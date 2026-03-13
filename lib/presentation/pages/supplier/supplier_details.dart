@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/data/models/supplier_model.dart'; // 🔥 Modelni import qil
+import 'package:ocam_pos/data/models/supplier_model.dart';
 import 'package:ocam_pos/presentation/widgets/supplier_widget/detail/detail_info_item.dart';
 import './delete_supplier.dart';
 import './edit_supplier.dart';
 
 class SupplierDetailsScreen extends StatelessWidget {
-  final SupplierModel supplier; // 🔥 Map o'rniga toza Model!
+  final SupplierModel supplier;
 
   const SupplierDetailsScreen({super.key, required this.supplier});
 
@@ -36,7 +36,6 @@ class SupplierDetailsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline, color: AppColors.primary),
-            // 🔥 O'chirishda ID ni berib yuboramiz
             onPressed: () => showDeleteSupplier(context),
           ),
         ],
@@ -46,10 +45,9 @@ class SupplierDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 1. Markaziy Logotip (Hero animatsiyasi bilan)
             Center(
               child: Hero(
-                tag: supplier.id ?? 'supplier',
+                tag: supplier.id,
                 child: Container(
                   height: 110,
                   width: 110,
@@ -87,7 +85,6 @@ class SupplierDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 25),
 
-            // 2. Quick Actions
             Container(
               padding: const EdgeInsets.symmetric(vertical: 18),
               decoration: BoxDecoration(
@@ -108,7 +105,6 @@ class SupplierDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 3. Supplier Data Card
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -131,7 +127,6 @@ class SupplierDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       TextButton.icon(
-                        // 🔥 Edit qilish uchun modelni uzatamiz
                         onPressed: () => showEditSupplierSheet(context),
                         icon: const Icon(
                           Icons.edit_outlined,
@@ -171,7 +166,6 @@ class SupplierDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 4. Invoices (Hozircha static, keyinchalik bazaga ulanadi)
             _buildInvoicesSection(),
             const SizedBox(height: 30),
           ],
@@ -180,7 +174,6 @@ class SupplierDetailsScreen extends StatelessWidget {
     );
   }
 
-  // --- 🎨 Yordamchi Vidjetlar ---
   Widget _quickAction(IconData icon, String label, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,

@@ -25,8 +25,6 @@ class AttendanceCalendar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Bu yerda senga 'table_calendar' paketi kerak bo'ladi,
-          // hozircha oddiy mock (imitatsiya) qilib turamiz:
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(

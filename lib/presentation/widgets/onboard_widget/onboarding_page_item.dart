@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'onboarding_components.dart'; // Clipper uchun
+import 'onboarding_components.dart';
 
 class OnboardingPageItem extends StatelessWidget {
   final Map<String, dynamic> data;

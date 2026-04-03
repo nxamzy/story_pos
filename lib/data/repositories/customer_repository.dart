@@ -7,7 +7,7 @@ class CustomerRepository {
 
   String get _currentUserId {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception("⚠️ Tizimga kirmagansiz!");
+    if (user == null) throw Exception("Tizimga kirmagansiz!");
     return user.uid;
   }
 
@@ -26,7 +26,7 @@ class CustomerRepository {
               .toList(),
         )
         .handleError((error) {
-          print("🔥 Firestore Stream Error: $error");
+          print("Firestore Stream Error: $error");
           return <CustomerModel>[];
         });
   }

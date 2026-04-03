@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 import 'package:ocam_pos/presentation/pages/sale/chackout/payment_successfull_scan.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/presentation/widgets/sale_widget/chackout/checkout_card.dart';
-// Bloc importini tekshir:
-// import 'package:ocam_pos/presentation/bloc/billing/billing_bloc.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -27,23 +25,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return BlocConsumer<BillingBloc, BillingState>(
       listener: (context, state) {
         if (state.saleSuccess) {
-          // 🎯 Sotuv bitishi bilan sening chiroyli Sheet'ingni chiqaramiz
-          // Unga state-dagi summani berib yuboramiz (lekin state tozalanishidan oldingi summani ushlab qolish kerak)
           showSuccessSheet(context, state.totalAmount);
         }
-        // 🎯 Agar xatolik bo'lsa Snackbar chiqarish
         if (state.error != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error!), backgroundColor: Colors.red),
           );
         }
 
-        // 🎯 G'ALABA! Sotuv bitgach savat bo'shaganini tekshiramiz
         if (!state.isLoading &&
             state.cartItems.isEmpty &&
             state.error == null) {
-          // Bu yerda Success sahifasiga o'tish mantiqi:
-          // context.go(PlatformRoutes.paymentSuccess.route);
           print("Sotuv muvaffaqiyatli yakunlandi!");
         }
       },
@@ -75,7 +67,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 _buildPrintSwitch(),
 
                 const SizedBox(height: 20),
-                // 🚀 COMPLETE BUTTON ENDI ISHLAYDI!
                 _buildCompleteButton(billingState),
                 const SizedBox(height: 30),
               ],
@@ -86,7 +77,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  // --- FAOL TUGMA (BLOC-GA ULANGAN) ---
   Widget _buildCompleteButton(BillingState state) {
     return SizedBox(
       width: double.infinity,
@@ -97,7 +87,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             : () {
                 final paid = double.tryParse(_amountPaidController.text) ?? 0.0;
 
-                // 🛑 Tekshiruv: To'langan pul kam bo'lsa
                 if (paid < state.totalAmount) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -111,7 +100,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   CompleteSaleEvent(
                     amountPaid: paid,
                     printReceipt: _printReceipt,
-                    // note: _noteController.text, // Agar eventda note bo'lsa qo'shish mumkin
                   ),
                 );
               },
@@ -135,7 +123,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  // --- QOLGAN WIDGETLAR (SENING DIZAYNING) ---
   Widget _buildProductTable(BillingState state) {
     return CheckoutCard(
       child: Table(
@@ -236,7 +223,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  // Boshqa yordamchi AppBar, DateCard, NoteCard o'zgarishsiz qoladi...
   AppBar _buildAppBar(BuildContext context) => AppBar(
     backgroundColor: AppColors.background,
     elevation: 0,

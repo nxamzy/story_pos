@@ -32,7 +32,6 @@ class _DeleteSupplierSheetState extends State<DeleteSupplierSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle
           Container(
             width: 40,
             height: 4,
@@ -43,7 +42,6 @@ class _DeleteSupplierSheetState extends State<DeleteSupplierSheet> {
           ),
           const SizedBox(height: 32),
 
-          // Ikonka (Yashil-kulrang aralashmasi)
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -58,7 +56,6 @@ class _DeleteSupplierSheetState extends State<DeleteSupplierSheet> {
           ),
           const SizedBox(height: 24),
 
-          // Savol
           const Text(
             "Are you sure to delete this supplier?",
             textAlign: TextAlign.center,
@@ -76,14 +73,12 @@ class _DeleteSupplierSheetState extends State<DeleteSupplierSheet> {
           ),
           const SizedBox(height: 24),
 
-          // Checkbox Vidjeti
           DeleteConfirmationCheckbox(
             isChecked: isChecked,
             onTap: () => setState(() => isChecked = !isChecked),
           ),
           const SizedBox(height: 32),
 
-          // O'CHIRISH TUGMASI (Yashil chiziqli yoki xira)
           SizedBox(
             width: double.infinity,
             height: 56,
@@ -113,7 +108,6 @@ class _DeleteSupplierSheetState extends State<DeleteSupplierSheet> {
           ),
           const SizedBox(height: 8),
 
-          // Bekor qilish tugmasi
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text(

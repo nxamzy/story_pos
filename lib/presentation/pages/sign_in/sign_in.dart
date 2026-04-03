@@ -18,13 +18,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // 1. Controllerlarni yaratamiz (Goggins intizomi!)
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    // Xotirani tejash uchun controllerlarni o'chiramiz
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -35,11 +33,9 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        // 2. BlocListener orqali holatlarni kuzatamiz
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              // Muvaffaqiyatli kirsa - Home-ga marsh!
               context.go(PlatformRoutes.homePage.route);
             }
           },
@@ -70,7 +66,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // 3. Email Field (Controller biriktirildi)
                 AuthTextField(
                   controller: _emailController,
                   label: "Email",
@@ -80,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 20),
 
-                // 4. Password Field (Controller biriktirildi)
                 AuthTextField(
                   controller: _passwordController,
                   label: "Password",
@@ -112,7 +106,6 @@ class _LoginPageState extends State<LoginPage> {
                 _buildSignUpPrompt(context),
                 const SizedBox(height: 16),
 
-                // 5. Log in Button (Loading holati bilan)
                 _buildLoginButton(),
 
                 const SizedBox(height: 16),
@@ -125,8 +118,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  // --- Yordamchi vidjetlar (Kodni toza saqlash uchun) ---
 
   Widget _buildDivider() {
     return Row(
@@ -198,7 +189,6 @@ class _LoginPageState extends State<LoginPage> {
                         SignInRequested(email, password),
                       );
                     } else {
-                      // MANA BU QISMI SNACKBAR CHIQARADI 🚀
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Iltimos hamma qatorlarni to'ldiring!"),

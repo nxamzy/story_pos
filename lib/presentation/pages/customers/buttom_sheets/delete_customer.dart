@@ -76,21 +76,16 @@ class _DeleteCustomerSheetState extends State<DeleteCustomerSheet> {
             child: ElevatedButton(
               onPressed: isChecked
                   ? () {
-                      // 1. Bloc'ga o'chirish buyrug'ini beramiz
                       context.read<CustomerBloc>().add(
                         DeleteCustomerEvent(widget.customerId),
                       );
 
-                      // 2. Birinchi pop: BottomSheet'ni yopadi
                       Navigator.of(context).pop();
 
-                      // 3. Ikkinchi pop: Customer Details sahifasidan chiqib, asosiy ro'yxatga qaytadi
-                      // Agat GoRouter ishlatsang context.pop() yoki Navigator.pop(context)
                       if (context.canPop()) {
                         context.pop();
                       }
 
-                      // 4. Xabar chiqarish
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Mijoz muvaffaqiyatli o'chirildi"),

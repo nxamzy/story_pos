@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
 
-// --- 🎯 1. CHAQIRUV FUNKSIYASI ---
 void showDeleteProduct(BuildContext context, ProductModel product) {
   showModalBottomSheet(
     context: context,
@@ -14,7 +13,7 @@ void showDeleteProduct(BuildContext context, ProductModel product) {
 }
 
 class DeleteProductSheet extends StatefulWidget {
-  final ProductModel product; // 🔥 O'chiriladigan mahsulot
+  final ProductModel product;
 
   const DeleteProductSheet({super.key, required this.product});
 
@@ -24,21 +23,18 @@ class DeleteProductSheet extends StatefulWidget {
 
 class _DeleteProductSheetState extends State<DeleteProductSheet> {
   bool isChecked = false;
-  bool _isLoading = false; // 🔥 Yuklanish holati
+  bool _isLoading = false;
 
-  // --- 🔥 BAZADAN O'CHIRISH FUNKSIYASI ---
   Future<void> _deleteProductFromFirestore() async {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Firestore'dan o'chirish
       await FirebaseFirestore.instance
           .collection('products')
           .doc(widget.product.id)
           .delete();
 
       if (mounted) {
-        // 2. Muvaffaqiyatli xabar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("${widget.product.name} muvaffaqiyatli o'chirildi!"),
@@ -46,11 +42,8 @@ class _DeleteProductSheetState extends State<DeleteProductSheet> {
           ),
         );
 
-        // 3. Sheetni yopish
         Navigator.pop(context);
 
-        // 4. Agar ProductDetails sahifasida bo'lsak, orqaga qaytish
-        // (Chunki mahsulot endi yo'q)
         Navigator.pop(context);
       }
     } catch (e) {
@@ -77,7 +70,6 @@ class _DeleteProductSheetState extends State<DeleteProductSheet> {
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: SafeArea(
         child: Stack(
-          // Yuklanish indikatori uchun
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -85,11 +77,9 @@ class _DeleteProductSheetState extends State<DeleteProductSheet> {
                 _buildHandleBar(),
                 const SizedBox(height: 24),
 
-                // 🚨 O'chirish ikonkasi animatsiya bilan
                 _buildAnimatedIcon(),
                 const SizedBox(height: 24),
 
-                // Sarlavha (Dinamik nom bilan)
                 Text(
                   "Delete '${widget.product.name}'?",
                   textAlign: TextAlign.center,
@@ -112,17 +102,14 @@ class _DeleteProductSheetState extends State<DeleteProductSheet> {
 
                 const SizedBox(height: 32),
 
-                // Tasdiqlash Checkboxi
                 _buildCheckboxTile(),
 
                 const SizedBox(height: 32),
 
-                // O'chirish Tugmasi
                 _buildDeleteButton(),
 
                 const SizedBox(height: 12),
 
-                // Bekor qilish tugmasi
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text(

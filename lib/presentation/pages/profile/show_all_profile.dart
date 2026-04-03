@@ -45,14 +45,12 @@ class ShowAllProfile extends StatelessWidget {
       body: ListView.builder(
         padding: const EdgeInsets.only(top: 12),
         physics: const BouncingScrollPhysics(),
-        itemCount: 5, // Dinamik ro'yxat bo'lsa, list.length
+        itemCount: 5,
         itemBuilder: (context, index) {
           return _buildProfileCard(
             name: "Marwan Magdy $index",
             email: "marwanmagdy200@gmail.com",
-            onTap: () {
-              // Profil tanlanganda mantiq
-            },
+            onTap: () {},
           );
         },
       ),

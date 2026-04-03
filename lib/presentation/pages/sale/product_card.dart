@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -13,7 +13,6 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<BillingBloc, BillingState>(
       builder: (context, state) {
-        // Savatda bormi yoki yo'qligini aniqlaymiz
         final cartItemIndex = state.cartItems.indexWhere(
           (item) => item.product.id == product.id,
         );
@@ -44,7 +43,6 @@ class ProductCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // 🔝 Rasm va Narx
               Expanded(
                 flex: 3,
                 child: Stack(
@@ -92,7 +90,6 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
 
-              // 📝 Ismi va Arrow icon
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
@@ -120,7 +117,6 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
 
-              // 🔢 BOSHQARUV TUGMALARI (Rasmda ko'rsatilganidek)
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),

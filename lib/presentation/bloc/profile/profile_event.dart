@@ -6,7 +6,6 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Profil ma'lumotlarini yuklash buyrug'i
 class LoadUserProfile extends ProfileEvent {
   final String uid;
   const LoadUserProfile(this.uid);
@@ -21,5 +20,5 @@ class UpdateUserProfile extends ProfileEvent {
   const UpdateUserProfile({required this.firstName, required this.lastName});
 
   @override
-  List<Object?> get props => [firstName, lastName]; // Bloc buni sezishi uchun kerak!
+  List<Object?> get props => [firstName, lastName];
 }

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
-// Bloc importini ochib qo'ying:
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 import 'package:ocam_pos/presentation/pages/sale/main_sale/quikadd/quick_add.dart';
 import 'package:ocam_pos/presentation/pages/sale/main_sale/scanner/scanner_page.dart';
 import 'package:ocam_pos/presentation/pages/sale/product_card.dart';
@@ -126,7 +125,6 @@ class _SaleScreenState extends State<SaleScreen> {
                     onPressed: () {
                       final userId = FirebaseAuth.instance.currentUser?.uid;
                       if (userId != null) {
-                        // 🔥 STOKNI YANGILASHNI BOSHLAYMIZ!
                         context.read<BillingBloc>().add(
                           ConfirmSaleEvent(userId),
                         );
@@ -235,7 +233,6 @@ class _SaleScreenState extends State<SaleScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Chiroyli ikonka yoki rasm
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -264,8 +261,6 @@ class _SaleScreenState extends State<SaleScreen> {
               style: TextStyle(color: AppColors.sage, fontSize: 14),
             ),
             const SizedBox(height: 20),
-
-            // Filtrlarni tozalash tugmasi
           ],
         ),
       ),
@@ -299,7 +294,6 @@ class _SaleScreenState extends State<SaleScreen> {
 
         final displayProducts = state.products;
 
-        // 🔥 AGAR BO'SH BO'LSA:
         if (displayProducts.isEmpty) {
           return _buildEmptyState(context);
         }

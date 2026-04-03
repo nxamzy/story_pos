@@ -6,7 +6,7 @@ class AddSupplierTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final int maxLines;
-  final String? Function(String?)? validator; // 🔥 MANA SHU QATORNI QO'SH
+  final String? Function(String?)? validator;
 
   const AddSupplierTextField({
     super.key,
@@ -14,7 +14,7 @@ class AddSupplierTextField extends StatelessWidget {
     required this.controller,
     this.keyboardType,
     this.maxLines = 1,
-    this.validator, // 🔥 VA BU YERGA HAM
+    this.validator,
   });
 
   @override
@@ -34,11 +34,10 @@ class AddSupplierTextField extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextFormField(
-            // ⚠️ TextField emas, TextFormField bo'lishi shart!
             controller: controller,
             keyboardType: keyboardType,
             maxLines: maxLines,
-            validator: validator, // 🔥 BU YERDA ISHLATILADI
+            validator: validator,
             decoration: InputDecoration(
               filled: true,
               fillColor: AppColors.background,
@@ -55,7 +54,6 @@ class AddSupplierTextField extends StatelessWidget {
                 borderSide: const BorderSide(color: AppColors.primary),
               ),
               errorBorder: OutlineInputBorder(
-                // ❌ Xato bo'lgandagi chegara
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Colors.red),
               ),

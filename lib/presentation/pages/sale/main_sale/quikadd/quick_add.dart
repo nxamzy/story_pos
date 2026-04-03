@@ -9,7 +9,6 @@ import 'package:ocam_pos/logic/blocs/products/product_state.dart';
 import 'package:ocam_pos/presentation/pages/sale/main_sale/scanner/scanner_page.dart';
 import 'package:ocam_pos/presentation/widgets/sale_widget/main_sale/quick_add_field.dart';
 
-// 🎯 1. ONPRESSEDGA TASHLAYDIGAN FUNKSIYA
 void bottomsheetdfsdfa(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -86,7 +85,7 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
     return BlocListener<ProductBloc, ProductState>(
       listener: (context, state) {
         if (state is ProductLoaded) {
-          Navigator.pop(context); // Muvaffaqiyatli bo'lsa yopiladi
+          Navigator.pop(context);
         }
       },
       child: Container(
@@ -95,9 +94,7 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
           color: AppColors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
-        padding: EdgeInsets.only(
-          bottom: bottomInset,
-        ), // 👈 Klaviaturadan qochadi
+        padding: EdgeInsets.only(bottom: bottomInset),
         child: Column(
           children: [
             const SizedBox(height: 12),
@@ -126,7 +123,6 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Barcode Skanerlash
                     QuickAddInputField(
                       label: "Barcode",
                       controller: barcodeController,
@@ -177,7 +173,6 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
               ),
             ),
 
-            // Saqlash tugmasi
             Padding(
               padding: const EdgeInsets.all(20),
               child: SizedBox(
@@ -208,7 +203,6 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
     );
   }
 
-  // 🎯 BAZADAN QIDIRISH MANTIQI
   void _searchProduct(String barcode) {
     final state = context.read<ProductBloc>().state;
     if (state is ProductLoaded) {

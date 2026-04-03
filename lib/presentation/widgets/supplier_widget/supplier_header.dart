@@ -11,7 +11,7 @@ class SupplierHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(top: 60, left: 24, right: 15, bottom: 20),
       decoration: const BoxDecoration(
-        color: AppColors.primary, // emeraldBase
+        color: AppColors.primary,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),

@@ -23,7 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // Foydalanuvchi ID-sini olamiz va Bloc-ga yuklash buyrug'ini beramiz
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       context.read<ProfileBloc>().add(LoadUserProfile(user.uid));
@@ -61,12 +60,10 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             const SizedBox(height: 10),
 
-            // Profil kartasi
             const ProfileInfoCard(),
 
             const SizedBox(height: 16),
 
-            // Sozlamalar bo'limi
             _buildSettingsSection(),
           ],
         ),

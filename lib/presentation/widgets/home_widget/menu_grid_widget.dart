@@ -8,7 +8,6 @@ class MenuGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menu elementlari ro'yxati (Kodni toza saqlash uchun)
     final List<Map<String, dynamic>> menuItems = [
       {
         'title': 'Purchases',
@@ -86,7 +85,6 @@ class _MenuItemCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Ikonka foni bilan
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(

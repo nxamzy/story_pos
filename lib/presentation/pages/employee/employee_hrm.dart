@@ -17,7 +17,7 @@ class AttendanceRecord {
 }
 
 class EmployeeHRMScreen extends StatefulWidget {
-  final EmployeeModel? employee; // 🔥 Null bo'lishi mumkin
+  final EmployeeModel? employee;
 
   const EmployeeHRMScreen({super.key, this.employee});
 
@@ -28,7 +28,7 @@ class EmployeeHRMScreen extends StatefulWidget {
 class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late EmployeeModel _currentEmployee; // 🔥 Asosiy ishchi ma'lumoti
+  late EmployeeModel _currentEmployee;
 
   final List<AttendanceRecord> attendanceList = [
     AttendanceRecord(
@@ -59,7 +59,6 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // 🔥 DEFAULT QIYMAT: Agar 'extra' bilan hech narsa kelmasa, shu ko'rinadi
     _currentEmployee =
         widget.employee ??
         EmployeeModel(
@@ -109,9 +108,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
       ),
       actions: [
         IconButton(
-          onPressed: () {
-            // Edit sheet chaqirish joyi
-          },
+          onPressed: () {},
           icon: const Icon(
             Icons.edit_note_rounded,
             color: AppColors.primary,
@@ -374,9 +371,6 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     );
   }
 }
-
-// ... _StatCard, _AttendanceTile va _CalendarDay vidjetlari o'zgarmasdan qoladi.
-// --- HELPER WIDGETS ---
 
 class _StatCard extends StatelessWidget {
   final String title, value;

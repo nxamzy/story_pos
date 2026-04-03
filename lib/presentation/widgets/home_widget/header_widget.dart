@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Buni qo'shish shart
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/presentation/bloc/profile/profile_bloc.dart';
 import 'package:ocam_pos/presentation/bloc/profile/profile_state.dart';
@@ -20,12 +20,11 @@ class _HeaderState extends State<Header> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Ustun faqat kerakli joyni egallaydi
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              // Avatar Image
               InkWell(
                 onTap: () {
                   context.push(PlatformRoutes.profilePage.route);
@@ -43,7 +42,6 @@ class _HeaderState extends State<Header> {
 
               const SizedBox(width: 18),
 
-              // Ism qismi
               Expanded(
                 child: BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
@@ -60,8 +58,7 @@ class _HeaderState extends State<Header> {
                           'Hello,',
                           style: TextStyle(
                             color: Color(0xFF15294B),
-                            fontSize:
-                                14, // Biroq kichraytirdik, chiroyli chiqadi
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -80,7 +77,6 @@ class _HeaderState extends State<Header> {
                 ),
               ),
 
-              // Notification Icon
               IconButton(
                 onPressed: () {
                   context.push(PlatformRoutes.notificationsPage.route);

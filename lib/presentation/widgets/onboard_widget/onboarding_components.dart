@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// 1. NUQTALAR (INDICATOR)
 class OnboardingDot extends StatelessWidget {
   final bool isActive;
   const OnboardingDot({super.key, required this.isActive});
@@ -22,7 +21,6 @@ class OnboardingDot extends StatelessWidget {
   }
 }
 
-// 2. CURVE CLIPPER
 class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

@@ -29,7 +29,6 @@ class SplashContent extends StatelessWidget {
       backgroundColor: AppColors.white,
       body: Column(
         children: [
-          // Yuqori egri qism
           SizedBox(
             height: size.height * 0.61,
             child: Stack(
@@ -48,7 +47,6 @@ class SplashContent extends StatelessWidget {
             ),
           ),
 
-          // Matnlar qismi
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
             child: Column(
@@ -78,7 +76,6 @@ class SplashContent extends StatelessWidget {
 
           const Spacer(),
 
-          // Pastki boshqaruv tugmalari
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 0, 30, 40),
             child: Row(
@@ -96,7 +93,6 @@ class SplashContent extends StatelessWidget {
                   ),
                 ),
 
-                // Indikator nuqtalar
                 Row(
                   children: List.generate(
                     3,

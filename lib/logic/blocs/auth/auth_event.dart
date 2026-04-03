@@ -7,7 +7,6 @@ abstract class AuthEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Registratsiya buyrug'i
 class SignUpRequested extends AuthEvent {
   final String email, password, firstName, lastName;
   const SignUpRequested(
@@ -18,13 +17,11 @@ class SignUpRequested extends AuthEvent {
   );
 }
 
-// Kirish buyrug'i
 class SignInRequested extends AuthEvent {
   final String email, password;
   const SignInRequested(this.email, this.password);
 }
 
-// Chiqish buyrug'i
 class SignOutRequested extends AuthEvent {}
 
 class AuthStatusChanged extends AuthEvent {

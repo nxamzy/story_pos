@@ -4,7 +4,6 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
 import 'package:ocam_pos/presentation/widgets/inventory_widget/edit_input_field.dart';
 
-// --- 🎯 1. CHAQIRUV FUNKSIYASI ---
 void showEditProductData(BuildContext context, ProductModel product) {
   showModalBottomSheet(
     context: context,
@@ -35,7 +34,7 @@ class _EditProductSheetState extends State<EditProductSheet> {
   bool _isLoading = false;
 
   final List<String> _categories = [
-    'General', // 🔥 SHUNI QO'SHING (Xuddi bazadagi kabi yozilishi shart)
+    'General',
     'Beverages',
     'Candy',
     'Packaged Food',
@@ -47,11 +46,10 @@ class _EditProductSheetState extends State<EditProductSheet> {
     super.initState();
     String initialCat = widget.product.category ?? 'General';
     if (!_categories.contains(initialCat)) {
-      _selectedCategory = _categories.first; // Yoki 'General'
+      _selectedCategory = _categories.first;
     } else {
       _selectedCategory = initialCat;
     }
-    // Boshlang'ich qiymatlarni yuklash
     barcodeController = TextEditingController(text: widget.product.barcode);
     nameController = TextEditingController(text: widget.product.name);
     qtyController = TextEditingController(
@@ -194,11 +192,10 @@ class _EditProductSheetState extends State<EditProductSheet> {
                   ],
                 ),
 
-                // 🔥 Description endi xato bermaydi!
                 EditInputField(
                   label: "Description",
                   controller: descriptionController,
-                  maxLines: 3, // Ko'p qatorli qilish imkoni
+                  maxLines: 3,
                 ),
 
                 const SizedBox(height: 24),

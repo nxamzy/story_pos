@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 
 void showNewProfile(BuildContext context) {
-  // Controllerlar xotirada qolishi uchun builder ichidan tashqariga olindi
   final nameController = TextEditingController(text: "Osama Al-Ghamri");
   final phoneController = TextEditingController(text: "01033980808");
   final addressController = TextEditingController(
@@ -34,7 +33,6 @@ void showNewProfile(BuildContext context) {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Handle Bar
                     Container(
                       width: 45,
                       height: 5,
@@ -57,10 +55,9 @@ void showNewProfile(BuildContext context) {
                     ),
                     const SizedBox(height: 24),
 
-                    // Rasm yuklash qismi
                     Center(
                       child: InkWell(
-                        onTap: () {}, // Galereyani ochish
+                        onTap: () {},
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
                           height: 110,
@@ -97,7 +94,6 @@ void showNewProfile(BuildContext context) {
                     ),
                     const SizedBox(height: 28),
 
-                    // Input Fields
                     _buildInputField("Full Name", nameController),
                     _buildInputField(
                       "Phone Number",
@@ -109,7 +105,6 @@ void showNewProfile(BuildContext context) {
 
                     const SizedBox(height: 24),
 
-                    // Save Button
                     SizedBox(
                       width: double.infinity,
                       height: 58,

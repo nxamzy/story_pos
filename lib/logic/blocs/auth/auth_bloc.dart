@@ -1,4 +1,4 @@
-import 'dart:async'; // StreamSubscription uchun kerak
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,13 +11,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription<User?>? _userSubscription;
 
   AuthBloc() : super(AuthInitial()) {
-    // --- 1. AVTOMATIK TEKSHIRUV (Eng muhim qism) ---
-    // Ilova yonganda Firebase-ni eshitishni boshlaymiz
     _userSubscription = _auth.authStateChanges().listen((user) {
       add(AuthStatusChanged(user));
     });
 
-    // Avtomatik holat o'zgarganda ishlaydigan event
     on<AuthStatusChanged>((event, emit) {
       if (event.user != null) {
         emit(Authenticated(event.user!.uid));
@@ -26,7 +23,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // --- 2. SIGN UP LOGIKASI ---
     on<SignUpRequested>((event, emit) async {
       if (event.email.isEmpty ||
           event.password.isEmpty ||
@@ -49,7 +45,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           'lastName': event.lastName,
           'createdAt': FieldValue.serverTimestamp(),
         });
-        // Bu yerda emit(Authenticated) shart emas, chunki authStateChanges o'zi bajaradi
       } on FirebaseAuthException catch (e) {
         emit(AuthError(_mapAuthError(e.code)));
       } catch (e) {
@@ -57,7 +52,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // --- 3. SIGN IN LOGIKASI ---
     on<SignInRequested>((event, emit) async {
       if (event.email.isEmpty || event.password.isEmpty) {
         emit(const AuthError("Email va parolni kiriting!"));
@@ -76,13 +70,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // --- 4. LOG OUT ---
     on<SignOutRequested>((event, emit) async {
       await _auth.signOut();
     });
   }
 
-  // Bloc yopilganda streamni ham yopamiz (Xotira to'lmasligi uchun)
   @override
   Future<void> close() {
     _userSubscription?.cancel();

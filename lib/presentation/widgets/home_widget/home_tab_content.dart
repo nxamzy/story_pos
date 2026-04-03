@@ -9,22 +9,21 @@ class HomeTabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // White
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Yuqori yashil fon (Header orqasidagi fon)
           Container(
             height: 300,
             decoration: const BoxDecoration(
-              color: AppColors.primary, // emeraldBase
+              color: AppColors.primary,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
             ),
           ),
           SafeArea(
             child: Column(
               children: [
-                const Header(), // Sening Header vidjeting
-                Expanded(child: const Body()), // Sening Body vidjeting
+                const Header(),
+                Expanded(child: const Body()),
               ],
             ),
           ),

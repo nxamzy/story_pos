@@ -18,23 +18,21 @@ class _DataCardState extends State<DataCard> {
   @override
   void initState() {
     super.initState();
-    // Agar tashqaridan sana kelmasa, bugungi sanani oladi
     _currentDate = widget.initialDate ?? DateTime.now();
   }
 
-  // --- 📅 KALENDARNI OCHISH FUNKSIYASI ---
   Future<void> _selectDate(BuildContext context) async {
     try {
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: _currentDate,
-        firstDate: DateTime(2020), // Eng boshlang'ich sana
-        lastDate: DateTime(2030), // Eng oxirgi sana
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2030),
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: AppColors.primary, // Emerald Green
+                primary: AppColors.primary,
                 onPrimary: AppColors.white,
                 onSurface: AppColors.forestDark,
               ),
@@ -52,7 +50,6 @@ class _DataCardState extends State<DataCard> {
           _currentDate = picked;
         });
 
-        // Tanlangan sanani tashqariga (sahifaga) yuboramiz
         if (widget.onDateSelected != null) {
           widget.onDateSelected!(picked);
         }
@@ -64,18 +61,16 @@ class _DataCardState extends State<DataCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Sanani chiroyli formatga keltirish: "29 September 2023"
     final String formattedDate = DateFormat(
       'dd MMMM yyyy',
     ).format(_currentDate);
 
     return InkWell(
-      onTap: () => _selectDate(context), // Bosganda kalendar ochiladi
+      onTap: () => _selectDate(context),
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        // Uzun bo'lishi uchun kenglikni cheklamaymiz yoki double.infinity beramiz
         width: double.infinity,
-        padding: const EdgeInsets.all(6), // Paddingni normallashtirdik
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
@@ -89,9 +84,7 @@ class _DataCardState extends State<DataCard> {
           ],
         ),
         child: Row(
-          // mainAxisSize: MainAxisSize.min olib tashlandi, endi Row butun kenglikni egallaydi
           children: [
-            // 1. Chap tomondagi Icon (Leading kabi)
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -106,7 +99,6 @@ class _DataCardState extends State<DataCard> {
             ),
             const SizedBox(width: 20),
 
-            // 2. Markazdagi Matnlar (Title va Subtitle kabi)
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +125,6 @@ class _DataCardState extends State<DataCard> {
               ),
             ),
 
-            // 3. O'ng tomondagi o'q (Trailing kabi)
             const Icon(
               Icons.keyboard_arrow_down,
               color: AppColors.sage,

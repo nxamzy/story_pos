@@ -53,7 +53,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
               slivers: [
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-                // 1. Statistika Grid
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverGrid.count(
@@ -90,7 +89,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   ),
                 ),
 
-                // 2. Tranzaksiyalar Sarlavhasi
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 32, 20, 16),
@@ -105,7 +103,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   ),
                 ),
 
-                // 3. Tranzaksiyalar Ro'yxati
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverList(

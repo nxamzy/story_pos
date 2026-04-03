@@ -5,12 +5,12 @@ class ProductModel {
   final String name;
   final String userId;
   final String barcode;
-  final double buyPrice; // Sotib olingan narxi (tannarxi)
-  final double sellPrice; // Sotish narxi
-  final int stock; // Ombordagi soni
+  final double buyPrice;
+  final double sellPrice;
+  final int stock;
   final String? category;
   final String? imageUrl;
-  final String? description; // 🔥 MANA SHU QATOR QO'SHILDI!
+  final String? description;
 
   ProductModel({
     required this.id,
@@ -22,10 +22,9 @@ class ProductModel {
     required this.stock,
     this.category,
     this.imageUrl,
-    this.description, // 🔥 Constructor-ga ham qo'shildi
+    this.description,
   });
 
-  // 🔥 1. Bazadan ma'lumot kelganda (Firestore -> App)
   factory ProductModel.fromMap(Map<String, dynamic> map, String documentId) {
     return ProductModel(
       id: documentId,
@@ -37,11 +36,10 @@ class ProductModel {
       stock: map['stock'] ?? 0,
       category: map['category'],
       imageUrl: map['imageUrl'],
-      description: map['description'], // 🔥 Map-dan o'qib olish
+      description: map['description'],
     );
   }
 
-  // 🔥 2. Bazaga ma'lumot yuborganda (App -> Firestore)
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -52,7 +50,7 @@ class ProductModel {
       'stock': stock,
       'category': category,
       'imageUrl': imageUrl,
-      'description': description, // 🔥 Map-ga qo'shish
+      'description': description,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

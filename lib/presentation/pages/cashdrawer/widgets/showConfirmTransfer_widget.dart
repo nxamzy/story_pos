@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ocam_pos/core/theme/app_colors.dart'; // AppColors importi
+import 'package:ocam_pos/core/theme/app_colors.dart';
 
 void showConfirmTransfer(BuildContext context) {
   showModalBottomSheet(
@@ -34,7 +34,6 @@ class _ConfirmTransferSheetState extends State<_ConfirmTransferSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. Handle (Tepadagi chiziqcha)
           Container(
             width: 45,
             height: 5,
@@ -45,7 +44,6 @@ class _ConfirmTransferSheetState extends State<_ConfirmTransferSheet> {
           ),
           const SizedBox(height: 24),
 
-          // 2. Transfer Ikonkasi (Doira ichida)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -60,7 +58,6 @@ class _ConfirmTransferSheetState extends State<_ConfirmTransferSheet> {
           ),
           const SizedBox(height: 16),
 
-          // 3. Balance matni (RichText bilan Emerald rangda)
           RichText(
             text: const TextSpan(
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -78,7 +75,6 @@ class _ConfirmTransferSheetState extends State<_ConfirmTransferSheet> {
           ),
           const SizedBox(height: 24),
 
-          // 4. Savol matni
           const Text(
             "Are you sure to transfer amount to\nMoamen Raafat?",
             textAlign: TextAlign.center,
@@ -90,12 +86,10 @@ class _ConfirmTransferSheetState extends State<_ConfirmTransferSheet> {
           ),
           const SizedBox(height: 20),
 
-          // 5. Custom Checkbox (Tasdiqlash)
           _buildCheckboxTile(),
 
           const SizedBox(height: 24),
 
-          // 6. Confirm Button
           _buildConfirmButton(context),
 
           const SizedBox(height: 8),

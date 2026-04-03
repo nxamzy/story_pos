@@ -59,7 +59,6 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
   }
 
   void _onSave(BuildContext context) {
-    // 1. Yangilangan modelni yaratamiz (ID o'zgarmaydi!)
     final updatedCustomer = widget.customer.copyWith(
       name: nameController.text.trim(),
       phone: phoneController.text.trim(),
@@ -68,10 +67,8 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
       notes: notesController.text.trim(),
     );
 
-    // 2. Bloc-ga yuboramiz
     context.read<CustomerBloc>().add(AddManualCustomerEvent(updatedCustomer));
 
-    // 3. UI-ni yopamiz va xabar beramiz
     context.pop();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -91,7 +88,6 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
       ),
       padding: const EdgeInsets.all(24),
       child: SingleChildScrollView(
-        // Klaviatura chiqsa xalaqit bermasligi uchun
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

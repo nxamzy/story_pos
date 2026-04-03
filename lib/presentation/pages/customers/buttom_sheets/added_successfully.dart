@@ -3,7 +3,6 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
 import 'package:ocam_pos/presentation/pages/customers/customer_details.dart';
 
-// 🔥 1. Modalni chaqirishda endi MIJOZni ham berib yuboramiz
 void showSuccessInventory(BuildContext context, CustomerModel customer) {
   showModalBottomSheet(
     context: context,
@@ -14,7 +13,6 @@ void showSuccessInventory(BuildContext context, CustomerModel customer) {
 }
 
 class SuccessCustomerSheet extends StatelessWidget {
-  // 🔥 2. Konstruktorda mijozni qabul qilamiz
   final CustomerModel customer;
   const SuccessCustomerSheet({super.key, required this.customer});
 
@@ -25,18 +23,12 @@ class SuccessCustomerSheet extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
-      padding: const EdgeInsets.fromLTRB(
-        24,
-        12,
-        24,
-        40,
-      ), // Pastki paddingni oshirdik
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildHandle(),
 
-          // 3D Illustration
           Image.network(
             'https://ouch-cdn2.icons8.com/6U8m8mB9zWz_Y_XnS2vH7W_pUuQ6Z8-I1_2O6_0v8q8/rs:fit:256:256/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvMzcy/L2M4ZGM0ZTMtM2Fj/Ny00YmU0LWJmMTYt/NjQ5YmQ4YjA1YjYy/LnBuZw.png',
             height: 160,
@@ -53,7 +45,6 @@ class SuccessCustomerSheet extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-          // 3. MIJOZ KARTOCHKASI (Preview) - Parametr uzatildi
           _buildCustomerPreview(context, customer),
         ],
       ),
@@ -76,7 +67,7 @@ class SuccessCustomerSheet extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () {
-        Navigator.pop(context); // Oldin modalni yopamiz
+        Navigator.pop(context);
         Navigator.push(
           context,
           MaterialPageRoute(

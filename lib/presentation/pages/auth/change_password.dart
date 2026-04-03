@@ -52,7 +52,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
               const SizedBox(height: 40),
 
-              // BIZNING YANGI VIDJETIMIZ 🦾
               CustomAuthInputField(
                 label: "New Password",
                 hint: "Enter new password",
@@ -75,7 +74,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
               const Spacer(),
 
-              // Tasdiqlash tugmasi
               _buildSubmitButton(context),
               const SizedBox(height: 10),
             ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:flutter/services.dart'; // 🎯 Vibratsiya o'rniga HapticFeedback uchun
+import 'package:flutter/services.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -33,8 +33,6 @@ class _ScannerPageState extends State<ScannerPage> {
           isScanned = true;
         });
 
-        // 🎯 VIBRATE O'RNIGA: Flutter'ning o'zini Haptic signali
-        // Bu hech qanday qo'shimcha paketsiz ishlaydi va xato bermaydi!
         await HapticFeedback.vibrate();
 
         if (mounted) {

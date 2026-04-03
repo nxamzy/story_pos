@@ -8,7 +8,7 @@ class CustomTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final TextInputType? keyboardType;
   final int maxLines;
-  final String? Function(String?)? validator; // 🔥 MANA SHU QATOR QO'SHILDI
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -18,7 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.keyboardType,
     this.maxLines = 1,
-    this.validator, // 🔥 VA BU YERGA HAM
+    this.validator,
   });
 
   @override
@@ -37,12 +37,11 @@ class CustomTextField extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // 🎯 DIQQAT: TextField emas, TextFormField ishlatish kerak!
           TextFormField(
             controller: controller,
             keyboardType: keyboardType,
             maxLines: maxLines,
-            validator: validator, // 🔥 VALIDATORNI SHU YERGA ULAYMIZ
+            validator: validator,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
@@ -72,7 +71,6 @@ class CustomTextField extends StatelessWidget {
                   width: 1.5,
                 ),
               ),
-              // Xato bo'lgandagi chegara
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Colors.red, width: 1),

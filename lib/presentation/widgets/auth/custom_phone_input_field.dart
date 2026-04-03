@@ -15,7 +15,6 @@ class CustomPhoneInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Davlat kodi bloki (Emerald Style)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
           decoration: BoxDecoration(
@@ -49,7 +48,6 @@ class CustomPhoneInputField extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        // Raqam kiritish maydoni
         Expanded(
           child: TextField(
             controller: controller,

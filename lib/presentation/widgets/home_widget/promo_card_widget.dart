@@ -9,14 +9,10 @@ class PromoCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 30),
       decoration: BoxDecoration(
-        // Yangi Emerald Gradient - Professional va zamonaviy
         gradient: LinearGradient(
           begin: Alignment.centerRight,
           end: Alignment.centerLeft,
-          colors: [
-            AppColors.primary, // Emerald Green
-            AppColors.primary.withOpacity(0.7), // Och yashilroq
-          ],
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -80,7 +76,7 @@ class PromoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Image.asset(
           'assets/images/calculator_promo.png',
-          fit: BoxFit.contain, // Rasm kesilib ketmasligi uchun
+          fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) => const Icon(
             Icons.qr_code_2_rounded,
             size: 50,

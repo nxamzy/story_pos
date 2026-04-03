@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 
 class CategoryList extends StatefulWidget {
-  // 🔥 1. Callback funksiyasini e'lon qilamiz
   final Function(String) onCategorySelected;
 
   const CategoryList({super.key, required this.onCategorySelected});
@@ -12,7 +11,6 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-  // Tanlangan indeksni saqlash uchun
   int selectedIndex = 0;
 
   final List<String> categories = [
@@ -38,7 +36,6 @@ class _CategoryListState extends State<CategoryList> {
               setState(() {
                 selectedIndex = index;
               });
-              // 🔥 2. Bosilganda tashqariga (SaleScreen-ga) xabar beramiz
               widget.onCategorySelected(categories[index]);
             },
             child: Container(

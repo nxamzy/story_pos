@@ -8,7 +8,7 @@ class ScanProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Kamera ko'rinishi uchun qora fon
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -37,10 +37,8 @@ class ScanProductScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // 1. Scanner Overlay (Kamera ramkasi)
           _buildScannerOverlay(),
 
-          // 2. Pastki bildirishnoma kartochkasi
           const Align(
             alignment: Alignment.bottomCenter,
             child: ScannedProductCard(),
@@ -66,8 +64,6 @@ class ScanProductScreen extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                // Burchaklardagi dekorativ chiziqlar (L-shape) bo'lishi mumkin
-                // Hozircha oddiy lazer chizig'i
                 Center(
                   child: Container(
                     height: 2,

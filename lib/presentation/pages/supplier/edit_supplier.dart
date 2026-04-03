@@ -28,12 +28,10 @@ class EditSupplierSheet extends StatelessWidget {
         top: 12,
       ),
       child: SingleChildScrollView(
-        // Ma'lumot ko'p bo'lsa scroll bo'lishi uchun
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Handle (Tepasidagi chiziqcha)
             Center(
               child: Container(
                 width: 45,
@@ -46,7 +44,6 @@ class EditSupplierSheet extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // 2. Sarlavha
             const Row(
               children: [
                 Icon(Icons.edit_note, color: AppColors.primary, size: 28),
@@ -63,7 +60,6 @@ class EditSupplierSheet extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // 3. Inputlar
             const EditFieldWidget(
               label: "Name",
               initialValue: "Coca-Cola Wholesale",
@@ -88,7 +84,6 @@ class EditSupplierSheet extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // 4. Save Button
             SizedBox(
               width: double.infinity,
               height: 58,

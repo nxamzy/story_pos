@@ -41,11 +41,8 @@ class _HomePageState extends State<HomePage> {
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.home_outlined),
       title: 'Home',
-      // Faol (tanlangan) rang - Yashil
       activeColorPrimary: AppColors.primary,
-      // No-faol (tanlanmagan) rang - To'qroq kulrang (yozuv ko'rinishi uchun)
       inactiveColorPrimary: Colors.grey.shade600,
-      // TextStyle ichida RANNG BERMAYMIZ! Faqat font o'lchami va qalinligi.
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
     ),
     PersistentBottomNavBarItem(
@@ -59,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       icon: const Icon(Icons.qr_code_scanner, size: 28),
       title: 'Sale',
       activeColorPrimary: AppColors.primary,
-      activeColorSecondary: AppColors.white, // Ikonka rangi
+      activeColorSecondary: AppColors.white,
       inactiveColorPrimary: AppColors.primary,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
     ),
@@ -103,6 +100,6 @@ class _HomePageState extends State<HomePage> {
 
     navBarStyle: NavBarStyle.style13,
     navBarHeight: 65,
-    backgroundColor: AppColors.white, // Navbar foni oq qoldirildi
+    backgroundColor: AppColors.white,
   );
 }

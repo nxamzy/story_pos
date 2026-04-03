@@ -19,7 +19,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  // 1. Controllerlar (Intizom!)
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -39,11 +38,9 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        // 2. BlocListener orqali navigatsiyani boshqaramiz
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              // Muvaffaqiyatli o'tsa - Home-ga marsh!
               context.go(PlatformRoutes.homePage.route);
             }
           },
@@ -74,7 +71,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // 3. Xatolarni ko'rsatish bloki (SnackBar-siz!)
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
                     if (state is AuthError) {
@@ -114,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
 
                 AuthTextField(
-                  controller: _firstNameController, // Controller ulandi
+                  controller: _firstNameController,
                   label: "Full Name",
                   hint: "Enter your full name",
                   icon: Icons.person_outline,
@@ -164,7 +160,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildSocialButtons(),
                 const SizedBox(height: 32),
 
-                // 4. Sign Up Button (Loading holati bilan)
                 _buildSignUpButton(),
 
                 const SizedBox(height: 20),
@@ -178,8 +173,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // --- Yordamchi metodlar ---
-
   Widget _buildSignUpButton() {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
@@ -188,14 +181,14 @@ class _SignUpPageState extends State<SignUpPage> {
           height: 56,
           child: ElevatedButton(
             onPressed: state is AuthLoading
-                ? null // Yuklanayotganda tugmani o'chirib qo'yamiz
+                ? null
                 : () {
                     context.read<AuthBloc>().add(
                       SignUpRequested(
                         _emailController.text.trim(),
                         _passwordController.text.trim(),
                         _firstNameController.text.trim(),
-                        "", // Bloc lastName so'rasa, hozircha bo'sh yuboramiz
+                        "",
                       ),
                     );
                   },

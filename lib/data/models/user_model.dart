@@ -5,7 +5,7 @@ class UserModel {
   final String email;
   final String firstName;
   final String lastName;
-  final String? photoUrl; // Profil rasmi (ixtiyoriy)
+  final String? photoUrl;
   final DateTime? createdAt;
 
   UserModel({
@@ -17,7 +17,6 @@ class UserModel {
     this.createdAt,
   });
 
-  // 1. Firestore'dan kelgan ma'lumotni (Map) Model'ga aylantirish
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'] ?? '',
@@ -29,7 +28,6 @@ class UserModel {
     );
   }
 
-  // 2. Model'ni Firestore'ga yuborish uchun Map'ga aylantirish
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

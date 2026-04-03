@@ -41,7 +41,6 @@ class _AddProductScreenState extends State<AddProductScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // Tab o'zgarganda UI yangilanishi uchun
     _tabController.addListener(() {
       setState(() {});
     });
@@ -73,11 +72,9 @@ class _AddProductScreenState extends State<AddProductScreen>
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception("Foydalanuvchi aniqlanmadi!");
 
-      // 🔥 MULTI-UNIT LOGIC:
       int enteredQty = int.tryParse(_qtyController.text) ?? 0;
       int perBox = int.tryParse(_itemsInBoxController.text) ?? 1;
 
-      // Agar 'Karobka' tabi tanlangan bo'lsa (index 1), sonini ko'paytiramiz
       int finalStock = (_tabController.index == 1)
           ? (enteredQty * perBox)
           : enteredQty;
@@ -86,7 +83,7 @@ class _AddProductScreenState extends State<AddProductScreen>
         'userId': user.uid,
         'name': _nameController.text.trim(),
         'barcode': _barcodeController.text.trim(),
-        'stock': finalStock, // Bazaga umumiy dona bo'lib kiradi
+        'stock': finalStock,
         'sellPrice': double.tryParse(_salePriceController.text) ?? 0.0,
         'buyPrice': double.tryParse(_purchasePriceController.text) ?? 0.0,
         'category': _selectedCategory,
@@ -242,7 +239,6 @@ class _AddProductScreenState extends State<AddProductScreen>
     );
   }
 
-  // --- Dropdown metodlarini o'zgarishsiz qoldirdim ---
   Widget _buildDropdownLabel(String label) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
     child: Text(

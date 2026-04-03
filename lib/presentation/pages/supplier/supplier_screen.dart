@@ -19,7 +19,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
-  DateTime? _selectedDate; // 🔥 Tanlangan sana holati
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -45,24 +45,20 @@ class _SupplierScreenState extends State<SupplierScreen> {
         children: [
           const SupplierHeader(),
 
-          // 🛠 FILTER & SEARCH SECTION
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
             child: Row(
               children: [
-                // 📅 Aqlli Sana Kartasi
                 DataCard(
                   initialDate: _selectedDate,
                   onDateSelected: (date) {
                     setState(() {
-                      _selectedDate =
-                          date; // Sana tanlanganda Stream yangilanadi
+                      _selectedDate = date;
                     });
                   },
                 ),
                 const SizedBox(width: 12),
 
-                // 🔍 Qidiruv maydoni
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -100,10 +96,8 @@ class _SupplierScreenState extends State<SupplierScreen> {
             ),
           ),
 
-          // 📡 STREAM BUILDER (JONLI MA'LUMOTLAR)
           Expanded(
             child: StreamBuilder<List<SupplierModel>>(
-              // 🔥 Sanani repositoryga uzatyapmiz
               stream: _repository.getSuppliers(selectedDate: _selectedDate),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -123,7 +117,6 @@ class _SupplierScreenState extends State<SupplierScreen> {
 
                 final suppliers = snapshot.data ?? [];
 
-                // Matnli qidiruv filtri
                 final filtered = suppliers.where((s) {
                   return s.name.toLowerCase().contains(_searchQuery);
                 }).toList();
@@ -150,7 +143,6 @@ class _SupplierScreenState extends State<SupplierScreen> {
     );
   }
 
-  // --- 🎨 EMPTY STATE ---
   Widget _buildEmptyState() {
     return Center(
       child: SingleChildScrollView(

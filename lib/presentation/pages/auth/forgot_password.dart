@@ -50,12 +50,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
               const SizedBox(height: 40),
 
-              // BIZNING UNIVERSAL TELEFON VIDJETIMIZ 🦾
               CustomPhoneInputField(controller: _phoneController),
 
               const Spacer(),
 
-              // Send Code Tugmasi
               _buildSubmitButton(context),
               const SizedBox(height: 24),
             ],

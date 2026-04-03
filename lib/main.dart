@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 import 'package:ocam_pos/logic/blocs/auth/auth_bloc.dart';
 import 'package:ocam_pos/logic/blocs/products/product_bloc.dart';
 import 'package:ocam_pos/logic/blocs/products/product_event.dart';

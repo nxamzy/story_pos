@@ -9,7 +9,7 @@ class QuickAddInputField extends StatelessWidget {
   final bool showClear;
   final int maxLines;
   final VoidCallback? onSuffixTap;
-  final TextInputType? keyboardType; // 🎯 YANGI: Klaviaturani boshqarish uchun
+  final TextInputType? keyboardType;
 
   const QuickAddInputField({
     super.key,
@@ -20,7 +20,7 @@ class QuickAddInputField extends StatelessWidget {
     this.showClear = false,
     this.maxLines = 1,
     this.onSuffixTap,
-    this.keyboardType, // Konstruktorga qo'shdik
+    this.keyboardType,
   });
 
   @override
@@ -46,7 +46,7 @@ class QuickAddInputField extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   maxLines: maxLines,
-                  keyboardType: keyboardType, // 🎯 SHU YERDA ISHLAYDI
+                  keyboardType: keyboardType,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

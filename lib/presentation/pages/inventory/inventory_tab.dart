@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // 🔥 Baza uchun
-import 'package:firebase_auth/firebase_auth.dart'; // 🔥 Userni tanish uchun
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/data/models/product_model.dart'; // Modelingni tekshir
+import 'package:ocam_pos/data/models/product_model.dart';
 import 'package:ocam_pos/presentation/widgets/inventory_widget/inventory_product_card.dart';
 import 'package:ocam_pos/routes/platform_routes.dart';
 
@@ -15,7 +15,6 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  // 1. Kategoriya bo'yicha filtr (Default: hammasi yoki birortasi)
   String selectedCategory = 'All';
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
@@ -23,7 +22,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      // FloatingActionButton qo'shib qo'ydim, tezkor qo'shish uchun
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
@@ -35,21 +33,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
           _buildSearchSection(),
           _buildCategorySection(),
           _buildListHeader(),
-          // 2. StreamBuilder — Ma'lumotlarning "jon tomiri"
           Expanded(child: _buildDynamicProductList()),
         ],
       ),
     );
   }
 
-  // --- 📦 BAZADAN MA'LUMOTLARNI OLISH ---
   Widget _buildDynamicProductList() {
-    // Firestore so'rovini tayyorlaymiz
     Query query = FirebaseFirestore.instance
         .collection('products')
         .where('userId', isEqualTo: currentUserId);
 
-    // Agar kategoriya 'All' bo'lmasa, uni ham filtrlaymiz
     if (selectedCategory != 'All') {
       query = query.where('category', isEqualTo: selectedCategory);
     }
@@ -67,7 +61,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
           );
         }
 
-        // 3. AGAR MAHSULOT YO'Q BO'LSA (Bo'sh holat)
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return _buildEmptyState();
         }
@@ -88,7 +81,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
               qty: "${product.stock} PC",
               imageUrl: product.imageUrl ?? 'https://via.placeholder.com/150',
               onTap: () {
-                // 🎯 Kelajakda: Mahsulotni tahrirlash yoki tafsilotlarini ko'rish
                 context.push(
                   PlatformRoutes.productDetails.route,
                   extra: product,
@@ -101,7 +93,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  // --- 🎨 BO'SH HOLAT VIDJETI ---
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -142,9 +133,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  // --- 🏷 KATEGORIYALAR (DYNAMIC) ---
   Widget _buildCategorySection() {
-    // 'All'ni qo'shib qo'ydimki, hamma narsani ko'rish imkoni bo'lsin
     List<String> cats = ['All', 'Beverages', 'Candy', 'Packaged Food', 'Home'];
     return Column(
       children: [
@@ -162,9 +151,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ),
               TextButton.icon(
-                onPressed: () {
-                  // Kategoriya qo'shish mantiqi (Dialog ochish mumkin)
-                },
+                onPressed: () {},
                 icon: const Icon(Icons.add, size: 18, color: AppColors.primary),
                 label: const Text(
                   'Add',
@@ -193,15 +180,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  // Qolgan metodlar (_buildHeader, _buildSearchSection, _buildCategoryChip, _buildListHeader, _buildIconButton)
-  // o'z joyida qoladi, faqat category chip bosilganda setState() bilan StreamBuilder yangilanadi.
-
   Widget _buildCategoryChip(String title, bool isSelected) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedCategory =
-              title; // 🔥 Bu bosilganda StreamBuilder qayta filtrlanadi
+          selectedCategory = title;
         });
       },
       child: Container(
@@ -227,7 +210,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  // --- 🛠 HEADER VA SEARCH (O'zingnikiga o'xshash, lekin toza holatda) ---
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.only(top: 60, left: 24, right: 15, bottom: 20),
@@ -285,9 +267,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 border: Border.all(color: AppColors.mintLight),
               ),
               child: TextField(
-                onChanged: (value) {
-                  // 🎯 Qidiruv mantiqi (Kelajakda filter qo'shish mumkin)
-                },
+                onChanged: (value) {},
                 decoration: const InputDecoration(
                   icon: Icon(Icons.search, color: AppColors.sage),
                   hintText: 'Search Product Here',

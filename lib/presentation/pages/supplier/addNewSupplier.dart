@@ -23,13 +23,12 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
-  // 🔥 SAQLASH FUNKSIYASI
   Future<void> _saveSupplier() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
         final supplier = SupplierModel(
-          id: '', // Yoki shunchaki yozmaslik (agar modelda required bo'lmasa)
+          id: '',
           name: _nameController.text.trim(),
           phone: _phoneController.text.trim(),
           email: _emailController.text.trim(),
@@ -97,7 +96,6 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                   AddSupplierTextField(
                     label: "Supplier Name",
                     controller: _nameController,
-                    // Inventory kabi validator qo'shdik
                     validator: (v) => v!.isEmpty ? "Ismni kiriting" : null,
                   ),
                 ],
@@ -143,7 +141,6 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
     );
   }
 
-  // Vidjetlar qismlarga bo'lingan (Toza kod uchun)
   Widget _buildImagePickerPlaceholder() {
     return Center(
       child: Container(

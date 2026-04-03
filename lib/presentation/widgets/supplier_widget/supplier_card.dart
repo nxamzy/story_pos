@@ -36,7 +36,6 @@ class SupplierCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 🖼 Rasm qismi (Default rasm bilan)
             Container(
               width: 50,
               height: 50,
@@ -53,7 +52,6 @@ class SupplierCard extends StatelessWidget {
             ),
             const SizedBox(width: 16),
 
-            // 📝 Ma'lumotlar qismi (Ism va ID)
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

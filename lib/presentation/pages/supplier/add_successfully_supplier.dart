@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 
-// Modalni chaqirish funksiyasi
 void showSupplierSuccessSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -36,8 +35,6 @@ class SuccessSupplierSheet extends StatelessWidget {
             ),
           ),
 
-          // 1. Tasdiq rasmi yoki Ikonka
-          // Bu yerda yashil muvaffaqiyat ikonkasini kattaroq va chiroyli qilamiz
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -67,7 +64,6 @@ class SuccessSupplierSheet extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-          // 2. YETKAZIB BERUVCHI KARTOCHKASI (Yashil uslubda)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -116,14 +112,13 @@ class SuccessSupplierSheet extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 3. ASOSIY TUGMA (Yashil va baquvvat)
           SizedBox(
             width: double.infinity,
             height: 58,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Modalni yopish
-                Navigator.pop(context); // Add sahifasidan chiqish
+                Navigator.pop(context);
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,

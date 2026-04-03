@@ -130,9 +130,7 @@ class _SettingsPageState extends State<SettingsPage> {
         border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: ListTile(
-        onTap: () {
-          /* Logout mantiqi */
-        },
+        onTap: () {},
         leading: const Icon(Icons.logout, color: Colors.red),
         title: const Text(
           "Logout",

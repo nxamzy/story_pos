@@ -50,11 +50,9 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
 
     setState(() => _isLoading = true);
 
-    // 🔥 UUID PAKETISIZ ID YARATISH:
-    // Firestore-dan bo'sh doc olamiz, u bizga tayyor unikal ID beradi
     final String customerId = FirebaseFirestore.instance
         .collection('users')
-        .doc() // Bu joyda yangi unikal ID generatsiya bo'ladi
+        .doc()
         .id;
 
     final newCustomer = CustomerModel(

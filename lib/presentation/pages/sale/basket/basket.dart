@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/printer_helper.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 import 'package:ocam_pos/presentation/pages/sale/basket/cart_item_card.dart';
 import 'package:ocam_pos/routes/platform_routes.dart';
 
@@ -17,7 +17,6 @@ class BasketScreen extends StatefulWidget {
 class _BasketScreenState extends State<BasketScreen> {
   @override
   Widget build(BuildContext context) {
-    // 🧠 BlocBuilder orqali state-ni kuzatamiz
     return BlocBuilder<BillingBloc, BillingState>(
       builder: (context, state) {
         final cartItems = state.cartItems;
@@ -44,18 +43,14 @@ class _BasketScreenState extends State<BasketScreen> {
               ),
             ),
             actions: [
-              // BillingState'ni ishlatish uchun BlocBuilder ichida ekaningga ishonch hosil qil
               BlocBuilder<BillingBloc, BillingState>(
                 builder: (context, state) {
                   return PopupMenuButton<String>(
                     onSelected: (String value) async {
-                      print(
-                        "Tanlangan qiymat: $value",
-                      ); // 👈 Debug uchun: Console'ni tekshir!
+                      print("Tanlangan qiymat: $value");
 
                       if (value == 'Print') {
                         print("Print funksiyasi ishga tushdi!");
-                        // Printer helperingni chaqir
                         await ReceiptPrinter.printReceipt(
                           state.cartItems,
                           state.totalAmount,

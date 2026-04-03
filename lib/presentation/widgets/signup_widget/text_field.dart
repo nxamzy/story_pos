@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 
 class AuthTextField extends StatelessWidget {
-  // 1. Keraksiz, ichkarida e'lon qilingan controllerlarni O'CHIRDIK 🗑️
   final String label;
   final String hint;
   final IconData icon;
   final bool isPassword;
-  final TextEditingController? controller; // Faqat shu qolishi kerak
+  final TextEditingController? controller;
 
   const AuthTextField({
     super.key,
@@ -15,7 +14,7 @@ class AuthTextField extends StatelessWidget {
     required this.hint,
     required this.icon,
     this.isPassword = false,
-    this.controller, // Controller endi majburiy bo'lsa yaxshi
+    this.controller,
   });
 
   @override
@@ -33,7 +32,7 @@ class AuthTextField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextField(
-          controller: controller, // UI-dan kelayotgan controllerni ulaymiz
+          controller: controller,
           obscureText: isPassword,
           decoration: InputDecoration(
             hintText: hint,

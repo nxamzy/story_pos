@@ -8,7 +8,7 @@ class EditInputField extends StatelessWidget {
   final bool isBarcode;
   final bool isDropdown;
   final VoidCallback? onTap;
-  final int maxLines; // 🔥 YANGI: Qatorlar soni uchun
+  final int maxLines;
 
   const EditInputField({
     super.key,
@@ -18,7 +18,7 @@ class EditInputField extends StatelessWidget {
     this.isBarcode = false,
     this.isDropdown = false,
     this.onTap,
-    this.maxLines = 1, // 🔥 DEFAULT: 1 ta qator
+    this.maxLines = 1,
   });
 
   @override
@@ -35,7 +35,7 @@ class EditInputField extends StatelessWidget {
       child: Row(
         crossAxisAlignment: maxLines > 1
             ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center, // 🔥 Izoh bo'lsa tepaga taqaladi
+            : CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -69,8 +69,8 @@ class EditInputField extends StatelessWidget {
                     : TextField(
                         controller: controller,
                         keyboardType: keyboardType,
-                        maxLines: maxLines, // 🔥 SHU YERDA ISHLATILDI
-                        minLines: 1, // Kamida 1 qator bo'lishi shart
+                        maxLines: maxLines,
+                        minLines: 1,
                         style: const TextStyle(
                           color: AppColors.forestDark,
                           fontSize: 16,
@@ -79,18 +79,14 @@ class EditInputField extends StatelessWidget {
                         decoration: const InputDecoration(
                           isDense: true,
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 4,
-                          ), // Sal kenglik berildi
+                          contentPadding: EdgeInsets.symmetric(vertical: 4),
                         ),
                       ),
               ],
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(
-              top: maxLines > 1 ? 8 : 0,
-            ), // 🔥 Icon joylashuvi
+            padding: EdgeInsets.only(top: maxLines > 1 ? 8 : 0),
             child: _buildSuffixIcon(),
           ),
         ],

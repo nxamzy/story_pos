@@ -1,120 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:ocam_pos/core/theme/app_colors.dart'; // AppColors importi
+import 'package:ocam_pos/core/theme/app_colors.dart';
 
-class TransferWidget extends StatefulWidget {
-  const TransferWidget({super.key});
+class TransferWidget extends StatelessWidget {
+  final TextEditingController amountController;
+  final TextEditingController noteController;
 
-  @override
-  State<TransferWidget> createState() => _TransferWidgetState();
-}
-
-class _TransferWidgetState extends State<TransferWidget> {
-  // Controllerlarni klass ichida e'lon qilish tartibning birinchi qoidasi!
-  final TextEditingController fromController = TextEditingController();
-  final TextEditingController toController = TextEditingController();
-
-  @override
-  void dispose() {
-    fromController.dispose();
-    toController.dispose();
-    super.dispose();
-  }
+  const TransferWidget({
+    super.key,
+    required this.amountController,
+    required this.noteController,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.mintLight),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+    return Column(
+      children: [
+        TextField(
+          controller: amountController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: "Amount",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            prefixIcon: const Icon(Icons.attach_money),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize:
-              MainAxisSize.min, // Container balandligini kontentga moslaydi
-          children: [
-            const Text(
-              "Transfer Balance",
-              style: TextStyle(
-                color: AppColors.forestDark,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            const Divider(color: AppColors.mintLight, thickness: 1, height: 30),
-
-            // --- FROM FIELD ---
-            _buildLabel("From"),
-            const SizedBox(height: 8),
-            _buildTransferField(
-              controller: fromController,
-              hintText: "Employee Name",
-              icon: Icons.person_outline,
-            ),
-
-            const SizedBox(height: 20),
-
-            // --- TO FIELD ---
-            _buildLabel("To"),
-            const SizedBox(height: 8),
-            _buildTransferField(
-              controller: toController,
-              hintText: "Select Employee",
-              icon: Icons.keyboard_arrow_down,
-            ),
-          ],
         ),
-      ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: noteController,
+          decoration: InputDecoration(
+            labelText: "Note (Optional)",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            prefixIcon: const Icon(Icons.note_add),
+          ),
+        ),
+      ],
     );
   }
+}
 
-  // --- YORDAMCHI METODLAR ---
+class TransfermButtonWidget extends StatelessWidget {
+  final VoidCallback? onPressed;
+  const TransfermButtonWidget({super.key, this.onPressed});
 
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: AppColors.primary, // Emerald Green
-        fontWeight: FontWeight.bold,
-        fontSize: 14,
-      ),
-    );
-  }
-
-  Widget _buildTransferField({
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.sage, fontSize: 14),
-        suffixIcon: Icon(icon, color: AppColors.primary),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        filled: true,
-        fillColor: AppColors.background,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.mintLight),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        child: const Text(
+          "Transfer Balance",
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ),
     );

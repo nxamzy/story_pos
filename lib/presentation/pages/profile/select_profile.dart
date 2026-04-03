@@ -24,7 +24,6 @@ void showConfirmSelect(BuildContext context) {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Handle Bar
                   Container(
                     width: 45,
                     height: 5,
@@ -47,7 +46,6 @@ void showConfirmSelect(BuildContext context) {
                   ),
                   const SizedBox(height: 20),
 
-                  // Profillar ro'yxati
                   ProfileSelectionItem(
                     index: 0,
                     name: "Marwan Magdy",
@@ -65,12 +63,10 @@ void showConfirmSelect(BuildContext context) {
 
                   const SizedBox(height: 12),
 
-                  // Show All Profiles tugmasi
                   _buildShowAllBtn(context),
 
                   const SizedBox(height: 24),
 
-                  // Switch Button
                   _buildSwitchBtn(context, selectedIndex),
                   const SizedBox(height: 10),
                 ],

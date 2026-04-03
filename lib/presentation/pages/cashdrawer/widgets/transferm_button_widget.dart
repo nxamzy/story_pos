@@ -1,43 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:ocam_pos/core/theme/app_colors.dart'; // AppColors importi
-import 'package:ocam_pos/presentation/pages/cashdrawer/widgets/showConfirmTransfer_widget.dart';
+import 'package:ocam_pos/core/theme/app_colors.dart';
 
-class TransfermButtonWidget extends StatefulWidget {
-  const TransfermButtonWidget({super.key});
+class TransfermButtonWidget extends StatelessWidget {
+  final VoidCallback? onPressed;
 
-  @override
-  State<TransfermButtonWidget> createState() => _TransfermButtonWidgetState();
-}
+  const TransfermButtonWidget({super.key, required this.onPressed});
 
-class _TransfermButtonWidgetState extends State<TransfermButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20), // Standart padding
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton(
-        onPressed: () => showConfirmTransfer(context),
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              AppColors.primary, // Emerald Green - Muvaffaqiyat rangi
+          backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
+          disabledBackgroundColor: AppColors.sage.withOpacity(0.3),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16),
-          minimumSize: const Size(
-            double.infinity,
-            56,
-          ), // Biroz balandroq va qulayroq
+          minimumSize: const Size(double.infinity, 56),
         ),
-        child: const Text(
-          "Transfer Balance",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
-          ),
-        ),
+        child: onPressed == null
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: AppColors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                "Transfer Balance",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
       ),
     );
   }

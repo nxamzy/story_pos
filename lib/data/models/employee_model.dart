@@ -5,7 +5,8 @@ class EmployeeModel {
   final String phone;
   final String imageUrl;
   final String lastCheckIn;
-  final double salary; // Ishchi maoshi
+  final double salary;
+  final double balance;
   final int earlyLeaves;
   final int absents;
   final int presentDays;
@@ -20,6 +21,7 @@ class EmployeeModel {
     required this.imageUrl,
     this.lastCheckIn = "Not checked in",
     required this.salary,
+    this.balance = 0.0,
     this.earlyLeaves = 0,
     this.absents = 0,
     this.presentDays = 0,
@@ -27,13 +29,13 @@ class EmployeeModel {
     required this.createdAt,
   });
 
-  // --- Yangilash uchun (Edit) ---
   EmployeeModel copyWith({
     String? name,
     String? role,
     String? phone,
     String? imageUrl,
     double? salary,
+    double? balance,
     int? earlyLeaves,
     int? absents,
     int? presentDays,
@@ -47,6 +49,7 @@ class EmployeeModel {
       imageUrl: imageUrl ?? this.imageUrl,
       lastCheckIn: lastCheckIn,
       salary: salary ?? this.salary,
+      balance: balance ?? this.balance,
       earlyLeaves: earlyLeaves ?? this.earlyLeaves,
       absents: absents ?? this.absents,
       presentDays: presentDays ?? this.presentDays,
@@ -55,7 +58,6 @@ class EmployeeModel {
     );
   }
 
-  // --- Firebase-ga yuborish uchun ---
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -64,6 +66,7 @@ class EmployeeModel {
       'imageUrl': imageUrl,
       'lastCheckIn': lastCheckIn,
       'salary': salary,
+      'balance': balance,
       'earlyLeaves': earlyLeaves,
       'absents': absents,
       'presentDays': presentDays,
@@ -72,7 +75,6 @@ class EmployeeModel {
     };
   }
 
-  // --- Firebase-dan o'qish uchun ---
   factory EmployeeModel.fromMap(Map<String, dynamic> map, String docId) {
     return EmployeeModel(
       id: docId,
@@ -82,6 +84,7 @@ class EmployeeModel {
       imageUrl: map['imageUrl'] ?? '',
       lastCheckIn: map['lastCheckIn'] ?? 'Not checked in',
       salary: (map['salary'] ?? 0.0).toDouble(),
+      balance: (map['balance'] ?? 0.0).toDouble(),
       earlyLeaves: map['earlyLeaves'] ?? 0,
       absents: map['absents'] ?? 0,
       presentDays: map['presentDays'] ?? 0,

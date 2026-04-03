@@ -98,9 +98,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             (widget.product.imageUrl != null &&
                 widget.product.imageUrl!.isNotEmpty)
             ? Image.network(
-                widget
-                    .product
-                    .imageUrl!, // 🔥 Hardcoded URL o'rniga modeldan keladi
+                widget.product.imageUrl!,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
@@ -109,18 +107,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 errorBuilder: (context, error, stackTrace) =>
                     _buildPlaceholderIcon(),
               )
-            : _buildPlaceholderIcon(), // Rasm bo'lmasa icon chiqadi
+            : _buildPlaceholderIcon(),
       ),
     );
   }
 
-  // Placeholder uchun alohida kichik metod
   Widget _buildPlaceholderIcon() {
     return const Icon(Icons.fastfood_rounded, size: 60, color: AppColors.sage);
   }
 
   Widget _buildInfoCard(BuildContext context, ProductModel product) {
-    // 🔥 'product' qo'shildi
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(24),
@@ -143,7 +139,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
               TextButton.icon(
-                // 🔥 ENDI BU ISHLAYDI! Joriy mahsulotni uzatamiz
                 onPressed: () => showEditProductData(context, product),
                 icon: const Icon(
                   Icons.edit_rounded,
@@ -161,7 +156,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          // 🎯 Ma'lumotlarni modeldan olib chiqamiz:
           DetailRow(label: "Name", value: product.name),
           DetailRow(label: "Barcode", value: product.barcode),
           DetailRow(label: "Quantity", value: "${product.stock} pcs"),
@@ -174,13 +168,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           DetailRow(label: "Purchase Price", value: "${product.buyPrice} EGP"),
           DetailRow(
             label: "Description",
-            value:
-                product.description ??
-                "No description", // 🔥 Modelda tuzatganimiz ishladi!
+            value: product.description ?? "No description",
             isArabic: false,
           ),
-          // Agar expiration date modelda bo'lsa:
-          // DetailRow(label: "Expiration Date", value: product.expiryDate ?? "N/A"),
         ],
       ),
     );

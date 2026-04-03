@@ -9,8 +9,6 @@ class EmployeeListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // BU YERDA ASLIDA FIREBASE'DAN STREAM KELADI
-    // Hozircha namunaviy ro'yxat:
     final List<EmployeeModel> employees = [
       EmployeeModel(
         id: "1",
@@ -42,7 +40,6 @@ class EmployeeListPage extends StatelessWidget {
               subtitle: Text(emp.role),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                // 🔥 MANA BU YERDA PROFILGA O'TAMIZ VA EXTRA BERAMIZ!
                 context.push(PlatformRoutes.employeeHRMPage.route, extra: emp);
               },
             ),

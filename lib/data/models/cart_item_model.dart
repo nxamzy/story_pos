@@ -8,7 +8,6 @@ class CartItem {
 
   double get subTotal => product.sellPrice * quantity;
 
-  // 🔥 Bazaga (sales collection) yozish uchun qulay format
   Map<String, dynamic> toMap() {
     return {
       'productId': product.id,

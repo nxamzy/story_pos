@@ -7,7 +7,7 @@ class PromoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 30),
       decoration: BoxDecoration(
         // Yangi Emerald Gradient - Professional va zamonaviy
         gradient: LinearGradient(
@@ -31,16 +31,13 @@ class PromoCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Row(
           children: [
-            // 1. Chapdagi rasm/ikonka qismi
             _buildPromoImage(),
 
             const SizedBox(width: 20),
 
-            // 2. O‘ngdagi matnlar
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start, // O'zbekcha uchun chapdan
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Text(
@@ -48,7 +45,7 @@ class PromoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // To'q fonda oq matn yaxshi o'qiladi
+                      color: Colors.white,
                       height: 1.2,
                     ),
                   ),

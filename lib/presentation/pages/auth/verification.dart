@@ -59,7 +59,6 @@ class _VerificationPageState extends State<VerificationPage> {
 
               const SizedBox(height: 40),
 
-              // OTP Kiritish maydonlari
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
@@ -72,7 +71,6 @@ class _VerificationPageState extends State<VerificationPage> {
 
               const Spacer(),
 
-              // Resend Section
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +98,6 @@ class _VerificationPageState extends State<VerificationPage> {
 
               const SizedBox(height: 24),
 
-              // Verify Button
               _buildVerifyButton(context),
               const SizedBox(height: 24),
             ],

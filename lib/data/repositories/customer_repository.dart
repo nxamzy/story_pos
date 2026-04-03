@@ -11,13 +11,11 @@ class CustomerRepository {
     return user.uid;
   }
 
-  // 📂 Mijozlar kolleksiyasiga yo'l (Kod takrorlanmasligi uchun)
   CollectionReference<Map<String, dynamic>> get _customerCol => _firestore
       .collection('users')
       .doc(_currentUserId)
       .collection('customers');
 
-  // 📜 REAL-TIME STREAM
   Stream<List<CustomerModel>> getCustomersStream() {
     return _customerCol
         .orderBy('createdAt', descending: true)
@@ -33,21 +31,17 @@ class CustomerRepository {
         });
   }
 
-  // ➕ QO'SHISH / YANGILASH
   Future<void> addOrUpdateCustomer(CustomerModel customer) async {
-    // Agar modelda id bo'lsa o'shani, bo'lmasa yangi id olamiz
     final String docId = customer.id.isEmpty
         ? _customerCol.doc().id
         : customer.id;
 
-    // Modelni toMap qilganda ID ni ham qo'shib yuboramiz (Repository darajasida)
     final data = customer.toMap();
     data['id'] = docId;
 
     await _customerCol.doc(docId).set(data, SetOptions(merge: true));
   }
 
-  // 🗑 O'CHIRISH
   Future<void> deleteCustomer(String customerId) async {
     await _customerCol.doc(customerId).delete();
   }

@@ -17,7 +17,6 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   void initState() {
     super.initState();
-    // Sahifa ochilishi bilan yuklaymiz
     context.read<CustomerBloc>().add(LoadCustomersEvent());
   }
 
@@ -40,7 +39,6 @@ class _CustomersPageState extends State<CustomersPage> {
       ),
       body: Column(
         children: [
-          // 🔍 Qidiruv paneli
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TextField(
@@ -82,16 +80,12 @@ class _CustomersPageState extends State<CustomersPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: state.searchResults.length,
                   itemBuilder: (context, index) {
-                    final customer =
-                        state.searchResults[index]; // 🆔 Tanlangan mijoz
+                    final customer = state.searchResults[index];
 
                     return CustomerTile(
                       name: customer.name,
                       phone: customer.phone,
                       onTap: () {
-                        // 🔥 MUHIM JOYI:
-                        // 'currentCustomer' emas, 'customer'ni uzatamiz!
-                        // GoRouter extra orqali butun modelni olib o'tadi
                         context.push(
                           PlatformRoutes.customerdetailsPage.route,
                           extra: customer,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // 🎯 Bloc buyruqlarini berish uchun
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/cart_item_model.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItem item;
@@ -20,11 +20,9 @@ class CartItemCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 🖼 Mahsulot rasmi
           _buildProductImage(),
           const SizedBox(width: 12),
 
-          // 📝 Ismi va narxi
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +45,6 @@ class CartItemCard extends StatelessWidget {
             ),
           ),
 
-          // 🔢 MIQDORNI BOSHQARISH (+ / -)
           Container(
             decoration: BoxDecoration(
               color: AppColors.background,
@@ -55,19 +52,16 @@ class CartItemCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // ➖ AYIRISH TUGMASI
                 _buildQtyButton(
                   icon: Icons.remove,
                   color: AppColors.sage,
                   onTap: () {
-                    // Bloc-ga kamaytirish buyrug'ini yuboramiz
                     context.read<BillingBloc>().add(
                       UpdateQuantityEvent(item.product.id, item.quantity - 1),
                     );
                   },
                 ),
 
-                // 📦 SONI
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
@@ -79,12 +73,10 @@ class CartItemCard extends StatelessWidget {
                   ),
                 ),
 
-                // ➕ QO'SHISH TUGMASI
                 _buildQtyButton(
                   icon: Icons.add,
                   color: AppColors.primary,
                   onTap: () {
-                    // Bloc-ga ko'paytirish buyrug'ini yuboramiz
                     context.read<BillingBloc>().add(
                       UpdateQuantityEvent(item.product.id, item.quantity + 1),
                     );
@@ -98,7 +90,6 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  // Yordamchi metodlar:
   Widget _buildQtyButton({
     required IconData icon,
     required Color color,

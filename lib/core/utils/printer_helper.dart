@@ -9,7 +9,7 @@ class ReceiptPrinter {
 
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.roll80, // Termal printer formati
+        pageFormat: PdfPageFormat.roll80,
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -26,7 +26,7 @@ class ReceiptPrinter {
               pw.Divider(),
               pw.Text("Sana: ${DateTime.now().toString().substring(0, 16)}"),
               pw.Divider(),
-              // Mahsulotlar ro'yxati
+
               ...items.map(
                 (item) => pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -58,7 +58,6 @@ class ReceiptPrinter {
       ),
     );
 
-    // Printer oynasini ochish
     await Printing.layoutPdf(
       onLayout: (PdfPageFormat format) async => pdf.save(),
     );

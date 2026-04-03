@@ -13,7 +13,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  // 1. Ma'lumotlar ro'yxatini shu yerga (yoki alohida faylga) joylashtiramiz
   final List<Map<String, dynamic>> _pages = [
     {
       "title": "Empower Your Business",
@@ -49,7 +48,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // ASOSIY SAHIFALAR
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -60,19 +58,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
               itemBuilder: (context, index) {
-                // Ma'lumotni yangi ajratilgan vidjetga uzatamiz
                 return OnboardingPageItem(data: _pages[index], size: size);
               },
             ),
           ),
 
-          // PASTI (TUGMALAR VA NUQTALAR)
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 0, 30, 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // SKIP TUGMASI
                 TextButton(
                   onPressed: () {
                     _pageController.animateToPage(
@@ -95,7 +90,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                // NUQTALAR (Indicator) - Alohida fayldan kelyapti
                 Row(
                   children: List.generate(
                     _pages.length,
@@ -103,7 +97,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                // NEXT TUGMASI
                 ElevatedButton(
                   onPressed: () {
                     if (_currentIndex < _pages.length - 1) {

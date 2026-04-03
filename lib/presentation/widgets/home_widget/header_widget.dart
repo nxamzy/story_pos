@@ -20,6 +20,8 @@ class _HeaderState extends State<Header> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Ustun faqat kerakli joyni egallaydi
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -41,18 +43,14 @@ class _HeaderState extends State<Header> {
 
               const SizedBox(width: 18),
 
-              // 🔥 DINAMIK QISM: Ismni Bloc-dan olamiz
+              // Ism qismi
               Expanded(
                 child: BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
-                    // Agar ma'lumot yuklangan bo'lsa ismni ko'rsatamiz, bo'lmasa "..."
                     String displayName = "Yuklanmoqda...";
-
                     if (state is ProfileLoaded) {
                       displayName =
                           "${state.user.firstName} ${state.user.lastName}";
-                    } else if (state is ProfileError) {
-                      displayName = "Foydalanuvchi";
                     }
 
                     return Column(
@@ -62,19 +60,19 @@ class _HeaderState extends State<Header> {
                           'Hello,',
                           style: TextStyle(
                             color: Color(0xFF15294B),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                            fontSize:
+                                14, // Biroq kichraytirdik, chiroyli chiqadi
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                         Text(
-                          displayName, // Statik ism olib tashlandi!
+                          displayName,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                           ),
-                          overflow: TextOverflow
-                              .ellipsis, // Ism uzun bo'lsa sig'diradi
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     );
@@ -90,10 +88,10 @@ class _HeaderState extends State<Header> {
                 icon: const Icon(Icons.notifications_none),
                 color: Colors.white,
               ),
-              const SizedBox(width: 20),
             ],
           ),
           const SizedBox(height: 20),
+
           const DataCard(),
         ],
       ),

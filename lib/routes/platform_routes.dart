@@ -1,5 +1,3 @@
-// platform_routes.dart
-
 class RouteInfo {
   final String name;
   final String route;
@@ -8,7 +6,6 @@ class RouteInfo {
 }
 
 class PlatformRoutes {
-  // Splash page
   static const firstPage = RouteInfo(name: 'first', route: '/');
   static const secondsPage = RouteInfo(name: 'seconds', route: '/seconds');
   static const thirtPage = RouteInfo(name: 'thirt', route: '/thirt');
@@ -47,6 +44,10 @@ class PlatformRoutes {
     name: 'employee',
     route: '/employee',
   );
+  static const addEmployee = RouteInfo(
+    name: 'addemployee',
+    route: '/addemployee',
+  );
   static const inventoryPage = RouteInfo(
     name: 'inventory',
     route: '/inventory',
@@ -75,5 +76,3 @@ class PlatformRoutes {
   static const receiptPage = RouteInfo(name: 'receipt', route: '/receipt');
   static const test = RouteInfo(name: 'test', route: '/test');
 }
-
-//Details = RouteInfo(name: 'productDetails', route: '/productDetails');

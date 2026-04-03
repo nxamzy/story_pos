@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
 
-// --- EVENTS ---
 abstract class CustomerEvent {}
 
 class LoadCustomersEvent extends CustomerEvent {}
@@ -24,13 +23,11 @@ class SearchCustomerEvent extends CustomerEvent {
   SearchCustomerEvent(this.query);
 }
 
-// 🔥 Ichki event: Stream'dan kelgan ma'lumotni State'ga urish uchun
 class _UpdateCustomersEvent extends CustomerEvent {
   final List<CustomerModel> customers;
   _UpdateCustomersEvent(this.customers);
 }
 
-// --- STATE ---
 class CustomerState {
   final List<CustomerModel> customers;
   final List<CustomerModel> searchResults;
@@ -59,13 +56,11 @@ class CustomerState {
   }
 }
 
-// --- BLOC ---
 class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   StreamSubscription? _customerSubscription;
 
   CustomerBloc() : super(CustomerState()) {
-    // 1. REAL-TIME YUKLASH (Stream ulaymiz)
     on<LoadCustomersEvent>((event, emit) {
       emit(state.copyWith(isLoading: true));
       final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -74,11 +69,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         emit(state.copyWith(isLoading: false, error: "User not logged in"));
         return;
       }
-
-      // Eski obunani tozalaymiz
       _customerSubscription?.cancel();
 
-      // 🔥 Firebase Stream boshlandi
       _customerSubscription = _firestore
           .collection('users')
           .doc(userId)
@@ -90,7 +82,6 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
               final list = snapshot.docs
                   .map((doc) => CustomerModel.fromMap(doc.data(), doc.id))
                   .toList();
-              // Ma'lumot kelsa, ichki eventni chaqiramiz
               add(_UpdateCustomersEvent(list));
             },
             onError: (e) {
@@ -99,19 +90,16 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
           );
     });
 
-    // 2. STATE'NI YANGILASH (Stream'dan kelgan ma'lumot bilan)
     on<_UpdateCustomersEvent>((event, emit) {
       emit(
         state.copyWith(
           customers: event.customers,
-          searchResults:
-              event.customers, // Qidiruv bo'lmasa hammasini ko'rsatadi
+          searchResults: event.customers,
           isLoading: false,
         ),
       );
     });
 
-    // 3. YANGI MIJOZ QO'SHISH
     on<AddManualCustomerEvent>((event, emit) async {
       final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
       try {
@@ -126,11 +114,9 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       }
     });
 
-    // 4. MIJOZNI O'CHIRISH
     on<DeleteCustomerEvent>((event, emit) async {
       final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
       try {
-        // Bazadan o'chirish
         await _firestore
             .collection('users')
             .doc(userId)
@@ -138,21 +124,16 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
             .doc(event.customerId)
             .delete();
 
-        // 🔥 MUHIM: O'chgandan keyin stateni ham tozalash:
         final updatedList = state.customers
             .where((c) => c.id != event.customerId)
             .toList();
         emit(
-          state.copyWith(
-            customers: updatedList,
-            searchResults: updatedList, // Qidiruv ro'yxatidan ham o'chsin
-          ),
+          state.copyWith(customers: updatedList, searchResults: updatedList),
         );
       } catch (e) {
         emit(state.copyWith(error: e.toString()));
       }
     });
-    // 5. QIDIRUV
     on<SearchCustomerEvent>((event, emit) {
       if (event.query.isEmpty) {
         emit(state.copyWith(searchResults: state.customers));
@@ -171,7 +152,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
 
   @override
   Future<void> close() {
-    _customerSubscription?.cancel(); // Bloc yopilganda streamni o'chiramiz
+    _customerSubscription?.cancel();
     return super.close();
   }
 }

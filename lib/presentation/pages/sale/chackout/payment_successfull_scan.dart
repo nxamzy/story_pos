@@ -1,24 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // 🎯 Bloc qo'shildi
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/data/models/product_model_1.dart';
+import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
 import 'package:ocam_pos/routes/platform_routes.dart';
 
-// 🎯 Endi bu funksiya summani qabul qiladi
 void showSuccessSheet(BuildContext context, double totalAmount) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    isDismissible: false, // Foydalanuvchi "New Sale"ni bosishga majbur bo'lsin
+    isDismissible: false,
     backgroundColor: Colors.transparent,
     builder: (context) => SuccessSheet(totalAmount: totalAmount),
   );
 }
 
 class SuccessSheet extends StatelessWidget {
-  final double totalAmount; // 💰 Dinamik summa
+  final double totalAmount;
 
   const SuccessSheet({super.key, required this.totalAmount});
 
@@ -42,7 +41,6 @@ class SuccessSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          // --- Rasm qismi o'zgarishsiz qoladi ---
           SizedBox(
             height: 140,
             child: Image.network(
@@ -64,7 +62,6 @@ class SuccessSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // 💸 DINAMIK SUMMA
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
@@ -93,7 +90,6 @@ class SuccessSheet extends StatelessWidget {
           ),
           const SizedBox(height: 28),
 
-          // --- RECEIPT TUGMASI ---
           InkWell(
             onTap: () => context.push(PlatformRoutes.receiptPage.route),
             borderRadius: BorderRadius.circular(16),
@@ -125,7 +121,6 @@ class SuccessSheet extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          // 🚀 NEW SALE TUGMASI (ENG MUHIMI)
           SizedBox(
             width: double.infinity,
             height: 58,
@@ -133,16 +128,11 @@ class SuccessSheet extends StatelessWidget {
               onPressed: () {
                 final userId = FirebaseAuth.instance.currentUser?.uid;
                 if (userId != null) {
-                  // 1. Savatni va holatni tozalash uchun Bloc-ga xabar beramiz
                   context.read<BillingBloc>().add(LoadAllProductsEvent(userId));
 
-                  // 2. Agar Dialog ochilgan bo'lsa, uni yopamiz
                   if (Navigator.canPop(context)) {
                     Navigator.pop(context);
                   }
-
-                  // BO'LDI! Sahifa o'zgarmaydi, lekin ichidagi ma'lumotlar yangilanadi.
-                  // TabBar o'z joyida qoladi!
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -160,7 +150,6 @@ class SuccessSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // ... Send Receipt tugmasi o'zgarishsiz qoladi ...
         ],
       ),
     );

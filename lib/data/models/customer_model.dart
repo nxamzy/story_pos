@@ -21,7 +21,6 @@ class CustomerModel {
     required this.createdAt,
   });
 
-  // 🔥 MANA SHU METODNI QO'SHISH KERAK:
   CustomerModel copyWith({
     String? id,
     String? name,
@@ -58,15 +57,13 @@ class CustomerModel {
   factory CustomerModel.fromMap(Map<String, dynamic> map, String docId) {
     return CustomerModel(
       id: docId,
-      // 1. Emailni to'g'ri map'dan olamiz
       email: map['email'] ?? '',
       name: map['name'] ?? '',
       phone: map['phone'] ?? '',
-      address: map['address'] ?? '', // Bu maydonni ham unutma!
-      notes: map['notes'] ?? '', // Bu ham muhim!
+      address: map['address'] ?? '',
+      notes: map['notes'] ?? '',
       totalSpent: (map['totalSpent'] ?? 0.0).toDouble(),
 
-      // 2. Sana bilan ishlash (Firestore Timestamp bo'lsa toDate() qilamiz)
       createdAt: map['createdAt'] != null
           ? (map['createdAt'] is String
                 ? DateTime.parse(map['createdAt'])

@@ -10,18 +10,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   ProfileBloc() : super(ProfileInitial()) {
-    // --- PROFILNI YUKLASH ---
     on<LoadUserProfile>((event, emit) async {
       emit(ProfileLoading());
       try {
-        // Firestore'dan foydalanuvchi hujjatini olamiz
         DocumentSnapshot doc = await _firestore
             .collection('users')
             .doc(event.uid)
             .get();
 
         if (doc.exists) {
-          // Ma'lumotni Modelga o'giramiz
           UserModel user = UserModel.fromMap(
             doc.data() as Map<String, dynamic>,
           );
@@ -34,7 +31,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
 
-    // --- PROFILNI YANGILASH ---
     on<UpdateUserProfile>((event, emit) async {
       final currentUser = _auth.currentUser;
       if (currentUser == null) return;
@@ -44,7 +40,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           'firstName': event.firstName,
           'lastName': event.lastName,
         });
-        // Yangilangandan keyin qayta yuklash buyrug'ini beramiz
         add(LoadUserProfile(currentUser.uid));
       } catch (e) {
         emit(ProfileError("Yangilashda xatolik: ${e.toString()}"));

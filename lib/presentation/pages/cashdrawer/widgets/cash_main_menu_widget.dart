@@ -1,39 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ocam_pos/core/theme/app_colors.dart'; // AppColors importi
+import 'package:ocam_pos/core/theme/app_colors.dart';
 
-class CashMainMenuWidget extends StatefulWidget {
-  const CashMainMenuWidget({super.key});
+class CashMainMenuWidget extends StatelessWidget {
+  final double balance;
 
-  @override
-  State<CashMainMenuWidget> createState() => _CashMainMenuWidgetState();
-}
+  const CashMainMenuWidget({super.key, required this.balance});
 
-class _CashMainMenuWidgetState extends State<CashMainMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.forestDark, // To'q yashil/qora fon
+        color: AppColors.forestDark,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
         ),
       ),
       height: 250,
-      width: MediaQuery.sizeOf(context).width,
+      width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
-          // --- NAVIGATION ROW ---
+          const SizedBox(height: 45),
           Row(
             children: [
               IconButton(
                 onPressed: () => context.pop(),
                 icon: const Icon(
                   Icons.arrow_back_ios_new,
-                  color: AppColors.primary, // Emerald yashil
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(width: 8),
@@ -51,36 +47,33 @@ class _CashMainMenuWidgetState extends State<CashMainMenuWidget> {
               const SizedBox(width: 20),
             ],
           ),
-
-          // --- BALANCE SECTION ---
           Padding(
             padding: const EdgeInsets.only(top: 30, right: 30, left: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'المبلغ المتاح فى الصندوق', // Kassadagi mavjud qoldiq
+                  'المبلغ المتاح فى الصندوق',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.mintLight, // Yumshoq och yashil
+                    color: AppColors.mintLight,
                     height: 1.2,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "2,909.20",
-                  style: TextStyle(
+                Text(
+                  balance.toStringAsFixed(2),
+                  style: const TextStyle(
                     fontSize: 42,
-
-                    color: AppColors.primary, // Asosiy Emerald yashil
+                    color: AppColors.primary,
                     letterSpacing: -1,
                     height: 1,
                   ),
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'جنيه مصري', // Misr funti
+                  'Sum',
                   style: TextStyle(
                     fontSize: 18,
                     color: AppColors.white,

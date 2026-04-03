@@ -19,7 +19,6 @@ class _BodyState extends State<Body> {
       padding: EdgeInsets.all(16),
       child: Column(
         children: [
-          // Reklama Cartasi
           InkWell(
             onTap: () {
               context.push(PlatformRoutes.test.route);
@@ -27,7 +26,6 @@ class _BodyState extends State<Body> {
             child: PromoCard(),
           ),
           SizedBox(height: 16),
-          // Functionlar
           MenuGrid(),
         ],
       ),

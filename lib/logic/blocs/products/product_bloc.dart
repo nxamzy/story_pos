@@ -14,7 +14,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          // 🎯 BAZADAN FAQAT SHU USERID BO'LGANLARINI OLAMIZ
           final snapshot = await _firestore
               .collection('products')
               .where('userId', isEqualTo: user.uid)
@@ -30,15 +29,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       }
     });
 
-    // 2. Yangi mahsulot qo'shish
     on<AddProduct>((event, emit) async {
       try {
-        // 1. Firebase'ga yangi doc yaratish
         final docRef = _firestore.collection('products').doc();
 
-        // 2. Modelni Map-ga o'girib, yangi ID bilan saqlash
         final productWithId = ProductModel(
-          id: docRef.id, // Firebase bergan ID ni yozamiz
+          id: docRef.id,
           name: event.product.name,
           userId: event.product.userId,
           barcode: event.product.barcode,
@@ -50,7 +46,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
         await docRef.set(productWithId.toMap());
 
-        // 3. Ro'yxatni qayta yuklash (State yangilanishi uchun)
         add(LoadProducts());
       } catch (e) {
         emit(ProductError(e.toString()));

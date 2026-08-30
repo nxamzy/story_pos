@@ -2,22 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/core/utils/printer_helper.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
-import 'package:ocam_pos/presentation/pages/sale/basket/cart_item_card.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/utils/receipt_printer.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
+import 'package:ocam_pos/presentation/sale/widgets/basket_customer_sheet.dart';
+import 'package:ocam_pos/presentation/sale/widgets/basket_item_card.dart';
+import 'package:ocam_pos/presentation/sale/widgets/payment_method_sheet.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
-class BasketScreen extends StatefulWidget {
+class BasketScreen extends StatelessWidget {
   const BasketScreen({super.key});
 
-  @override
-  State<BasketScreen> createState() => _BasketScreenState();
-}
+  String _paymentLabel(String id) => kPaymentMethods
+      .firstWhere((m) => m.id == id, orElse: () => kPaymentMethods.first)
+      .title;
 
-class _BasketScreenState extends State<BasketScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BillingBloc, BillingState>(
+    return BlocBuilder<SaleBloc, SaleState>(
       builder: (context, state) {
         final cartItems = state.cartItems;
 
@@ -36,39 +40,33 @@ class _BasketScreenState extends State<BasketScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
-              "Basket",
+              "Savat",
               style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
             actions: [
-              BlocBuilder<BillingBloc, BillingState>(
-                builder: (context, state) {
-                  return PopupMenuButton<String>(
-                    onSelected: (String value) async {
-                      print("Tanlangan qiymat: $value");
-
-                      if (value == 'Print') {
-                        print("Print funksiyasi ishga tushdi!");
-                        await ReceiptPrinter.printReceipt(
-                          state.cartItems,
-                          state.totalAmount,
-                        );
-                      } else if (value == 'Delete') {
-                        context.read<BillingBloc>().add(ClearCartEvent());
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => [
-                      _buildPopupItem('Print', Icons.print_outlined),
-                      _buildPopupItem(
-                        'Delete',
-                        Icons.delete_outline,
-                        isDestructive: true,
-                      ),
-                    ],
-                  );
+              PopupMenuButton<String>(
+                onSelected: (value) async {
+                  if (value == 'print') {
+                    await ReceiptPrinter.printReceipt(
+                      state.cartItems,
+                      state.totalAmount,
+                    );
+                  } else if (value == 'clear') {
+                    context.read<SaleBloc>().add(const ClearCartEvent());
+                  }
                 },
+                itemBuilder: (context) => [
+                  _buildPopupItem('print', "Chop etish", Icons.print_outlined),
+                  _buildPopupItem(
+                    'clear',
+                    "Tozalash",
+                    Icons.delete_outline,
+                    isDestructive: true,
+                  ),
+                ],
               ),
             ],
           ),
@@ -81,12 +79,12 @@ class _BasketScreenState extends State<BasketScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         itemCount: cartItems.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
                         itemBuilder: (context, index) =>
                             CartItemCard(item: cartItems[index]),
                       ),
                     ),
-                    _buildCheckoutSection(state),
+                    _buildCheckoutSection(context, state),
                   ],
                 ),
         );
@@ -95,10 +93,25 @@ class _BasketScreenState extends State<BasketScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
-      child: Text(
-        "Savat bo'sh",
-        style: TextStyle(color: AppColors.sage, fontSize: 16),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.shopping_basket_outlined,
+            size: 72,
+            color: AppColors.sage.withValues(alpha: 0.6),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Savat bo'sh",
+            style: TextStyle(
+              color: AppColors.forestDark,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -109,7 +122,7 @@ class _BasketScreenState extends State<BasketScreen> {
       child: Row(
         children: [
           Text(
-            "Total Products ($count)",
+            "Jami mahsulotlar ($count)",
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -121,7 +134,7 @@ class _BasketScreenState extends State<BasketScreen> {
     );
   }
 
-  Widget _buildCheckoutSection(BillingState state) {
+  Widget _buildCheckoutSection(BuildContext context, SaleState state) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
@@ -138,19 +151,43 @@ class _BasketScreenState extends State<BasketScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _optionRow(Icons.person_add_alt, "Select Customer (optional)", () {}),
+          _optionRow(
+            Icons.person_add_alt,
+            state.customer?.name ?? "Mijoz tanlash (ixtiyoriy)",
+            () async {
+              final selected = await showCustomerSheet(
+                context,
+                current: state.customer,
+              );
+              if (context.mounted) {
+                context.read<SaleBloc>().add(SelectSaleCustomerEvent(selected));
+              }
+            },
+          ),
           const Divider(height: 32, color: AppColors.mintLight),
-          _optionRow(Icons.payment_outlined, "Select Payment Method", () {}),
+          _optionRow(
+            Icons.payment_outlined,
+            _paymentLabel(state.paymentMethod),
+            () async {
+              final selected = await showPaymentMethodSheet(
+                context,
+                current: state.paymentMethod,
+              );
+              if (selected != null && context.mounted) {
+                context.read<SaleBloc>().add(SelectPaymentMethodEvent(selected));
+              }
+            },
+          ),
           const SizedBox(height: 24),
-          _priceRow("Subtotal", "${state.totalAmount.toStringAsFixed(2)} EGP"),
+          _priceRow("Mahsulotlar", AppFormat.money(state.subTotal)),
           const SizedBox(height: 8),
-          _priceRow("Tax (0%)", "0.00 EGP", isPrimary: true),
+          _priceRow("Soliq", AppFormat.money(state.tax), isPrimary: true),
           const Divider(height: 32, color: AppColors.mintLight),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Total",
+                "Jami",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -158,7 +195,7 @@ class _BasketScreenState extends State<BasketScreen> {
                 ),
               ),
               Text(
-                "${state.totalAmount.toStringAsFixed(2)} EGP",
+                AppFormat.money(state.totalAmount),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -184,7 +221,7 @@ class _BasketScreenState extends State<BasketScreen> {
                 elevation: 0,
               ),
               child: const Text(
-                "Checkout",
+                "To'lovga o'tish",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -195,24 +232,25 @@ class _BasketScreenState extends State<BasketScreen> {
   }
 
   PopupMenuItem<String> _buildPopupItem(
+    String value,
     String text,
     IconData icon, {
     bool isDestructive = false,
   }) {
     return PopupMenuItem(
-      value: text,
+      value: value,
       child: Row(
         children: [
           Icon(
             icon,
-            color: isDestructive ? Colors.red : AppColors.forestDark,
+            color: isDestructive ? AppColors.error : AppColors.forestDark,
             size: 20,
           ),
           const SizedBox(width: 12),
           Text(
             text,
             style: TextStyle(
-              color: isDestructive ? Colors.red : AppColors.forestDark,
+              color: isDestructive ? AppColors.error : AppColors.forestDark,
             ),
           ),
         ],
@@ -230,6 +268,7 @@ class _BasketScreenState extends State<BasketScreen> {
           Expanded(
             child: Text(
               title,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,

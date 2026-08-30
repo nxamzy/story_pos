@@ -1,50 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/widgets/basket_widget/base_sheet_wrapper.dart';
+import 'package:ocam_pos/core/widgets/base_sheet_wrapper.dart';
+import 'package:ocam_pos/data/models/customer_model.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
 
-void showCustomerSheet(BuildContext context) {
-  showModalBottomSheet(
+/// Sotuvga mijoz biriktirish uchun tanlov ro'yxati.
+///
+/// Tanlansa shu mijoz obyekti bilan yopiladi (`Navigator.pop(context, customer)`),
+/// chaqiruvchi ekran natijani `SelectSaleCustomerEvent` orqali SaleBloc'ga yuboradi.
+Future<CustomerModel?> showCustomerSheet(
+  BuildContext context, {
+  CustomerModel? current,
+}) {
+  context.read<CustomerBloc>().add(const LoadCustomersEvent());
+  return showModalBottomSheet<CustomerModel?>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => const CustomerSelectionSheet(),
+    builder: (_) => BlocProvider.value(
+      value: context.read<CustomerBloc>(),
+      child: CustomerSelectionSheet(current: current),
+    ),
   );
 }
 
 class CustomerSelectionSheet extends StatefulWidget {
-  const CustomerSelectionSheet({super.key});
+  final CustomerModel? current;
+  const CustomerSelectionSheet({super.key, this.current});
 
   @override
   State<CustomerSelectionSheet> createState() => _CustomerSelectionSheetState();
 }
 
 class _CustomerSelectionSheetState extends State<CustomerSelectionSheet> {
-  int _selectedId = 0;
+  CustomerModel? _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.current;
+  }
 
   @override
   Widget build(BuildContext context) {
     return BaseSheetWrapper(
-      title: "Customers",
-      showAddBtn: true,
-      onAddTap: () {},
+      title: "Mijozlar",
       child: Column(
         children: [
           _buildSearchBar(),
           const SizedBox(height: 20),
           Expanded(
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: 8,
-              itemBuilder: (context, index) => _buildSelectionCard(
-                title: "Customer Name $index",
-                subtitle: "01033970808",
-                isCustomer: true,
-                isSelected: _selectedId == index,
-                onTap: () => setState(() => _selectedId = index),
-              ),
+            child: BlocBuilder<CustomerBloc, CustomerState>(
+              builder: (context, state) {
+                final customers = state.visibleCustomers;
+                if (customers.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "Mijozlar topilmadi",
+                      style: TextStyle(color: AppColors.sage),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: customers.length,
+                  itemBuilder: (context, index) {
+                    final customer = customers[index];
+                    return _buildSelectionCard(
+                      title: customer.name,
+                      subtitle: customer.phone,
+                      isSelected: _selected?.id == customer.id,
+                      onTap: () => setState(() => _selected = customer),
+                    );
+                  },
+                );
+              },
             ),
           ),
-          _buildActionBtn("Select Customer"),
+          if (_selected != null)
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text(
+                "Tanlovni bekor qilish",
+                style: TextStyle(color: AppColors.error),
+              ),
+            ),
+          _buildActionBtn("Mijozni tanlash"),
         ],
       ),
     );
@@ -58,12 +102,13 @@ class _CustomerSelectionSheetState extends State<CustomerSelectionSheet> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.mintLight),
       ),
-      child: const TextField(
-        decoration: InputDecoration(
-          hintText: "Search by customer name",
+      child: TextField(
+        onChanged: (value) =>
+            context.read<CustomerBloc>().add(SearchCustomerEvent(value)),
+        decoration: const InputDecoration(
+          hintText: "Mijoz ismi bo'yicha qidirish",
           hintStyle: TextStyle(color: AppColors.sage),
           prefixIcon: Icon(Icons.search, color: AppColors.primary),
-          suffixIcon: Icon(Icons.tune, color: AppColors.forestDark),
           border: InputBorder.none,
         ),
       ),
@@ -75,7 +120,6 @@ class _CustomerSelectionSheetState extends State<CustomerSelectionSheet> {
     required String subtitle,
     required bool isSelected,
     required VoidCallback onTap,
-    bool isCustomer = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -94,10 +138,14 @@ class _CustomerSelectionSheetState extends State<CustomerSelectionSheet> {
           children: [
             CircleAvatar(
               backgroundColor: AppColors.mintLight,
-              backgroundImage: isCustomer
-                  ? const NetworkImage('https://i.pravatar.cc/150?img=3')
-                  : null,
               radius: 24,
+              child: Text(
+                title.isNotEmpty ? title[0].toUpperCase() : "?",
+                style: const TextStyle(
+                  color: AppColors.forestDark,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -154,7 +202,9 @@ class _CustomerSelectionSheetState extends State<CustomerSelectionSheet> {
         width: double.infinity,
         height: 58,
         child: ElevatedButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: _selected == null
+              ? null
+              : () => Navigator.pop(context, _selected),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,

@@ -1,28 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
+/// Yakunlangan savdoni ko'rsatadi. `SaleBloc.state.completedSale` dan
+/// o'qiydi — chunki savat tozalangandan keyin ham shu ma'lumot state'da qoladi.
 void showSuccessSheet(BuildContext context, double totalAmount) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     isDismissible: false,
     backgroundColor: Colors.transparent,
-    builder: (context) => SuccessSheet(totalAmount: totalAmount),
+    builder: (_) => BlocProvider.value(
+      value: context.read<SaleBloc>(),
+      child: const SuccessSheet(),
+    ),
   );
 }
 
 class SuccessSheet extends StatelessWidget {
-  final double totalAmount;
-
-  const SuccessSheet({super.key, required this.totalAmount});
+  const SuccessSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final sale = context.watch<SaleBloc>().state.completedSale;
+    final total = sale?.total ?? 0;
+    final paymentLabel = sale?.paymentMethod == 'card'
+        ? "Plastik karta"
+        : "Naqd pul";
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
@@ -41,20 +50,15 @@ class SuccessSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          SizedBox(
-            height: 140,
-            child: Image.network(
-              "https://cdn3d.iconscout.com/3d/premium/thumb/thumb-up-3d-icon-download-in-png-blend-fbx-gltf-file-formats--like-gesture-hand-finger-ok-hand-gestures-pack-people-icons-4715136.png",
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.check_circle_rounded,
-                size: 100,
-                color: AppColors.primary,
-              ),
-            ),
+          const Icon(
+            Icons.check_circle_rounded,
+            size: 100,
+            color: AppColors.primary,
           ),
           const SizedBox(height: 20),
           const Text(
-            "Sale Completed Successfully",
+            "Savdo muvaffaqiyatli yakunlandi",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -71,18 +75,18 @@ class SuccessSheet extends StatelessWidget {
                 color: AppColors.forestDark,
               ),
               children: [
-                const TextSpan(text: "TOTAL AMOUNT "),
+                const TextSpan(text: "JAMI SUMMA "),
                 TextSpan(
-                  text: "${totalAmount.toStringAsFixed(2)} EGP",
+                  text: AppFormat.money(total),
                   style: const TextStyle(color: AppColors.primary),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "Payment Type : Cash",
-            style: TextStyle(
+          Text(
+            "To'lov turi: $paymentLabel",
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.sage,
               fontWeight: FontWeight.w500,
@@ -106,7 +110,7 @@ class SuccessSheet extends StatelessWidget {
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      "Receipt Details",
+                      "Chek tafsilotlari",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -125,16 +129,7 @@ class SuccessSheet extends StatelessWidget {
             width: double.infinity,
             height: 58,
             child: ElevatedButton(
-              onPressed: () {
-                final userId = FirebaseAuth.instance.currentUser?.uid;
-                if (userId != null) {
-                  context.read<BillingBloc>().add(LoadAllProductsEvent(userId));
-
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  }
-                }
-              },
+              onPressed: () => context.go(PlatformRoutes.salePage.route),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
@@ -144,7 +139,7 @@ class SuccessSheet extends StatelessWidget {
                 elevation: 0,
               ),
               child: const Text(
-                "New Sale",
+                "Yangi sotuv",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

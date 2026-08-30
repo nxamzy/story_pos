@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -11,7 +14,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BillingBloc, BillingState>(
+    return BlocBuilder<SaleBloc, SaleState>(
       builder: (context, state) {
         final cartItemIndex = state.cartItems.indexWhere(
           (item) => item.product.id == product.id,
@@ -28,14 +31,14 @@ class ProductCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isInCart
-                  ? AppColors.primary.withOpacity(0.5)
+                  ? AppColors.primary.withValues(alpha: 0.5)
                   : AppColors.mintLight,
               width: isInCart ? 2 : 1,
             ),
             boxShadow: [
               if (isInCart)
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),
@@ -73,11 +76,11 @@ class ProductCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          "${product.sellPrice.toInt()} EGP",
+                          AppFormat.money(product.sellPrice),
                           style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -122,7 +125,7 @@ class ProductCard extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: !isInCart
                     ? InkWell(
-                        onTap: () => context.read<BillingBloc>().add(
+                        onTap: () => context.read<SaleBloc>().add(
                           AddProductToCartEvent(product),
                         ),
                         child: Container(
@@ -144,7 +147,7 @@ class ProductCard extends StatelessWidget {
                           _buildActionBtn(
                             icon: Icons.add,
                             color: AppColors.primary,
-                            onTap: () => context.read<BillingBloc>().add(
+                            onTap: () => context.read<SaleBloc>().add(
                               UpdateQuantityEvent(product.id, quantity + 1),
                             ),
                           ),
@@ -158,7 +161,7 @@ class ProductCard extends StatelessWidget {
                           _buildActionBtn(
                             icon: Icons.remove,
                             color: AppColors.emeraldBase,
-                            onTap: () => context.read<BillingBloc>().add(
+                            onTap: () => context.read<SaleBloc>().add(
                               UpdateQuantityEvent(product.id, quantity - 1),
                             ),
                           ),

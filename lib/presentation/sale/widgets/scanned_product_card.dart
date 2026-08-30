@@ -14,7 +14,7 @@ class ScannedProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.1),
+            color: AppColors.forestDark.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

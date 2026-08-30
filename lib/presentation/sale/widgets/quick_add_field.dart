@@ -10,6 +10,7 @@ class QuickAddInputField extends StatelessWidget {
   final int maxLines;
   final VoidCallback? onSuffixTap;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
 
   const QuickAddInputField({
     super.key,
@@ -21,6 +22,7 @@ class QuickAddInputField extends StatelessWidget {
     this.maxLines = 1,
     this.onSuffixTap,
     this.keyboardType,
+    this.validator,
   });
 
   @override
@@ -43,10 +45,11 @@ class QuickAddInputField extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextField(
+                child: TextFormField(
                   controller: controller,
                   maxLines: maxLines,
                   keyboardType: keyboardType,
+                  validator: validator,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -55,10 +58,11 @@ class QuickAddInputField extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: hint,
                     hintStyle: TextStyle(
-                      color: AppColors.sage.withOpacity(0.5),
+                      color: AppColors.sage.withValues(alpha: 0.5),
                     ),
                     isDense: true,
                     border: InputBorder.none,
+                    errorStyle: const TextStyle(fontSize: 11),
                     contentPadding: const EdgeInsets.symmetric(vertical: 6),
                   ),
                 ),

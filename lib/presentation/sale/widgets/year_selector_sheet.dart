@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/widgets/sale_widget/chackout/year_item.dart';
+import 'package:ocam_pos/presentation/sale/widgets/year_item.dart';
 
 void showCustomDatePicker(BuildContext context) {
   showModalBottomSheet(
@@ -47,7 +47,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
           ),
           const SizedBox(height: 24),
           const Text(
-            "Select Date",
+            "Sanani tanlang",
             style: TextStyle(
               fontSize: 14,
               color: AppColors.sage,
@@ -59,7 +59,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Thurs, June 24",
+                "Payshanba, 24-iyun",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
               const Row(
                 children: [
                   Text(
-                    "June 2021",
+                    "Iyun 2021",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -128,7 +128,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
-                  "Cancel",
+                  "Bekor qilish",
                   style: TextStyle(
                     color: AppColors.sage,
                     fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class _DatePickerSheetState extends State<DatePickerSheet> {
                   ),
                 ),
                 child: const Text(
-                  "Select",
+                  "Tanlash",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

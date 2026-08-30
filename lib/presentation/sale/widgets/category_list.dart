@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 
-class CategoryList extends StatefulWidget {
-  final Function(String) onCategorySelected;
+/// Kategoriya chiplari. Ro'yxat va tanlangan qiymat tashqaridan (BLoC
+/// state'idan) beriladi — shu sababli haqiqiy mahsulot kategoriyalari bilan
+/// har doim mos keladi.
+class CategoryList extends StatelessWidget {
+  final List<String> categories;
+  final String selected;
+  final ValueChanged<String> onCategorySelected;
 
-  const CategoryList({super.key, required this.onCategorySelected});
-
-  @override
-  State<CategoryList> createState() => _CategoryListState();
-}
-
-class _CategoryListState extends State<CategoryList> {
-  int selectedIndex = 0;
-
-  final List<String> categories = [
-    "All",
-    "Beverages",
-    "Candy",
-    "Packaged Food",
-    "Home",
-  ];
+  const CategoryList({
+    super.key,
+    required this.categories,
+    required this.selected,
+    required this.onCategorySelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +25,10 @@ class _CategoryListState extends State<CategoryList> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          bool isSelected = selectedIndex == index;
+          final category = categories[index];
+          final isSelected = selected == category;
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
-              widget.onCategorySelected(categories[index]);
-            },
+            onTap: () => onCategorySelected(category),
             child: Container(
               margin: const EdgeInsets.only(right: 12),
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -50,7 +41,7 @@ class _CategoryListState extends State<CategoryList> {
               ),
               child: Center(
                 child: Text(
-                  categories[index],
+                  category,
                   style: TextStyle(
                     color: isSelected ? Colors.white : AppColors.forestDark,
                     fontWeight: FontWeight.bold,

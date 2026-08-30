@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/widgets/sale_widget/scan/scanned_product_card.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/sale/widgets/scanned_product_card.dart';
 
 class ScanProductScreen extends StatelessWidget {
   const ScanProductScreen({super.key});
@@ -22,16 +23,19 @@ class ScanProductScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Scan Product",
+          "Mahsulotni skanerlash",
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.flash_on, color: AppColors.primary),
-            onPressed: () {},
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.flash_on, color: AppColors.primary),
+              onPressed: () =>
+                  AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            ),
           ),
         ],
       ),
@@ -57,7 +61,7 @@ class ScanProductScreen extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               border: Border.all(
-                color: AppColors.primary.withOpacity(0.5),
+                color: AppColors.primary.withValues(alpha: 0.5),
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(24),
@@ -72,7 +76,7 @@ class ScanProductScreen extends StatelessWidget {
                       color: AppColors.primary,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.5),
+                          color: AppColors.primary.withValues(alpha: 0.5),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),

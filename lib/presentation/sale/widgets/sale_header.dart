@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class SaleHeader extends StatelessWidget {
   const SaleHeader({super.key});
@@ -21,7 +21,7 @@ class SaleHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            "Sale Screen",
+            "Sotuv",
             style: TextStyle(
               color: Colors.white,
               fontSize: 28,

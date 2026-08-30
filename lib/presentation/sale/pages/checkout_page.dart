@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
-import 'package:ocam_pos/presentation/pages/sale/chackout/payment_successfull_scan.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/utils/receipt_printer.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
+import 'package:ocam_pos/presentation/sale/pages/payment_success_page.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/widgets/sale_widget/chackout/checkout_card.dart';
+import 'package:ocam_pos/presentation/sale/widgets/checkout_card.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -21,26 +27,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _printReceipt = true;
 
   @override
+  void dispose() {
+    _amountPaidController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BillingBloc, BillingState>(
-      listener: (context, state) {
-        if (state.saleSuccess) {
-          showSuccessSheet(context, state.totalAmount);
-        }
+    return BlocConsumer<SaleBloc, SaleState>(
+      listenWhen: (previous, current) =>
+          current.completedSale != previous.completedSale ||
+          current.error != previous.error,
+      listener: (context, state) async {
         if (state.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error!), backgroundColor: Colors.red),
-          );
+          AppSnackBar.error(context, state.error!);
+          context.read<SaleBloc>().add(const SaleMessageCleared());
+          return;
         }
 
-        if (!state.isLoading &&
-            state.cartItems.isEmpty &&
-            state.error == null) {
-          print("Sotuv muvaffaqiyatli yakunlandi!");
+        final sale = state.completedSale;
+        if (sale != null) {
+          if (_printReceipt) {
+            await ReceiptPrinter.printReceipt(sale.items, sale.total);
+          }
+          if (context.mounted) {
+            showSuccessSheet(context, sale.total);
+          }
         }
       },
-      builder: (context, billingState) {
-        final double totalAmount = billingState.totalAmount;
+      builder: (context, saleState) {
+        final double totalAmount = saleState.totalAmount;
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -50,24 +67,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionTitle("Invoice Date"),
+                _buildSectionTitle("Sana"),
                 _buildDateCard(),
 
-                _buildSectionTitle("Cart Items"),
-                _buildProductTable(billingState),
+                _buildSectionTitle("Savatdagi mahsulotlar"),
+                _buildProductTable(saleState),
 
-                _buildSectionTitle("Scan to Pay"),
+                _buildSectionTitle("QR orqali to'lash"),
                 _buildQRCodeCard(totalAmount),
 
-                _buildSectionTitle("Amount to Pay"),
+                _buildSectionTitle("To'lanadigan summa"),
                 _buildAmountCard(totalAmount),
 
-                _buildSectionTitle("Note"),
+                _buildSectionTitle("Eslatma"),
                 _buildNoteCard(),
                 _buildPrintSwitch(),
 
                 const SizedBox(height: 20),
-                _buildCompleteButton(billingState),
+                _buildCompleteButton(saleState),
                 const SizedBox(height: 30),
               ],
             ),
@@ -77,29 +94,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildCompleteButton(BillingState state) {
+  Widget _buildCompleteButton(SaleState state) {
     return SizedBox(
       width: double.infinity,
       height: 58,
       child: ElevatedButton(
-        onPressed: state.isLoading
+        onPressed: state.isProcessing
             ? null
             : () {
-                final paid = double.tryParse(_amountPaidController.text) ?? 0.0;
+                final paid =
+                    double.tryParse(_amountPaidController.text) ?? 0.0;
 
                 if (paid < state.totalAmount) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("To'langan summa yetarli emas!"),
-                    ),
-                  );
+                  AppSnackBar.error(context, "To'langan summa yetarli emas!");
                   return;
                 }
 
-                context.read<BillingBloc>().add(
+                context.read<SaleBloc>().add(
                   CompleteSaleEvent(
                     amountPaid: paid,
-                    printReceipt: _printReceipt,
+                    note: _noteController.text.trim(),
                   ),
                 );
               },
@@ -109,10 +123,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        child: state.isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
+        child: state.isProcessing
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
             : const Text(
-                "Complete Sale",
+                "Savdoni yakunlash",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -123,7 +144,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildProductTable(BillingState state) {
+  Widget _buildProductTable(SaleState state) {
     return CheckoutCard(
       child: Table(
         border: TableBorder(
@@ -140,7 +161,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(
-                    "${(item.quantity * item.product.sellPrice).toStringAsFixed(2)} EGP",
+                    AppFormat.money(item.subTotal),
                     textAlign: TextAlign.right,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -168,7 +189,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(
                 width: 150,
                 height: 150,
-                child: PrettyQrView.data(data: 'pay?am=$amount&cu=EGP'),
+                child: PrettyQrView.data(
+                  data: 'pay?am=$amount&cu=${AppConfig.currency}',
+                ),
               ),
             ],
           ),
@@ -183,25 +206,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Text(
-                  totalAmount.toStringAsFixed(2),
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  "EGP",
-                  style: TextStyle(
-                    color: AppColors.sage,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              AppFormat.money(totalAmount),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -236,7 +247,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       onPressed: () => Navigator.pop(context),
     ),
     title: const Text(
-      "Checkout",
+      "To'lov",
       style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
     ),
   );
@@ -280,12 +291,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          "Print Receipt",
+          "Chekni chop etish",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         Switch.adaptive(
           value: _printReceipt,
-          activeColor: AppColors.primary,
+          activeThumbColor: AppColors.primary,
           onChanged: (v) => setState(() => _printReceipt = v),
         ),
       ],

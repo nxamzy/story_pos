@@ -1,14 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
-import 'package:ocam_pos/presentation/pages/sale/main_sale/quikadd/quick_add.dart';
-import 'package:ocam_pos/presentation/pages/sale/main_sale/scanner/scanner_page.dart';
-import 'package:ocam_pos/presentation/pages/sale/product_card.dart';
-import 'package:ocam_pos/presentation/widgets/sale_widget/main_sale/category_list.dart';
-import 'package:ocam_pos/presentation/widgets/sale_widget/main_sale/sale_header.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
+import 'package:ocam_pos/presentation/sale/widgets/quick_add_sheet.dart';
+import 'package:ocam_pos/presentation/sale/pages/scanner_page.dart';
+import 'package:ocam_pos/presentation/sale/widgets/sale_product_grid.dart';
+import 'package:ocam_pos/presentation/sale/widgets/category_list.dart';
+import 'package:ocam_pos/presentation/sale/widgets/sale_header.dart';
 
 class SaleScreen extends StatefulWidget {
   const SaleScreen({super.key});
@@ -18,20 +24,32 @@ class SaleScreen extends StatefulWidget {
 }
 
 class _SaleScreenState extends State<SaleScreen> {
-  final TextEditingController barcodeController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
   final Map<String, DateTime> _lastScanTimes = {};
-  String _selectedCategory = "All";
 
   @override
   void initState() {
     super.initState();
-    _loadInitialProducts();
+    context.read<SaleBloc>().add(const LoadSaleProducts());
   }
 
-  void _loadInitialProducts() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      context.read<BillingBloc>().add(LoadAllProductsEvent(user.uid));
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onBarcodeScanned(String barcode) async {
+    final now = DateTime.now();
+    final lastScan = _lastScanTimes[barcode];
+    // Bir xil shtrix-kod ketma-ket 2 soniya ichida qayta o'qilsa —
+    // savatga ikki marta qo'shilib ketmasligi uchun e'tiborsiz qoldiriladi.
+    if (lastScan != null && now.difference(lastScan).inSeconds < 2) return;
+    _lastScanTimes[barcode] = now;
+
+    await HapticFeedback.mediumImpact();
+    if (mounted) {
+      context.read<SaleBloc>().add(ScanBarcodeEvent(barcode));
     }
   }
 
@@ -39,22 +57,12 @@ class _SaleScreenState extends State<SaleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocListener<BillingBloc, BillingState>(
-        listenWhen: (previous, current) =>
-            previous.error != current.error && current.error != null,
+      body: BlocListener<SaleBloc, SaleState>(
+        listenWhen: (previous, current) => current.error != previous.error,
         listener: (context, state) {
-          if (state.error != null && state.error!.contains("muvaffaqiyatli")) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Sotuv yakunlandi!"),
-                backgroundColor: Colors.green,
-              ),
-            );
-
-            final userId = FirebaseAuth.instance.currentUser?.uid;
-            if (userId != null) {
-              context.read<BillingBloc>().add(LoadAllProductsEvent(userId));
-            }
+          if (state.error != null) {
+            AppSnackBar.error(context, state.error!);
+            context.read<SaleBloc>().add(const SaleMessageCleared());
           }
         },
         child: Column(
@@ -65,15 +73,17 @@ class _SaleScreenState extends State<SaleScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Column(
                   children: [
-                    CategoryList(
-                      onCategorySelected: (category) {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
-                        context.read<BillingBloc>().add(
-                          FilterProductsByCategoryEvent(category),
-                        );
-                      },
+                    BlocBuilder<SaleBloc, SaleState>(
+                      buildWhen: (p, c) =>
+                          p.categories != c.categories ||
+                          p.category != c.category,
+                      builder: (context, state) => CategoryList(
+                        categories: state.categories,
+                        selected: state.category,
+                        onCategorySelected: (category) => context
+                            .read<SaleBloc>()
+                            .add(FilterSaleByCategory(category)),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     _buildSearchSection(),
@@ -92,15 +102,17 @@ class _SaleScreenState extends State<SaleScreen> {
   }
 
   Widget _buildCartSummary() {
-    return BlocBuilder<BillingBloc, BillingState>(
+    return BlocBuilder<SaleBloc, SaleState>(
+      buildWhen: (p, c) =>
+          p.cartItems != c.cartItems || p.totalAmount != c.totalAmount,
       builder: (context, state) {
-        if (state.cartItems.isEmpty) return const SizedBox.shrink();
+        if (state.isCartEmpty) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -108,9 +120,9 @@ class _SaleScreenState extends State<SaleScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Savatda: ${state.cartItems.length} mahsulot"),
+                    Text("Savatda: ${state.totalQuantity} mahsulot"),
                     Text(
-                      "${state.totalAmount.toStringAsFixed(2)} EGP",
+                      AppFormat.money(state.totalAmount),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -122,14 +134,8 @@ class _SaleScreenState extends State<SaleScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      final userId = FirebaseAuth.instance.currentUser?.uid;
-                      if (userId != null) {
-                        context.read<BillingBloc>().add(
-                          ConfirmSaleEvent(userId),
-                        );
-                      }
-                    },
+                    onPressed: () =>
+                        context.push(PlatformRoutes.basketPage.route),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
@@ -137,7 +143,7 @@ class _SaleScreenState extends State<SaleScreen> {
                       ),
                     ),
                     child: const Text(
-                      "Confirm & Pay",
+                      "Savatga o'tish",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -170,18 +176,22 @@ class _SaleScreenState extends State<SaleScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
-                      controller: barcodeController,
+                      controller: searchController,
                       decoration: const InputDecoration(
-                        hintText: "Search Product Here",
+                        hintText: "Mahsulot qidirish",
                         hintStyle: TextStyle(color: AppColors.sage),
                         border: InputBorder.none,
                       ),
+                      onChanged: (value) => context.read<SaleBloc>().add(
+                        SearchSaleProducts(value),
+                      ),
                       onSubmitted: (value) {
                         if (value.isNotEmpty) {
-                          context.read<BillingBloc>().add(
-                            ScanBarcodeEvent(value),
+                          context.read<SaleBloc>().add(ScanBarcodeEvent(value));
+                          searchController.clear();
+                          context.read<SaleBloc>().add(
+                            const SearchSaleProducts(''),
                           );
-                          barcodeController.clear();
                         }
                       },
                     ),
@@ -192,7 +202,7 @@ class _SaleScreenState extends State<SaleScreen> {
           ),
           const SizedBox(width: 12),
           InkWell(
-            onTap: () => bottomsheetdfsdfa(context),
+            onTap: () => showQuickAddProductSheet(context),
             child: _iconButton(Icons.add),
           ),
           const SizedBox(width: 12),
@@ -202,21 +212,8 @@ class _SaleScreenState extends State<SaleScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const ScannerPage()),
               );
-
               if (scannedBarcode != null && scannedBarcode.isNotEmpty) {
-                final now = DateTime.now();
-                if (_lastScanTimes.containsKey(scannedBarcode)) {
-                  final lastScan = _lastScanTimes[scannedBarcode]!;
-                  if (now.difference(lastScan).inSeconds < 2) return;
-                }
-                _lastScanTimes[scannedBarcode] = now;
-                await HapticFeedback.mediumImpact();
-
-                if (mounted) {
-                  context.read<BillingBloc>().add(
-                    ScanBarcodeEvent(scannedBarcode),
-                  );
-                }
+                await _onBarcodeScanned(scannedBarcode);
               }
             },
             child: _iconButton(Icons.qr_code_scanner),
@@ -226,7 +223,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 60),
@@ -236,7 +233,7 @@ class _SaleScreenState extends State<SaleScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -281,9 +278,9 @@ class _SaleScreenState extends State<SaleScreen> {
   }
 
   Widget _buildGrid() {
-    return BlocBuilder<BillingBloc, BillingState>(
+    return BlocBuilder<SaleBloc, SaleState>(
       builder: (context, state) {
-        if (state.isLoading && state.products.isEmpty) {
+        if (state.status.isFirstLoad && state.products.isEmpty) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.only(top: 50),
@@ -292,10 +289,10 @@ class _SaleScreenState extends State<SaleScreen> {
           );
         }
 
-        final displayProducts = state.products;
+        final displayProducts = state.visibleProducts;
 
         if (displayProducts.isEmpty) {
-          return _buildEmptyState(context);
+          return _buildEmptyState();
         }
 
         return GridView.builder(

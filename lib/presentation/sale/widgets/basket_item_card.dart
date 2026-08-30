@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/cart_item_model.dart';
-import 'package:ocam_pos/presentation/bloc/billing_bloc.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItem item;
@@ -16,7 +18,7 @@ class CartItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.mintLight.withOpacity(0.5)),
+        border: Border.all(color: AppColors.mintLight.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
@@ -35,7 +37,7 @@ class CartItemCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "${item.product.sellPrice.toStringAsFixed(2)} EGP",
+                  AppFormat.money(item.product.sellPrice),
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -56,7 +58,7 @@ class CartItemCard extends StatelessWidget {
                   icon: Icons.remove,
                   color: AppColors.sage,
                   onTap: () {
-                    context.read<BillingBloc>().add(
+                    context.read<SaleBloc>().add(
                       UpdateQuantityEvent(item.product.id, item.quantity - 1),
                     );
                   },
@@ -77,7 +79,7 @@ class CartItemCard extends StatelessWidget {
                   icon: Icons.add,
                   color: AppColors.primary,
                   onTap: () {
-                    context.read<BillingBloc>().add(
+                    context.read<SaleBloc>().add(
                       UpdateQuantityEvent(item.product.id, item.quantity + 1),
                     );
                   },

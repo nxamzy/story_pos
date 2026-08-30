@@ -14,7 +14,7 @@ class OnboardingDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: isActive
             ? const Color(0xFFE65100)
-            : const Color(0xFFE65100).withOpacity(0.3),
+            : const Color(0xFFE65100).withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(4),
       ),
     );

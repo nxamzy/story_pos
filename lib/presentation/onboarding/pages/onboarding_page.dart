@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ocam_pos/presentation/widgets/onboard_widget/onboarding_components.dart';
-import 'package:ocam_pos/presentation/widgets/onboard_widget/onboarding_page_item.dart';
+import 'package:ocam_pos/presentation/onboarding/widgets/onboarding_components.dart';
+import 'package:ocam_pos/presentation/onboarding/widgets/onboarding_page_item.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -104,8 +104,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeInOutQuart,
                       );
-                    } else {
-                      print("Homega o'tish");
                     }
                   },
                   style: ElevatedButton.styleFrom(

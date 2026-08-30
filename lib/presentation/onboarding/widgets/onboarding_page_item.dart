@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'onboarding_components.dart';
+import 'package:ocam_pos/presentation/onboarding/widgets/onboarding_components.dart';
 
 class OnboardingPageItem extends StatelessWidget {
   final Map<String, dynamic> data;

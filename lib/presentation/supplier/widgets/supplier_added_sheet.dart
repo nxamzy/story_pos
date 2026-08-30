@@ -50,7 +50,7 @@ class SuccessSupplierSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           const Text(
-            "Supplier Added!",
+            "Ta'minotchi qo'shildi!",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class SuccessSupplierSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            "New supplier has been created successfully",
+            "Yangi ta'minotchi muvaffaqiyatli yaratildi",
             style: TextStyle(color: AppColors.sage, fontSize: 14),
           ),
           const SizedBox(height: 30),
@@ -91,7 +91,7 @@ class SuccessSupplierSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "New Supplier Created",
+                        "Yangi ta'minotchi yaratildi",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -100,7 +100,7 @@ class SuccessSupplierSheet extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        "Ready for procurement",
+                        "Xarid uchun tayyor",
                         style: TextStyle(fontSize: 13, color: AppColors.sage),
                       ),
                     ],
@@ -128,7 +128,7 @@ class SuccessSupplierSheet extends StatelessWidget {
                 elevation: 0,
               ),
               child: const Text(
-                "Continue to List",
+                "Ro'yxatga qaytish",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

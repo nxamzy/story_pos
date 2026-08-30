@@ -3,14 +3,20 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 
 class EditFieldWidget extends StatelessWidget {
   final String label;
-  final String initialValue;
+  final TextEditingController controller;
   final bool hasClearIcon;
+  final TextInputType keyboardType;
+  final int maxLines;
+  final String? Function(String?)? validator;
 
   const EditFieldWidget({
     super.key,
     required this.label,
-    required this.initialValue,
+    required this.controller,
     this.hasClearIcon = false,
+    this.keyboardType = TextInputType.text,
+    this.maxLines = 1,
+    this.validator,
   });
 
   @override
@@ -18,7 +24,10 @@ class EditFieldWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        validator: validator,
         style: const TextStyle(
           color: AppColors.forestDark,
           fontWeight: FontWeight.w500,
@@ -27,11 +36,16 @@ class EditFieldWidget extends StatelessWidget {
           labelText: label,
           labelStyle: const TextStyle(color: AppColors.sage, fontSize: 13),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          suffixIcon: Icon(
-            Icons.cancel,
-            color: hasClearIcon ? AppColors.primary : AppColors.mintMedium,
-            size: 20,
-          ),
+          suffixIcon: hasClearIcon
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                  onPressed: controller.clear,
+                )
+              : null,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,

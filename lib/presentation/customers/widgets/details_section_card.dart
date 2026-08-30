@@ -25,7 +25,7 @@ class DetailsSectionCard extends StatelessWidget {
         border: Border.all(color: AppColors.mintLight),
         boxShadow: [
           BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.02),
+            color: AppColors.forestDark.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -45,7 +45,7 @@ class DetailsSectionCard extends StatelessWidget {
                   color: AppColors.forestDark,
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
           const Divider(height: 24, color: AppColors.mintLight),

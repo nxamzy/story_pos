@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
-import 'package:ocam_pos/presentation/pages/customers/customer_details.dart';
+import 'package:ocam_pos/presentation/customers/pages/customer_details_page.dart';
 
 void showSuccessInventory(BuildContext context, CustomerModel customer) {
   showModalBottomSheet(
@@ -36,7 +36,7 @@ class SuccessCustomerSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           const Text(
-            "Added Successfully",
+            "Muvaffaqiyatli qo'shildi",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class SuccessCustomerSheet extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 25,
-              backgroundColor: AppColors.primary.withOpacity(0.1),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               child: Text(
                 customer.name[0].toUpperCase(),
                 style: const TextStyle(

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/pages/customers/bloc/customer_bloc.dart';
-import 'package:ocam_pos/presentation/widgets/customer_widget/customer_tile.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
+import 'package:ocam_pos/presentation/customers/widgets/customer_tile.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class CustomersPage extends StatefulWidget {
   const CustomersPage({super.key});
@@ -17,7 +20,7 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CustomerBloc>().add(LoadCustomersEvent());
+    context.read<CustomerBloc>().add(const LoadCustomersEvent());
   }
 
   @override
@@ -28,7 +31,7 @@ class _CustomersPageState extends State<CustomersPage> {
         backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text(
-          'Customers',
+          'Mijozlar',
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -45,7 +48,7 @@ class _CustomersPageState extends State<CustomersPage> {
               onChanged: (value) =>
                   context.read<CustomerBloc>().add(SearchCustomerEvent(value)),
               decoration: InputDecoration(
-                hintText: "Search name or phone...",
+                hintText: "Ism yoki telefon bo'yicha qidirish...",
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 filled: true,
                 fillColor: AppColors.white,
@@ -61,16 +64,17 @@ class _CustomersPageState extends State<CustomersPage> {
           Expanded(
             child: BlocBuilder<CustomerBloc, CustomerState>(
               builder: (context, state) {
-                if (state.isLoading && state.customers.isEmpty) {
+                if (state.status.isFirstLoad && state.customers.isEmpty) {
                   return const Center(
                     child: CircularProgressIndicator(color: AppColors.primary),
                   );
                 }
 
-                if (state.searchResults.isEmpty) {
+                final results = state.visibleCustomers;
+                if (results.isEmpty) {
                   return const Center(
                     child: Text(
-                      "No customers found",
+                      "Mijozlar topilmadi",
                       style: TextStyle(color: AppColors.sage),
                     ),
                   );
@@ -78,9 +82,9 @@ class _CustomersPageState extends State<CustomersPage> {
 
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: state.searchResults.length,
+                  itemCount: results.length,
                   itemBuilder: (context, index) {
-                    final customer = state.searchResults[index];
+                    final customer = results[index];
 
                     return CustomerTile(
                       name: customer.name,
@@ -121,7 +125,7 @@ class _CustomersPageState extends State<CustomersPage> {
             children: [
               Icon(Icons.contact_phone, color: AppColors.primary),
               SizedBox(width: 8),
-              Text("Import"),
+              Text("Import qilish"),
             ],
           ),
         ),
@@ -131,7 +135,7 @@ class _CustomersPageState extends State<CustomersPage> {
             children: [
               Icon(Icons.edit, color: AppColors.primary),
               SizedBox(width: 8),
-              Text("Add Manual"),
+              Text("Qo'lda qo'shish"),
             ],
           ),
         ),

@@ -23,7 +23,7 @@ class CustomerTile extends StatelessWidget {
         border: Border.all(color: AppColors.mintLight, width: 1),
         boxShadow: [
           BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.03),
+            color: AppColors.forestDark.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

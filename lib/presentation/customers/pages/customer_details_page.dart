@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
-import 'package:ocam_pos/presentation/pages/customers/buttom_sheets/card_information.dart';
-import 'package:ocam_pos/presentation/pages/customers/buttom_sheets/delete_customer.dart';
-import 'package:ocam_pos/presentation/widgets/customer_widget/details_section_card.dart';
+import 'package:ocam_pos/presentation/customers/widgets/customer_info_sheet.dart';
+import 'package:ocam_pos/presentation/customers/widgets/delete_customer_sheet.dart';
+import 'package:ocam_pos/presentation/customers/widgets/details_section_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailsPage extends StatelessWidget {
@@ -28,7 +28,7 @@ class CustomerDetailsPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Customer Details',
+          'Mijoz tafsiloti',
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class CustomerDetailsPage extends StatelessWidget {
 
   Widget _buildPersonalInfo(BuildContext context) {
     return DetailsSectionCard(
-      title: "Personal Information",
+      title: "Shaxsiy ma'lumot",
       trailing: IconButton(
         icon: const Icon(Icons.edit_note_rounded, color: AppColors.primary),
         onPressed: () {
@@ -86,11 +86,11 @@ class CustomerDetailsPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _InfoRow(label: "Full Name", value: customer.name),
-          _InfoRow(label: "Phone Number", value: customer.phone),
-          _InfoRow(label: "Registration ID", value: customer.id.toUpperCase()),
+          _InfoRow(label: "To'liq ism", value: customer.name),
+          _InfoRow(label: "Telefon raqami", value: customer.phone),
+          _InfoRow(label: "Ro'yxat ID", value: customer.id.toUpperCase()),
           _InfoRow(
-            label: "Created Date",
+            label: "Ro'yxatdan o'tgan sana",
             value:
                 "${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}",
             isLast: true,
@@ -102,7 +102,7 @@ class CustomerDetailsPage extends StatelessWidget {
 
   Widget _buildFinancialStats() {
     return DetailsSectionCard(
-      title: "Financial Overview",
+      title: "Moliyaviy umumiy ko'rinish",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -115,7 +115,7 @@ class CustomerDetailsPage extends StatelessWidget {
             ),
           ),
           const Text(
-            "Total Amount Spent",
+            "Jami sarflangan summa",
             style: TextStyle(color: AppColors.sage, fontSize: 13),
           ),
         ],
@@ -125,12 +125,12 @@ class CustomerDetailsPage extends StatelessWidget {
 
   Widget _buildSaleInvoices() {
     return DetailsSectionCard(
-      title: "Recent Sales Invoices",
+      title: "So'nggi xaridlar",
       trailing: _SeeMoreButton(onTap: () {}),
       child: Column(
         children: const [
           _InvoiceTile(
-            date: "No recent transactions",
+            date: "Hozircha xaridlar yo'q",
             price: "0 UZS",
             isLast: true,
           ),
@@ -150,7 +150,7 @@ class _ProfileImage extends StatelessWidget {
       width: 100,
       height: 100,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppColors.mintLight, width: 2),
       ),
@@ -191,9 +191,9 @@ class _ContactButtonsRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildActionBtn(Icons.phone_outlined, "Call", _makeCall),
+        _buildActionBtn(Icons.phone_outlined, "Qo'ng'iroq", _makeCall),
         _buildActionBtn(Icons.chat_bubble_outline, "SMS", _sendSMS),
-        _buildActionBtn(Icons.share_outlined, "Share", () {}),
+        _buildActionBtn(Icons.share_outlined, "Ulashish", () {}),
       ],
     );
   }
@@ -211,7 +211,7 @@ class _ContactButtonsRow extends StatelessWidget {
           border: Border.all(color: AppColors.mintLight),
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey50.withOpacity(0.5),
+              color: AppColors.grey50.withValues(alpha: 0.5),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -293,7 +293,7 @@ class _InvoiceTile extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
       decoration: BoxDecoration(
-        color: AppColors.background.withOpacity(0.5),
+        color: AppColors.background.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -337,7 +337,7 @@ class _SeeMoreButton extends StatelessWidget {
     return TextButton(
       onPressed: onTap,
       child: const Text(
-        "View All >",
+        "Barchasini ko'rish >",
         style: TextStyle(color: AppColors.primary, fontSize: 12),
       ),
     );

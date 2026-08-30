@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/data/models/supplier_model.dart';
-import 'package:ocam_pos/presentation/pages/supplier/supplier_details.dart';
+import 'package:ocam_pos/presentation/supplier/pages/supplier_details_page.dart';
 
 class SupplierCard extends StatelessWidget {
   final SupplierModel supplier;
@@ -28,7 +28,7 @@ class SupplierCard extends StatelessWidget {
           border: Border.all(color: AppColors.mintLight),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

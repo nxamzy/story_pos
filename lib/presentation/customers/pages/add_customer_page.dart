@@ -1,12 +1,14 @@
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/validators.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
-import 'package:ocam_pos/presentation/pages/customers/bloc/customer_bloc.dart';
-import 'package:ocam_pos/presentation/widgets/customer_widget/details_section_card.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
+import 'package:ocam_pos/presentation/customers/widgets/details_section_card.dart';
 
 class AddNewCustomerPage extends StatefulWidget {
   const AddNewCustomerPage({super.key});
@@ -26,8 +28,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
   final cityController = TextEditingController();
   final notesController = TextEditingController();
 
-  bool _isLoading = false;
-  File? _selectedImage;
+  bool _isSaving = false;
   bool _showAltPhone = false;
 
   @override
@@ -43,90 +44,67 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
   }
 
   void _handleSave() {
-    if (!_formKey.currentState!.validate()) {
-      _showErrorSnackBar('Iltimos, ism va telefon raqamini kiriting!');
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
-
-    final String customerId = FirebaseFirestore.instance
-        .collection('users')
-        .doc()
-        .id;
+    setState(() => _isSaving = true);
 
     final newCustomer = CustomerModel(
-      id: customerId,
+      id: '',
       name: nameController.text.trim(),
       phone: phoneController.text.trim(),
       email: emailController.text.trim(),
-      address: "${cityController.text.trim()} ${addressController.text.trim()}"
-          .trim(),
+      address:
+          "${cityController.text.trim()} ${addressController.text.trim()}"
+              .trim(),
       notes: notesController.text.trim(),
-      totalSpent: 0.0,
       createdAt: DateTime.now(),
     );
 
-    context.read<CustomerBloc>().add(AddManualCustomerEvent(newCustomer));
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        _showSuccessSnackBar('Mijoz muvaffaqiyatli saqlandi!');
-        context.pop();
-      }
-    });
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.redAccent,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    context.read<CustomerBloc>().add(SaveCustomerEvent(newCustomer));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      _buildPersonalSection(),
-                      const SizedBox(height: 16),
-                      _buildContactSection(),
-                      const SizedBox(height: 16),
-                      _buildAddressSection(),
-                      const SizedBox(height: 16),
-                      _buildNotesSection(),
-                      const SizedBox(height: 40),
-                    ],
+    return BlocListener<CustomerBloc, CustomerState>(
+      listenWhen: (previous, current) =>
+          current.actionMessage != null || current.error != null,
+      listener: (context, state) {
+        if (state.error != null) {
+          setState(() => _isSaving = false);
+          AppSnackBar.error(context, state.error!);
+        } else if (state.actionMessage != null) {
+          AppSnackBar.success(context, state.actionMessage!);
+          context.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: _buildAppBar(),
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        _buildPersonalSection(),
+                        const SizedBox(height: 16),
+                        _buildContactSection(),
+                        const SizedBox(height: 16),
+                        _buildAddressSection(),
+                        const SizedBox(height: 16),
+                        _buildNotesSection(),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _buildActionFooter(),
-            ],
+                _buildActionFooter(),
+              ],
+            ),
           ),
         ),
       ),
@@ -147,7 +125,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
         onPressed: () => context.pop(),
       ),
       title: const Text(
-        'New Customer Profile',
+        'Yangi mijoz profili',
         style: TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.bold,
@@ -159,46 +137,35 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
 
   Widget _buildPersonalSection() {
     return DetailsSectionCard(
-      title: "Identity Information",
-      child: Column(
-        children: [
-          _ImageUploadPicker(
-            imageFile: _selectedImage,
-            onTap: () => setState(() => _selectedImage = File('picked')),
-          ),
-          const SizedBox(height: 24),
-          _HeavyDutyTextField(
-            label: "Full Name",
-            hint: "Enter customer full name",
-            controller: nameController,
-            prefixIcon: Icons.person_outline,
-            validator: (v) =>
-                (v == null || v.isEmpty) ? "Name is required" : null,
-          ),
-        ],
+      title: "Shaxsiy ma'lumot",
+      child: _HeavyDutyTextField(
+        label: "To'liq ism",
+        hint: "Mijozning to'liq ismi",
+        controller: nameController,
+        prefixIcon: Icons.person_outline,
+        validator: (v) => Validators.required(v, "Ism"),
       ),
     );
   }
 
   Widget _buildContactSection() {
     return DetailsSectionCard(
-      title: "Contact Data",
+      title: "Aloqa ma'lumotlari",
       child: Column(
         children: [
           _HeavyDutyTextField(
-            label: "Primary Phone",
+            label: "Asosiy telefon",
             hint: "+998 90 123 45 67",
             controller: phoneController,
             prefixIcon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
-            validator: (v) =>
-                (v == null || v.length < 7) ? "Phone is required" : null,
+            validator: Validators.phone,
           ),
           const SizedBox(height: 12),
           if (_showAltPhone) ...[
             _HeavyDutyTextField(
-              label: "Secondary Phone",
-              hint: "Alternative contact",
+              label: "Qo'shimcha telefon",
+              hint: "Muqobil aloqa",
               controller: altPhoneController,
               prefixIcon: Icons.add_call,
               keyboardType: TextInputType.phone,
@@ -206,7 +173,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
             const SizedBox(height: 12),
           ],
           _HeavyDutyTextField(
-            label: "Email Address",
+            label: "Email",
             hint: "customer@domain.com",
             controller: emailController,
             prefixIcon: Icons.alternate_email_outlined,
@@ -218,7 +185,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
               child: TextButton.icon(
                 onPressed: () => setState(() => _showAltPhone = true),
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text("Add Alternative Phone"),
+                label: const Text("Qo'shimcha telefon qo'shish"),
                 style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               ),
             ),
@@ -229,19 +196,19 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
 
   Widget _buildAddressSection() {
     return DetailsSectionCard(
-      title: "Location Details",
+      title: "Manzil",
       child: Column(
         children: [
           _HeavyDutyTextField(
-            label: "City",
-            hint: "e.g. Tashkent",
+            label: "Shahar",
+            hint: "masalan: Toshkent",
             controller: cityController,
             prefixIcon: Icons.location_city_outlined,
           ),
           const SizedBox(height: 12),
           _HeavyDutyTextField(
-            label: "Street Address",
-            hint: "District, House number...",
+            label: "Ko'cha manzili",
+            hint: "Tuman, uy raqami...",
             controller: addressController,
             prefixIcon: Icons.map_outlined,
             maxLines: 2,
@@ -253,10 +220,10 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
 
   Widget _buildNotesSection() {
     return DetailsSectionCard(
-      title: "Additional Notes",
+      title: "Qo'shimcha eslatmalar",
       child: _HeavyDutyTextField(
-        label: "Internal Notes",
-        hint: "Preferences or special terms...",
+        label: "Ichki eslatma",
+        hint: "Xohish yoki maxsus shartlar...",
         controller: notesController,
         prefixIcon: Icons.edit_note_outlined,
         maxLines: 3,
@@ -281,7 +248,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
         width: double.infinity,
         height: 55,
         child: ElevatedButton(
-          onPressed: _isLoading ? null : _handleSave,
+          onPressed: _isSaving ? null : _handleSave,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             shape: RoundedRectangleBorder(
@@ -289,7 +256,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
             ),
             elevation: 0,
           ),
-          child: _isLoading
+          child: _isSaving
               ? const SizedBox(
                   height: 24,
                   width: 24,
@@ -299,7 +266,7 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
                   ),
                 )
               : const Text(
-                  "Save Customer Profile",
+                  "Mijoz profilini saqlash",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -354,7 +321,7 @@ class _HeavyDutyTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: AppColors.sage.withOpacity(0.6),
+              color: AppColors.sage.withValues(alpha: 0.6),
               fontSize: 14,
             ),
             prefixIcon: Icon(prefixIcon, color: AppColors.sage, size: 20),
@@ -374,49 +341,11 @@ class _HeavyDutyTextField extends StatelessWidget {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.redAccent),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ImageUploadPicker extends StatelessWidget {
-  final VoidCallback onTap;
-  final File? imageFile;
-  const _ImageUploadPicker({required this.onTap, this.imageFile});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(25),
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: AppColors.mintLight, width: 2),
-        ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.camera_alt_outlined, color: AppColors.primary, size: 30),
-            SizedBox(height: 4),
-            Text(
-              "Photo",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

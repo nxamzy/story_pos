@@ -8,7 +8,7 @@ class CustomPhoneInputField extends StatelessWidget {
   const CustomPhoneInputField({
     super.key,
     required this.controller,
-    this.hint = "Phone Number",
+    this.hint = "Telefon raqami",
   });
 
   @override

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
-import 'package:ocam_pos/presentation/widgets/auth/custom_phone_input_field.dart'; // Yangi vidjetimiz
+import 'package:ocam_pos/core/routes/app_routes.dart';
+import 'package:ocam_pos/presentation/auth/widgets/auth_input_field.dart'; // Vidjetni import qilamiz
 
-class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _phoneController = TextEditingController();
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  final TextEditingController _newPassController = TextEditingController();
+  final TextEditingController _confirmPassController = TextEditingController();
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _newPassController.dispose();
+    _confirmPassController.dispose();
     super.dispose();
   }
 
@@ -26,7 +28,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,7 +37,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               const SizedBox(height: 32),
 
               const Text(
-                "Forgot Password",
+                "Yangi parol",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -44,18 +46,36 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Enter the phone number associated with your account",
+                "Yangi parolingizni kiriting va uni unutmang",
                 style: TextStyle(fontSize: 15, color: AppColors.sage),
               ),
 
               const SizedBox(height: 40),
 
-              CustomPhoneInputField(controller: _phoneController),
+              CustomAuthInputField(
+                label: "Yangi parol",
+                hint: "Yangi parolni kiriting",
+                prefixIcon: Icons.lock_open_rounded,
+                controller: _newPassController,
+                isPassword: true,
+                suffixIcon: Icons.remove_red_eye_outlined,
+              ),
+
+              const SizedBox(height: 24),
+
+              CustomAuthInputField(
+                label: "Yangi parolni tasdiqlang",
+                hint: "Parolni qayta kiriting",
+                prefixIcon: Icons.lock_outline,
+                controller: _confirmPassController,
+                isPassword: true,
+                suffixIcon: Icons.remove_red_eye_outlined,
+              ),
 
               const Spacer(),
 
               _buildSubmitButton(context),
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -88,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () => context.push(PlatformRoutes.verification.route),
+        onPressed: () => context.push(PlatformRoutes.loginPage.route),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
@@ -98,7 +118,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           elevation: 0,
         ),
         child: const Text(
-          "Send Code",
+          "Tasdiqlash",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),

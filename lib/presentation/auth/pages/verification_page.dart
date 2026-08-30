@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
-import 'package:ocam_pos/presentation/widgets/auth/custom_otp_box.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
+import 'package:ocam_pos/presentation/auth/widgets/otp_box.dart';
 
 class VerificationPage extends StatefulWidget {
   const VerificationPage({super.key});
@@ -28,7 +28,7 @@ class _VerificationPageState extends State<VerificationPage> {
               const SizedBox(height: 32),
 
               const Text(
-                "Enter Verification Code",
+                "Tasdiqlash kodini kiriting",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -37,14 +37,14 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               const SizedBox(height: 12),
               const Text(
-                "4-digit code was sent to +20*****2646",
+                "4 xonali kod raqamingizga yuborildi",
                 style: TextStyle(fontSize: 15, color: AppColors.sage),
               ),
               const SizedBox(height: 12),
               Row(
                 children: const [
                   Text(
-                    "Request code again in ",
+                    "Kodni qayta so'rash: ",
                     style: TextStyle(color: AppColors.sage, fontSize: 14),
                   ),
                   Text(
@@ -76,7 +76,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Didn't receive Code? ",
+                      "Kod kelmadimi? ",
                       style: TextStyle(
                         color: AppColors.forestDark,
                         fontSize: 14,
@@ -85,7 +85,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     GestureDetector(
                       onTap: () {},
                       child: const Text(
-                        "Resend",
+                        "Qayta yuborish",
                         style: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class _VerificationPageState extends State<VerificationPage> {
           elevation: 0,
         ),
         child: const Text(
-          "Verify Account",
+          "Tasdiqlash",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),

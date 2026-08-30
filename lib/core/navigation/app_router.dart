@@ -7,40 +7,40 @@ import 'package:ocam_pos/data/models/customer_model.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
 import 'package:ocam_pos/data/models/supplier_model.dart';
-import 'package:ocam_pos/logic/blocs/auth/auth_bloc.dart';
-import 'package:ocam_pos/logic/blocs/auth/auth_state.dart';
+import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 
-import 'package:ocam_pos/presentation/pages/cashdrawer/cashdrawer_page.dart';
-import 'package:ocam_pos/presentation/pages/customers/add_new_customers.dart';
-import 'package:ocam_pos/presentation/pages/customers/customer_details.dart';
-import 'package:ocam_pos/presentation/pages/customers/customers.dart';
-import 'package:ocam_pos/presentation/pages/employee/employee_hrm.dart';
-import 'package:ocam_pos/presentation/pages/home/home.dart';
-import 'package:ocam_pos/presentation/pages/inventory/addNewProduct.dart';
-import 'package:ocam_pos/presentation/pages/inventory/inventory_tab.dart';
-import 'package:ocam_pos/presentation/pages/inventory/product_details_inventory.dart';
-import 'package:ocam_pos/presentation/pages/notifications/notification.dart';
-import 'package:ocam_pos/presentation/pages/profile/profile_page.dart';
-import 'package:ocam_pos/presentation/pages/profile/show_all_profile.dart';
-import 'package:ocam_pos/presentation/pages/report/reports.dart';
-import 'package:ocam_pos/presentation/pages/sale/basket/basket.dart';
-import 'package:ocam_pos/presentation/pages/sale/chackout/checkout.dart';
-import 'package:ocam_pos/presentation/pages/sale/main_sale/sale_screen.dart';
-import 'package:ocam_pos/presentation/pages/sale/scan/ocr_scan.dart';
-import 'package:ocam_pos/presentation/pages/sale/main_sale/receipt/receipt.dart';
-import 'package:ocam_pos/presentation/pages/settings/settings_page.dart';
-import 'package:ocam_pos/presentation/pages/auth/change_password.dart';
-import 'package:ocam_pos/presentation/pages/auth/forgot_password.dart';
-import 'package:ocam_pos/presentation/pages/sign_in/sign_in.dart';
-import 'package:ocam_pos/presentation/pages/sign_up/sign_up.dart';
-import 'package:ocam_pos/presentation/pages/auth/verification.dart';
-import 'package:ocam_pos/presentation/pages/splash/first_splash.dart';
-import 'package:ocam_pos/presentation/pages/splash/second_splash.dart';
-import 'package:ocam_pos/presentation/pages/splash/thirt_splash.dart';
-import 'package:ocam_pos/presentation/pages/supplier/addNewSupplier.dart';
-import 'package:ocam_pos/presentation/pages/supplier/supplier_screen.dart';
-import 'package:ocam_pos/presentation/pages/supplier/supplier_details.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/presentation/cashdrawer/pages/cashdrawer_page.dart';
+import 'package:ocam_pos/presentation/customers/pages/add_customer_page.dart';
+import 'package:ocam_pos/presentation/customers/pages/customer_details_page.dart';
+import 'package:ocam_pos/presentation/customers/pages/customers_page.dart';
+import 'package:ocam_pos/presentation/employee/pages/employee_page.dart';
+import 'package:ocam_pos/presentation/employee/pages/add_employee_page.dart';
+import 'package:ocam_pos/presentation/home/pages/home_page.dart';
+import 'package:ocam_pos/presentation/inventory/pages/add_product_page.dart';
+import 'package:ocam_pos/presentation/inventory/pages/inventory_page.dart';
+import 'package:ocam_pos/presentation/inventory/pages/product_details_page.dart';
+import 'package:ocam_pos/presentation/notifications/pages/notifications_page.dart';
+import 'package:ocam_pos/presentation/profile/pages/profile_page.dart';
+import 'package:ocam_pos/presentation/profile/pages/show_all_profiles_page.dart';
+import 'package:ocam_pos/presentation/report/pages/report_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/basket_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/checkout_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/sale_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/scan_product_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/receipt_page.dart';
+import 'package:ocam_pos/presentation/settings/pages/settings_page.dart';
+import 'package:ocam_pos/presentation/auth/pages/change_password_page.dart';
+import 'package:ocam_pos/presentation/auth/pages/forgot_password_page.dart';
+import 'package:ocam_pos/presentation/auth/pages/sign_in_page.dart';
+import 'package:ocam_pos/presentation/auth/pages/sign_up_page.dart';
+import 'package:ocam_pos/presentation/auth/pages/verification_page.dart';
+import 'package:ocam_pos/presentation/onboarding/pages/first_splash_page.dart';
+import 'package:ocam_pos/presentation/onboarding/pages/second_splash_page.dart';
+import 'package:ocam_pos/presentation/onboarding/pages/third_splash_page.dart';
+import 'package:ocam_pos/presentation/supplier/pages/add_supplier_page.dart';
+import 'package:ocam_pos/presentation/supplier/pages/supplier_page.dart';
+import 'package:ocam_pos/presentation/supplier/pages/supplier_details_page.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -63,16 +63,12 @@ class AppRouter {
           currentLocation == PlatformRoutes.loginPage.route ||
           currentLocation == PlatformRoutes.signUpPage.route;
 
-      if (authState is Authenticated) {
-        if (isPublicPath) {
-          return PlatformRoutes.homePage.route;
-        }
+      if (authState.isAuthenticated && isPublicPath) {
+        return PlatformRoutes.homePage.route;
       }
 
-      if (authState is UnAuthenticated) {
-        if (!isPublicPath) {
-          return PlatformRoutes.loginPage.route;
-        }
+      if (authState.isUnauthenticated && !isPublicPath) {
+        return PlatformRoutes.loginPage.route;
       }
 
       return null;
@@ -98,7 +94,7 @@ class AppRouter {
       ),
       GoRoute(
         path: PlatformRoutes.addEmployee.route,
-        builder: (context, state) => const AddNewCustomerPage(),
+        builder: (context, state) => const EmployeeAddPage(),
       ),
       GoRoute(
         path: PlatformRoutes.signUpPage.route,

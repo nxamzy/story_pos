@@ -74,5 +74,4 @@ class PlatformRoutes {
   static const checkoutPage = RouteInfo(name: 'checkout', route: '/checkout');
   static const scanProductPage = RouteInfo(name: 'scan', route: '/scan');
   static const receiptPage = RouteInfo(name: 'receipt', route: '/receipt');
-  static const test = RouteInfo(name: 'test', route: '/test');
 }

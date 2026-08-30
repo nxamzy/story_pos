@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
-import 'package:ocam_pos/presentation/pages/inventory/card_information_inventory.dart';
-import 'package:ocam_pos/presentation/pages/inventory/delete_product.dart';
-import 'package:ocam_pos/presentation/widgets/inventory_widget/detail_row.dart';
+import 'package:ocam_pos/presentation/inventory/widgets/product_info_sheet.dart';
+import 'package:ocam_pos/presentation/inventory/widgets/delete_product_sheet.dart';
+import 'package:ocam_pos/presentation/inventory/widgets/detail_row.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductModel product;
@@ -65,7 +66,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             children: [
               Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
               SizedBox(width: 10),
-              Text("Delete Product", style: TextStyle(color: Colors.redAccent)),
+              Text("O'chirish", style: TextStyle(color: Colors.redAccent)),
             ],
           ),
         ),
@@ -86,7 +87,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         border: Border.all(color: AppColors.mintLight),
         boxShadow: [
           BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.05),
+            color: AppColors.forestDark.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -131,7 +132,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Product Information",
+                "Mahsulot ma'lumoti",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -146,7 +147,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   color: AppColors.primary,
                 ),
                 label: const Text(
-                  "Edit",
+                  "Tahrirlash",
                   style: TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
@@ -156,19 +157,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          DetailRow(label: "Name", value: product.name),
-          DetailRow(label: "Barcode", value: product.barcode),
-          DetailRow(label: "Quantity", value: "${product.stock} pcs"),
+          DetailRow(label: "Nomi", value: product.name),
+          DetailRow(label: "Shtrix-kod", value: product.barcode),
+          DetailRow(label: "Miqdor", value: "${product.stock} dona"),
           DetailRow(
-            label: "Category",
-            value: product.category ?? "No Category",
+            label: "Kategoriya",
+            value: product.category ?? "Kategoriyasiz",
             isCategory: true,
           ),
-          DetailRow(label: "Sale Price", value: "${product.sellPrice} EGP"),
-          DetailRow(label: "Purchase Price", value: "${product.buyPrice} EGP"),
+          DetailRow(label: "Sotish narxi", value: AppFormat.money(product.sellPrice)),
+          DetailRow(label: "Tannarx", value: AppFormat.money(product.buyPrice)),
           DetailRow(
-            label: "Description",
-            value: product.description ?? "No description",
+            label: "Tavsif",
+            value: product.description?.isNotEmpty == true
+                ? product.description!
+                : "Tavsif yo'q",
             isArabic: false,
           ),
         ],

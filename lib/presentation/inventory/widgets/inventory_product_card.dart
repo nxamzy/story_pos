@@ -27,7 +27,7 @@ class InventoryProductCard extends StatelessWidget {
         border: Border.all(color: AppColors.mintLight),
         boxShadow: [
           BoxShadow(
-            color: AppColors.forestDark.withOpacity(0.02),
+            color: AppColors.forestDark.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

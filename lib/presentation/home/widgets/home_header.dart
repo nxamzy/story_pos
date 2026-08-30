@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ocam_pos/presentation/bloc/profile/profile_bloc.dart';
-import 'package:ocam_pos/presentation/bloc/profile/profile_state.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
-import 'date_card_widget.dart';
+import 'package:ocam_pos/presentation/home/widgets/date_card.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -45,11 +45,8 @@ class _HeaderState extends State<Header> {
               Expanded(
                 child: BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
-                    String displayName = "Yuklanmoqda...";
-                    if (state is ProfileLoaded) {
-                      displayName =
-                          "${state.user.firstName} ${state.user.lastName}";
-                    }
+                    final displayName =
+                        state.user?.fullName ?? "Yuklanmoqda...";
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

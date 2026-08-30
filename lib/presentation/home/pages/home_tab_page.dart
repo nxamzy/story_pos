@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/widgets/home_widget/body_widget.dart';
-import 'package:ocam_pos/presentation/widgets/home_widget/header_widget.dart';
+import 'package:ocam_pos/presentation/home/widgets/home_body.dart';
+import 'package:ocam_pos/presentation/home/widgets/home_header.dart';
 
 class HomeTabContent extends StatelessWidget {
   const HomeTabContent({super.key});

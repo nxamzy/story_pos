@@ -77,7 +77,7 @@ class _DataCardState extends State<DataCard> {
           border: Border.all(color: AppColors.mintLight),
           boxShadow: [
             BoxShadow(
-              color: AppColors.forestDark.withOpacity(0.04),
+              color: AppColors.forestDark.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -88,7 +88,7 @@ class _DataCardState extends State<DataCard> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -107,7 +107,7 @@ class _DataCardState extends State<DataCard> {
                   Text(
                     "Tanlangan sana",
                     style: TextStyle(
-                      color: AppColors.sage.withOpacity(0.8),
+                      color: AppColors.sage.withValues(alpha: 0.8),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),

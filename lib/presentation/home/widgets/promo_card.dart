@@ -12,12 +12,12 @@ class PromoCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.centerRight,
           end: Alignment.centerLeft,
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -69,7 +69,7 @@ class PromoCard extends StatelessWidget {
       width: 90,
       height: 90,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
       child: ClipRRect(

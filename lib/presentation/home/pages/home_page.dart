@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/presentation/pages/inventory/inventory_tab.dart';
-import 'package:ocam_pos/presentation/pages/sale/main_sale/sale_screen.dart';
-import 'package:ocam_pos/presentation/pages/supplier/supplier_screen.dart';
-import 'package:ocam_pos/presentation/widgets/home_widget/home_tab_content.dart';
+import 'package:ocam_pos/presentation/inventory/pages/inventory_page.dart';
+import 'package:ocam_pos/presentation/sale/pages/sale_page.dart';
+import 'package:ocam_pos/presentation/supplier/pages/supplier_page.dart';
+import 'package:ocam_pos/presentation/home/pages/home_tab_page.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-import '../more/more.dart';
+import 'package:ocam_pos/presentation/more/pages/more_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,21 +40,21 @@ class _HomePageState extends State<HomePage> {
   List<PersistentBottomNavBarItem> _navBarsItems() => [
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.home_outlined),
-      title: 'Home',
+      title: 'Bosh sahifa',
       activeColorPrimary: AppColors.primary,
       inactiveColorPrimary: Colors.grey.shade600,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.inventory_2_outlined),
-      title: 'Inventory',
+      title: 'Ombor',
       activeColorPrimary: AppColors.primary,
       inactiveColorPrimary: Colors.grey.shade600,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.qr_code_scanner, size: 28),
-      title: 'Sale',
+      title: 'Sotuv',
       activeColorPrimary: AppColors.primary,
       activeColorSecondary: AppColors.white,
       inactiveColorPrimary: AppColors.primary,
@@ -62,14 +62,14 @@ class _HomePageState extends State<HomePage> {
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.local_shipping_outlined),
-      title: 'Supplier',
+      title: "Ta'minotchi",
       activeColorPrimary: AppColors.primary,
       inactiveColorPrimary: Colors.grey.shade600,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.more_horiz_outlined),
-      title: 'More',
+      title: "Ko'proq",
       activeColorPrimary: AppColors.primary,
       inactiveColorPrimary: Colors.grey.shade600,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
       colorBehindNavBar: AppColors.white,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 10,
           offset: const Offset(0, -2),
         ),

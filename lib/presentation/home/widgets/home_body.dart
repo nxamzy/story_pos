@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:ocam_pos/presentation/widgets/home_widget/promo_card_widget.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/home/widgets/promo_card.dart';
 
-import 'menu_grid_widget.dart';
+import 'package:ocam_pos/presentation/home/widgets/menu_grid.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -20,10 +19,9 @@ class _BodyState extends State<Body> {
       child: Column(
         children: [
           InkWell(
-            onTap: () {
-              context.push(PlatformRoutes.test.route);
-            },
-            child: PromoCard(),
+            onTap: () =>
+                AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            child: const PromoCard(),
           ),
           SizedBox(height: 16),
           MenuGrid(),

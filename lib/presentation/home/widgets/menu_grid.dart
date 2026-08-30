@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/routes/platform_routes.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class MenuGrid extends StatelessWidget {
   const MenuGrid({super.key});
@@ -10,24 +11,24 @@ class MenuGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> menuItems = [
       {
-        'title': 'Purchases',
+        'title': 'Xaridlar',
         'icon': Icons.shopping_bag_outlined,
         'route': null,
       },
-      {'title': 'Expenses', 'icon': Icons.payments_outlined, 'route': null},
+      {'title': 'Xarajatlar', 'icon': Icons.payments_outlined, 'route': null},
       {
-        'title': 'Customers',
+        'title': 'Mijozlar',
         'icon': Icons.people_outline,
         'route': PlatformRoutes.customersPage.route,
       },
-      {'title': 'Invoices', 'icon': Icons.receipt_long_outlined, 'route': null},
+      {'title': 'Hisob-fakturalar', 'icon': Icons.receipt_long_outlined, 'route': null},
       {
-        'title': 'HRM',
+        'title': 'Xodimlar',
         'icon': Icons.admin_panel_settings_outlined,
         'route': PlatformRoutes.employeeHRMPage.route,
       },
       {
-        'title': 'Reports',
+        'title': 'Hisobotlar',
         'icon': Icons.pie_chart_outline,
         'route': PlatformRoutes.repostsPage.route,
       },
@@ -50,7 +51,7 @@ class MenuGrid extends StatelessWidget {
           icon: item['icon'],
           onTap: item['route'] != null
               ? () => context.push(item['route'])
-              : null,
+              : () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
         );
       },
     );
@@ -76,7 +77,7 @@ class _MenuItemCard extends StatelessWidget {
           border: Border.all(color: AppColors.mintLight),
           boxShadow: [
             BoxShadow(
-              color: AppColors.forestDark.withOpacity(0.03),
+              color: AppColors.forestDark.withValues(alpha: 0.03),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -88,7 +89,7 @@ class _MenuItemCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 28, color: AppColors.primary),

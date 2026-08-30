@@ -1,4 +1,7 @@
-class EmployeeModel {
+import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/data/models/model_utils.dart';
+
+class EmployeeModel extends Equatable {
   final String id;
   final String name;
   final String role;
@@ -13,15 +16,15 @@ class EmployeeModel {
   final int lateIns;
   final DateTime createdAt;
 
-  EmployeeModel({
+  const EmployeeModel({
     required this.id,
     required this.name,
     required this.role,
     required this.phone,
-    required this.imageUrl,
-    this.lastCheckIn = "Not checked in",
-    required this.salary,
-    this.balance = 0.0,
+    this.imageUrl = '',
+    this.lastCheckIn = "Kelmagan",
+    this.salary = 0,
+    this.balance = 0,
     this.earlyLeaves = 0,
     this.absents = 0,
     this.presentDays = 0,
@@ -29,32 +32,21 @@ class EmployeeModel {
     required this.createdAt,
   });
 
-  EmployeeModel copyWith({
-    String? name,
-    String? role,
-    String? phone,
-    String? imageUrl,
-    double? salary,
-    double? balance,
-    int? earlyLeaves,
-    int? absents,
-    int? presentDays,
-    int? lateIns,
-  }) {
+  factory EmployeeModel.fromMap(Map<String, dynamic> map, String docId) {
     return EmployeeModel(
-      id: id,
-      name: name ?? this.name,
-      role: role ?? this.role,
-      phone: phone ?? this.phone,
-      imageUrl: imageUrl ?? this.imageUrl,
-      lastCheckIn: lastCheckIn,
-      salary: salary ?? this.salary,
-      balance: balance ?? this.balance,
-      earlyLeaves: earlyLeaves ?? this.earlyLeaves,
-      absents: absents ?? this.absents,
-      presentDays: presentDays ?? this.presentDays,
-      lateIns: lateIns ?? this.lateIns,
-      createdAt: createdAt,
+      id: docId,
+      name: ModelUtils.toStr(map['name']),
+      role: ModelUtils.toStr(map['role']),
+      phone: ModelUtils.toStr(map['phone']),
+      imageUrl: ModelUtils.toStr(map['imageUrl']),
+      lastCheckIn: ModelUtils.toStr(map['lastCheckIn'], 'Kelmagan'),
+      salary: ModelUtils.toDouble(map['salary']),
+      balance: ModelUtils.toDouble(map['balance']),
+      earlyLeaves: ModelUtils.toInt(map['earlyLeaves']),
+      absents: ModelUtils.toInt(map['absents']),
+      presentDays: ModelUtils.toInt(map['presentDays']),
+      lateIns: ModelUtils.toInt(map['lateIns']),
+      createdAt: ModelUtils.date(map['createdAt']),
     );
   }
 
@@ -71,27 +63,53 @@ class EmployeeModel {
       'absents': absents,
       'presentDays': presentDays,
       'lateIns': lateIns,
-      'createdAt': createdAt.toIso8601String(),
     };
   }
 
-  factory EmployeeModel.fromMap(Map<String, dynamic> map, String docId) {
+  EmployeeModel copyWith({
+    String? id,
+    String? name,
+    String? role,
+    String? phone,
+    String? imageUrl,
+    String? lastCheckIn,
+    double? salary,
+    double? balance,
+    int? earlyLeaves,
+    int? absents,
+    int? presentDays,
+    int? lateIns,
+    DateTime? createdAt,
+  }) {
     return EmployeeModel(
-      id: docId,
-      name: map['name'] ?? '',
-      role: map['role'] ?? '',
-      phone: map['phone'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
-      lastCheckIn: map['lastCheckIn'] ?? 'Not checked in',
-      salary: (map['salary'] ?? 0.0).toDouble(),
-      balance: (map['balance'] ?? 0.0).toDouble(),
-      earlyLeaves: map['earlyLeaves'] ?? 0,
-      absents: map['absents'] ?? 0,
-      presentDays: map['presentDays'] ?? 0,
-      lateIns: map['lateIns'] ?? 0,
-      createdAt: map['createdAt'] != null
-          ? DateTime.parse(map['createdAt'])
-          : DateTime.now(),
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      phone: phone ?? this.phone,
+      imageUrl: imageUrl ?? this.imageUrl,
+      lastCheckIn: lastCheckIn ?? this.lastCheckIn,
+      salary: salary ?? this.salary,
+      balance: balance ?? this.balance,
+      earlyLeaves: earlyLeaves ?? this.earlyLeaves,
+      absents: absents ?? this.absents,
+      presentDays: presentDays ?? this.presentDays,
+      lateIns: lateIns ?? this.lateIns,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    role,
+    phone,
+    imageUrl,
+    salary,
+    balance,
+    presentDays,
+    absents,
+    lateIns,
+    earlyLeaves,
+  ];
 }

@@ -1,36 +1,47 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocam_pos/data/datasources/auth_remote_datasource.dart';
+import 'package:ocam_pos/data/repositories/repository_guard.dart';
 
-class AuthRepository {
-  final FirebaseAuth _firebaseAuth;
+class AuthRepository with RepositoryGuard {
+  final AuthRemoteDataSource _remote;
 
-  AuthRepository({FirebaseAuth? firebaseAuth})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthRepository({required AuthRemoteDataSource remote}) : _remote = remote;
 
-  Future<void> signUp({required String email, required String password}) async {
-    try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
+  Stream<User?> authStateChanges() => _remote.authStateChanges();
 
-  Future<void> signIn({required String email, required String password}) async {
-    try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw e.code;
-    } catch (e) {
-      throw "unknown-error";
-    }
-  }
+  User? get currentUser => _remote.currentUser;
 
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-  }
+  bool get isSignedIn => _remote.currentUser != null;
+
+  Future<void> signIn({required String email, required String password}) =>
+      guard(() => _remote.signIn(email: email, password: password));
+
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) => guard(
+    () => _remote.signUp(
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+    ),
+  );
+
+  Future<void> signOut() => guard(() => _remote.signOut());
+
+  Future<void> sendPasswordResetEmail(String email) =>
+      guard(() => _remote.sendPasswordResetEmail(email));
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) => guard(
+    () => _remote.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    ),
+  );
 }

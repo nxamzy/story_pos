@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/data/models/model_utils.dart';
 
-class CustomerModel {
+class CustomerModel extends Equatable {
   final String id;
   final String name;
   final String phone;
@@ -10,16 +11,43 @@ class CustomerModel {
   final double totalSpent;
   final DateTime createdAt;
 
-  CustomerModel({
+  const CustomerModel({
     required this.id,
     required this.name,
     required this.phone,
-    required this.email,
-    required this.address,
-    required this.notes,
-    required this.totalSpent,
+    this.email = '',
+    this.address = '',
+    this.notes = '',
+    this.totalSpent = 0,
     required this.createdAt,
   });
+
+  factory CustomerModel.fromMap(Map<String, dynamic> map, String docId) {
+    return CustomerModel(
+      id: docId,
+      name: ModelUtils.toStr(map['name']),
+      phone: ModelUtils.toStr(map['phone']),
+      email: ModelUtils.toStr(map['email']),
+      address: ModelUtils.toStr(map['address']),
+      notes: ModelUtils.toStr(map['notes']),
+      totalSpent: ModelUtils.toDouble(map['totalSpent']),
+      createdAt: ModelUtils.date(map['createdAt']),
+    );
+  }
+
+  /// Diqqat: bu yerda barcha maydonlar yoziladi. Ilgari `email`, `address`
+  /// va `notes` yozilmay qolib ketardi — shuning uchun mijoz saqlangach
+  /// bu maydonlar bo'sh ko'rinardi.
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'address': address,
+      'notes': notes,
+      'totalSpent': totalSpent,
+    };
+  }
 
   CustomerModel copyWith({
     String? id,
@@ -43,32 +71,14 @@ class CustomerModel {
     );
   }
 
-  // toMap va fromMap funksiyalaring pastda qolaversin...// Firestore-ga yozish uchun
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'phone': phone,
-      'totalSpent': totalSpent,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
-
-  factory CustomerModel.fromMap(Map<String, dynamic> map, String docId) {
-    return CustomerModel(
-      id: docId,
-      email: map['email'] ?? '',
-      name: map['name'] ?? '',
-      phone: map['phone'] ?? '',
-      address: map['address'] ?? '',
-      notes: map['notes'] ?? '',
-      totalSpent: (map['totalSpent'] ?? 0.0).toDouble(),
-
-      createdAt: map['createdAt'] != null
-          ? (map['createdAt'] is String
-                ? DateTime.parse(map['createdAt'])
-                : (map['createdAt'] as Timestamp).toDate())
-          : DateTime.now(),
-    );
-  }
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    phone,
+    email,
+    address,
+    notes,
+    totalSpent,
+  ];
 }

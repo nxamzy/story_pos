@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/data/models/model_utils.dart';
 
-class SupplierModel {
+class SupplierModel extends Equatable {
   final String id;
   final String name;
   final String phone;
@@ -10,7 +12,7 @@ class SupplierModel {
   final String imageUrl;
   final DateTime createdAt;
 
-  SupplierModel({
+  const SupplierModel({
     required this.id,
     required this.name,
     required this.phone,
@@ -21,19 +23,26 @@ class SupplierModel {
     required this.createdAt,
   });
 
-  factory SupplierModel.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map<String, dynamic>;
+  factory SupplierModel.fromMap(Map<String, dynamic> map, String docId) {
     return SupplierModel(
-      id: doc.id,
-      name: data['name'] ?? '',
-      phone: data['phone'] ?? '',
-      email: data['email'] ?? '',
-      address: data['address'] ?? '',
-      notes: data['notes'] ?? '',
-      imageUrl: data['imageUrl'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      id: docId,
+      name: ModelUtils.toStr(map['name']),
+      phone: ModelUtils.toStr(map['phone']),
+      email: ModelUtils.toStr(map['email']),
+      address: ModelUtils.toStr(map['address']),
+      notes: ModelUtils.toStr(map['notes']),
+      imageUrl: ModelUtils.toStr(map['imageUrl']),
+      // `serverTimestamp()` yozilgan zahoti lokal snapshot'da null keladi —
+      // ilgari shu yerda `as Timestamp` cast qilinib, ilova yiqilardi.
+      createdAt: ModelUtils.date(map['createdAt']),
     );
   }
+
+  factory SupplierModel.fromFirestore(DocumentSnapshot doc) =>
+      SupplierModel.fromMap(
+        (doc.data() as Map<String, dynamic>?) ?? const {},
+        doc.id,
+      );
 
   Map<String, dynamic> toMap() {
     return {
@@ -43,7 +52,31 @@ class SupplierModel {
       'address': address,
       'notes': notes,
       'imageUrl': imageUrl,
-      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
+
+  SupplierModel copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? email,
+    String? address,
+    String? notes,
+    String? imageUrl,
+    DateTime? createdAt,
+  }) {
+    return SupplierModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      notes: notes ?? this.notes,
+      imageUrl: imageUrl ?? this.imageUrl,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, name, phone, email, address, notes, imageUrl];
 }

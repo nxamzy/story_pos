@@ -28,8 +28,15 @@ class CashBloc extends Bloc<CashEvent, CashState> {
       ),
     );
     on<TransferFormChanged>(
-      (event, emit) =>
-          emit(state.copyWith(from: event.from, to: event.to, clearError: true)),
+      (event, emit) => emit(
+        state.copyWith(
+          from: event.from,
+          to: event.to,
+          clearFrom: event.from == null,
+          clearTo: event.to == null,
+          clearError: true,
+        ),
+      ),
     );
     on<TransferRequested>(_onTransfer);
   }

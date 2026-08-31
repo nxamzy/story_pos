@@ -29,7 +29,7 @@ class SaleState extends Equatable {
     this.products = const [],
     this.cartItems = const [],
     this.query = '',
-    this.category = 'All',
+    this.category = 'Barchasi',
     this.customer,
     this.paymentMethod = 'cash',
     this.isProcessing = false,
@@ -45,7 +45,7 @@ class SaleState extends Equatable {
           q.isEmpty ||
           p.name.toLowerCase().contains(q) ||
           p.barcode.toLowerCase().contains(q);
-      final matchesCategory = category == 'All' || p.category == category;
+      final matchesCategory = category == 'Barchasi' || p.category == category;
       return matchesQuery && matchesCategory;
     }).toList();
   }
@@ -57,7 +57,7 @@ class SaleState extends Equatable {
         .toSet()
         .toList()
       ..sort();
-    return ['All', ...all];
+    return ['Barchasi', ...all];
   }
 
   bool get isCartEmpty => cartItems.isEmpty;

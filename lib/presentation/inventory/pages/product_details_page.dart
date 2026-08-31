@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
+import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/widgets/product_info_sheet.dart';
 import 'package:ocam_pos/presentation/inventory/widgets/delete_product_sheet.dart';
 import 'package:ocam_pos/presentation/inventory/widgets/detail_row.dart';
@@ -17,6 +19,19 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    // ProductBloc'dagi joriy ro'yxatdan tirik nusxasini olamiz — aks holda
+    // "Tahrirlash"dan keyin bu sahifa eski (widget.product) qiymatlarni
+    // ko'rsatishda davom etadi, chunki Navigator.pop qaytargan sahifa
+    // qayta build bo'lmaydi.
+    final product = context
+        .watch<ProductBloc>()
+        .state
+        .products
+        .firstWhere(
+          (p) => p.id == widget.product.id,
+          orElse: () => widget.product,
+        );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -32,22 +47,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Product Details',
+          "Mahsulot tafsilotlari",
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [_buildPopupMenu(context), const SizedBox(width: 8)],
+        actions: [_buildPopupMenu(context, product), const SizedBox(width: 8)],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             const SizedBox(height: 24),
-            _buildProductImage(),
+            _buildProductImage(product),
             const SizedBox(height: 32),
-            _buildInfoCard(context, widget.product),
+            _buildInfoCard(context, product),
             const SizedBox(height: 40),
           ],
         ),
@@ -55,7 +70,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildPopupMenu(BuildContext context) {
+  Widget _buildPopupMenu(BuildContext context, ProductModel product) {
     return PopupMenuButton<int>(
       icon: const Icon(Icons.more_vert, color: AppColors.primary),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -72,12 +87,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ],
       onSelected: (value) {
-        if (value == 1) showDeleteProduct(context, widget.product);
+        if (value == 1) showDeleteProduct(context, product);
       },
     );
   }
 
-  Widget _buildProductImage() {
+  Widget _buildProductImage(ProductModel product) {
     return Container(
       height: 200,
       width: 200,
@@ -95,11 +110,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child:
-            (widget.product.imageUrl != null &&
-                widget.product.imageUrl!.isNotEmpty)
+        child: (product.imageUrl != null && product.imageUrl!.isNotEmpty)
             ? Image.network(
-                widget.product.imageUrl!,
+                product.imageUrl!,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;

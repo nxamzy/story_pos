@@ -55,8 +55,14 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       return;
     }
     try {
-      await _repository.addCustomer(event.customer);
-      emit(state.copyWith(actionMessage: "Mijoz saqlandi", clearError: true));
+      final id = await _repository.addCustomer(event.customer);
+      emit(
+        state.copyWith(
+          actionMessage: "Mijoz saqlandi",
+          createdCustomer: event.customer.copyWith(id: id),
+          clearError: true,
+        ),
+      );
     } catch (error) {
       emit(state.copyWith(error: Failure.from(error).message));
     }

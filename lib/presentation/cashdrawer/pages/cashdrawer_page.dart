@@ -57,7 +57,7 @@ class _CashDrawerPageState extends State<CashDrawerPage> {
           return SafeArea(
             child: Column(
               children: [
-                CashMainMenuWidget(balance: state.from?.balance ?? 0),
+                CashMainMenuWidget(balance: state.balance),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),

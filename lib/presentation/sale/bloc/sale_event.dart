@@ -104,11 +104,12 @@ class SelectPaymentMethodEvent extends SaleEvent {
 class CompleteSaleEvent extends SaleEvent {
   final double amountPaid;
   final String? note;
+  final DateTime? date;
 
-  const CompleteSaleEvent({required this.amountPaid, this.note});
+  const CompleteSaleEvent({required this.amountPaid, this.note, this.date});
 
   @override
-  List<Object?> get props => [amountPaid, note];
+  List<Object?> get props => [amountPaid, note, date];
 }
 
 /// Ko'rsatilgan xabar/xato o'qildi.

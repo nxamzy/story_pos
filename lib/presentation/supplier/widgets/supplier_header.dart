@@ -20,7 +20,7 @@ class SupplierHeader extends StatelessWidget {
       child: Row(
         children: [
           const Text(
-            'Suppliers',
+            "Ta'minotchilar",
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class SupplierHeader extends StatelessWidget {
                       color: AppColors.forestDark,
                     ),
                     SizedBox(width: 10),
-                    Text("Import From Contacts"),
+                    Text("Kontaktlardan import qilish"),
                   ],
                 ),
               ),
@@ -55,7 +55,7 @@ class SupplierHeader extends StatelessWidget {
                   children: [
                     Icon(Icons.edit_note, color: AppColors.forestDark),
                     SizedBox(width: 10),
-                    Text("Add Manual"),
+                    Text("Qo'lda qo'shish"),
                   ],
                 ),
               ),

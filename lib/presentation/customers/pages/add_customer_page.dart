@@ -9,6 +9,7 @@ import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
 import 'package:ocam_pos/presentation/customers/widgets/details_section_card.dart';
+import 'package:ocam_pos/presentation/customers/widgets/customer_added_sheet.dart';
 
 class AddNewCustomerPage extends StatefulWidget {
   const AddNewCustomerPage({super.key});
@@ -72,9 +73,8 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
         if (state.error != null) {
           setState(() => _isSaving = false);
           AppSnackBar.error(context, state.error!);
-        } else if (state.actionMessage != null) {
-          AppSnackBar.success(context, state.actionMessage!);
-          context.pop();
+        } else if (state.actionMessage != null && state.createdCustomer != null) {
+          showSuccessInventory(context, state.createdCustomer!);
         }
       },
       child: Scaffold(

@@ -32,7 +32,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<List<ProductModel>> getProducts({String? category}) async {
     Query<Map<String, dynamic>> query = _paths.products;
-    if (category != null && category.isNotEmpty && category != 'All') {
+    if (category != null && category.isNotEmpty && category != 'Barchasi') {
       query = query.where('category', isEqualTo: category);
     }
     final snap = await query.get();

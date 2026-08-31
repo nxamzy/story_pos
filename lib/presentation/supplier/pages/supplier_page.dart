@@ -56,11 +56,20 @@ class _SupplierScreenState extends State<SupplierScreen> {
                 buildWhen: (p, c) => p.filterDate != c.filterDate,
                 builder: (context, state) => Row(
                   children: [
-                    DataCard(
-                      initialDate: state.filterDate,
-                      onDateSelected: (date) => context
-                          .read<SupplierBloc>()
-                          .add(LoadSuppliers(date: date)),
+                    // DataCard ichida `width: double.infinity` bor — bu
+                    // Column ichida xavfsiz (kenglik cheklangan), lekin
+                    // to'g'ridan-to'g'ri Row farzandi bo'lsa, Row asosiy
+                    // o'q bo'ylab cheksiz kenglik beradi va butun qatorning
+                    // (va undan keyingi hamma narsaning) chizilishi
+                    // muvaffaqiyatsiz tugaydi. IntrinsicWidth uni o'zining
+                    // tabiiy (chekli) kengligiga qaytaradi.
+                    IntrinsicWidth(
+                      child: DataCard(
+                        initialDate: state.filterDate,
+                        onDateSelected: (date) => context
+                            .read<SupplierBloc>()
+                            .add(LoadSuppliers(date: date)),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

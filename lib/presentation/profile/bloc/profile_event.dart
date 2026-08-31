@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/data/models/user_model.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
@@ -9,6 +10,24 @@ abstract class ProfileEvent extends Equatable {
 
 class LoadUserProfile extends ProfileEvent {
   const LoadUserProfile();
+}
+
+class ProfileUpdated extends ProfileEvent {
+  final UserModel user;
+
+  const ProfileUpdated(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}
+
+class ProfileFailed extends ProfileEvent {
+  final String message;
+
+  const ProfileFailed(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class UpdateUserProfile extends ProfileEvent {

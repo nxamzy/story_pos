@@ -39,6 +39,8 @@ class CashState extends Equatable {
     String? error,
     String? actionMessage,
     bool clearError = false,
+    bool clearFrom = false,
+    bool clearTo = false,
   }) {
     return CashState(
       status: status ?? this.status,
@@ -46,8 +48,8 @@ class CashState extends Equatable {
       balance: balance ?? this.balance,
       employees: employees ?? this.employees,
       logs: logs ?? this.logs,
-      from: from ?? this.from,
-      to: to ?? this.to,
+      from: clearFrom ? null : (from ?? this.from),
+      to: clearTo ? null : (to ?? this.to),
       error: clearError ? null : (error ?? this.error),
       actionMessage: actionMessage,
     );

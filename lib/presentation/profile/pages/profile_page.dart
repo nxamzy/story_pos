@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
@@ -37,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
         ),
         title: const Text(
-          'Profile',
+          'Profil',
           style: TextStyle(
             color: AppColors.primary,
             fontSize: 24,
@@ -94,12 +95,21 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SettingsTile(
+          SettingsTile(
             icon: Icons.verified_user_outlined,
             title: "Rol va ruxsatlar",
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
           ),
-          const SettingsTile(icon: Icons.home_outlined, title: "Manzil"),
-          const SettingsTile(icon: Icons.language, title: "Til"),
+          SettingsTile(
+            icon: Icons.home_outlined,
+            title: "Manzil",
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          ),
+          SettingsTile(
+            icon: Icons.language,
+            title: "Til",
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          ),
 
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 20, 16, 8),
@@ -112,8 +122,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
 
-          const SettingsTile(icon: Icons.help_outline, title: "Yordam markazi"),
-          const SettingsTile(icon: Icons.info_outline, title: "Ko'p so'raladigan savollar"),
+          SettingsTile(
+            icon: Icons.help_outline,
+            title: "Yordam markazi",
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          ),
+          SettingsTile(
+            icon: Icons.info_outline,
+            title: "Ko'p so'raladigan savollar",
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          ),
           SettingsTile(
             icon: Icons.settings_outlined,
             title: "Sozlamalar",

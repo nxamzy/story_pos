@@ -32,6 +32,11 @@ class SuccessCustomerSheet extends StatelessWidget {
           Image.network(
             'https://ouch-cdn2.icons8.com/6U8m8mB9zWz_Y_XnS2vH7W_pUuQ6Z8-I1_2O6_0v8q8/rs:fit:256:256/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvMzcy/L2M4ZGM0ZTMtM2Fj/Ny00YmU0LWJmMTYt/NjQ5YmQ4YjA1YjYy/LnBuZw.png',
             height: 160,
+            errorBuilder: (context, error, stackTrace) => const Icon(
+              Icons.check_circle_rounded,
+              size: 120,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -67,6 +72,9 @@ class SuccessCustomerSheet extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () {
+        // Varaq + ostidagi "Yangi mijoz" formasini ikkalasini ham yopamiz —
+        // aks holda orqaga qaytganda bo'sh formaga tushib qolar edi.
+        Navigator.pop(context);
         Navigator.pop(context);
         Navigator.push(
           context,

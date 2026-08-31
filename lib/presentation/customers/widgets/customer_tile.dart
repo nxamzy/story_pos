@@ -37,14 +37,20 @@ class CustomerTile extends StatelessWidget {
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.sage, width: 2),
           ),
-          child: const CircleAvatar(
+          child: CircleAvatar(
             radius: 24,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150'),
+            backgroundColor: AppColors.mintLight,
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : "?",
+              style: const TextStyle(
+                color: AppColors.forestDark,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
         title: Text(
           name,
-          textAlign: TextAlign.right,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.forestDark,
@@ -53,7 +59,6 @@ class CustomerTile extends StatelessWidget {
         ),
         subtitle: Text(
           phone,
-          textAlign: TextAlign.right,
           style: const TextStyle(color: AppColors.grey300),
         ),
         trailing: const Icon(

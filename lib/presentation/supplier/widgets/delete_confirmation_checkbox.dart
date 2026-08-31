@@ -39,7 +39,7 @@ class DeleteConfirmationCheckbox extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             const Text(
-              "Yes, I want to delete this supplier",
+              "Ha, bu ta'minotchini o'chirmoqchiman",
               style: TextStyle(
                 color: AppColors.forestMedium,
                 fontWeight: FontWeight.w500,

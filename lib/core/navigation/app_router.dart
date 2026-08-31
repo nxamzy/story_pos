@@ -26,14 +26,12 @@ import 'package:ocam_pos/presentation/report/pages/report_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/basket_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/checkout_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/sale_page.dart';
-import 'package:ocam_pos/presentation/sale/pages/scan_product_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/receipt_page.dart';
 import 'package:ocam_pos/presentation/settings/pages/settings_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/change_password_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/forgot_password_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/sign_in_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/sign_up_page.dart';
-import 'package:ocam_pos/presentation/auth/pages/verification_page.dart';
 import 'package:ocam_pos/presentation/onboarding/pages/first_splash_page.dart';
 import 'package:ocam_pos/presentation/onboarding/pages/second_splash_page.dart';
 import 'package:ocam_pos/presentation/onboarding/pages/third_splash_page.dart';
@@ -107,10 +105,6 @@ class AppRouter {
       GoRoute(
         path: PlatformRoutes.forgotPasswordPage.route,
         builder: (context, state) => const ForgotPasswordPage(),
-      ),
-      GoRoute(
-        path: PlatformRoutes.verification.route,
-        builder: (context, state) => const VerificationPage(),
       ),
       GoRoute(
         path: PlatformRoutes.chanegePassword.route,
@@ -202,10 +196,6 @@ class AppRouter {
       GoRoute(
         path: PlatformRoutes.checkoutPage.route,
         builder: (context, state) => const CheckoutScreen(),
-      ),
-      GoRoute(
-        path: PlatformRoutes.scanProductPage.route,
-        builder: (context, state) => const ScanProductScreen(),
       ),
       GoRoute(
         path: PlatformRoutes.receiptPage.route,

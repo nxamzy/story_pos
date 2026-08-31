@@ -39,16 +39,25 @@ class SupplierCard extends StatelessWidget {
             Container(
               width: 50,
               height: 50,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: AppColors.background,
-                image: const DecorationImage(
-                  image: NetworkImage(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Pepsi_logo_2014.svg/1200px-Pepsi_logo_2014.svg.png',
-                  ),
-                  fit: BoxFit.contain,
-                ),
               ),
+              child: supplier.imageUrl.isNotEmpty
+                  ? Image.network(
+                      supplier.imageUrl,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(
+                            Icons.local_shipping_outlined,
+                            color: AppColors.sage,
+                          ),
+                    )
+                  : const Icon(
+                      Icons.local_shipping_outlined,
+                      color: AppColors.sage,
+                    ),
             ),
             const SizedBox(width: 16),
 

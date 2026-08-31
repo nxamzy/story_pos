@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
       icon: const Icon(Icons.qr_code_scanner, size: 28),
       title: 'Sotuv',
       activeColorPrimary: AppColors.primary,
-      activeColorSecondary: AppColors.white,
       inactiveColorPrimary: AppColors.primary,
       textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
     ),

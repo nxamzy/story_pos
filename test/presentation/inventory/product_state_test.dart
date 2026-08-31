@@ -45,7 +45,7 @@ void main() {
       expect(state.visibleProducts.map((p) => p.id), ['3']);
     });
 
-    test('"All" kategoriyasi hammasini ko\'rsatadi', () {
+    test('"Barchasi" kategoriyasi hammasini ko\'rsatadi', () {
       final state = ProductState(status: BlocStatus.success, products: products);
       expect(state.visibleProducts.length, 3);
     });

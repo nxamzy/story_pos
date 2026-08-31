@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/core/widgets/confirm_dialog.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
 import 'package:ocam_pos/presentation/settings/widgets/settings_item.dart';
@@ -99,6 +100,11 @@ class SettingsPage extends StatelessWidget {
               title: "Vaqt formati",
               icon: Icons.access_time,
               onTap: () => _comingSoon(context),
+            ),
+            SettingsItem(
+              title: "Parolni o'zgartirish",
+              icon: Icons.lock_outline,
+              onTap: () => context.push(PlatformRoutes.chanegePassword.route),
             ),
 
             const SizedBox(height: 20),

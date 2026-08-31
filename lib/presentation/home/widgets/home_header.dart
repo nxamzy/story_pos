@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
-
-import 'package:ocam_pos/presentation/home/widgets/date_card.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -45,16 +44,18 @@ class _HeaderState extends State<Header> {
               Expanded(
                 child: BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
-                    final displayName =
-                        state.user?.fullName ?? "Yuklanmoqda...";
+                    final displayName = state.user?.fullName ??
+                        (state.status.isFailure
+                            ? "Profil topilmadi"
+                            : "Yuklanmoqda...");
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Hello,',
+                          'Xush kelibsiz,',
                           style: TextStyle(
-                            color: Color(0xFF15294B),
+                            color: Colors.white70,
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),
@@ -83,9 +84,6 @@ class _HeaderState extends State<Header> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
-
-          const DataCard(),
         ],
       ),
     );

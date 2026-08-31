@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
 import 'package:ocam_pos/presentation/customers/widgets/customer_info_sheet.dart';
 import 'package:ocam_pos/presentation/customers/widgets/delete_customer_sheet.dart';
@@ -68,7 +69,7 @@ class CustomerDetailsPage extends StatelessWidget {
             const SizedBox(height: 16),
             _buildFinancialStats(),
             const SizedBox(height: 16),
-            _buildSaleInvoices(),
+            _buildSaleInvoices(context),
           ],
         ),
       ),
@@ -123,10 +124,12 @@ class CustomerDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSaleInvoices() {
+  Widget _buildSaleInvoices(BuildContext context) {
     return DetailsSectionCard(
       title: "So'nggi xaridlar",
-      trailing: _SeeMoreButton(onTap: () {}),
+      trailing: _SeeMoreButton(
+        onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+      ),
       child: Column(
         children: const [
           _InvoiceTile(
@@ -193,7 +196,11 @@ class _ContactButtonsRow extends StatelessWidget {
       children: [
         _buildActionBtn(Icons.phone_outlined, "Qo'ng'iroq", _makeCall),
         _buildActionBtn(Icons.chat_bubble_outline, "SMS", _sendSMS),
-        _buildActionBtn(Icons.share_outlined, "Ulashish", () {}),
+        _buildActionBtn(
+          Icons.share_outlined,
+          "Ulashish",
+          () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+        ),
       ],
     );
   }

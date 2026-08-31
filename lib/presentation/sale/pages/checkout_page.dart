@@ -114,6 +114,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   CompleteSaleEvent(
                     amountPaid: paid,
                     note: _noteController.text.trim(),
+                    date: _selectedDate,
                   ),
                 );
               },

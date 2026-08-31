@@ -190,7 +190,7 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
       customerId: state.customer?.id,
       customerName: state.customer?.name,
       note: event.note ?? '',
-      createdAt: DateTime.now(),
+      createdAt: event.date ?? DateTime.now(),
     );
 
     try {

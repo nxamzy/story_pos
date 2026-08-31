@@ -15,6 +15,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     : _repository = userRepository,
       super(const ProfileState()) {
     on<LoadUserProfile>(_onLoad);
+    on<ProfileUpdated>(
+      (event, emit) => emit(
+        state.copyWith(
+          status: BlocStatus.success,
+          user: event.user,
+          clearError: true,
+        ),
+      ),
+    );
+    on<ProfileFailed>(
+      (event, emit) => emit(
+        state.copyWith(status: BlocStatus.failure, error: event.message),
+      ),
+    );
     on<UpdateUserProfile>(_onUpdate);
   }
 
@@ -22,19 +36,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(status: BlocStatus.loading, clearError: true));
     _subscription?.cancel();
     _subscription = _repository.watchProfile().listen(
-      (user) => emit(
-        state.copyWith(
-          status: BlocStatus.success,
-          user: user,
-          clearError: true,
-        ),
-      ),
-      onError: (Object error) => emit(
-        state.copyWith(
-          status: BlocStatus.failure,
-          error: Failure.from(error).message,
-        ),
-      ),
+      (user) => add(ProfileUpdated(user)),
+      onError: (Object error) => add(ProfileFailed(Failure.from(error).message)),
     );
   }
 

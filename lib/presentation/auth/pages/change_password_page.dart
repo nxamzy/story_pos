@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/core/routes/app_routes.dart';
-import 'package:ocam_pos/presentation/auth/widgets/auth_input_field.dart'; // Vidjetni import qilamiz
+import 'package:ocam_pos/core/utils/validators.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
+import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
+import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
+import 'package:ocam_pos/presentation/auth/widgets/auth_text_field.dart';
 
+/// Tizimga kirgan holatda parolni o'zgartirish.
+///
+/// Firebase joriy parol bilan qayta autentifikatsiyani talab qiladi
+/// (`AuthRepository.changePassword`), shu sababli "Joriy parol" maydoni ham
+/// bor — faqat yangisini emas.
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
 
@@ -12,14 +22,27 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  final TextEditingController _newPassController = TextEditingController();
-  final TextEditingController _confirmPassController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _currentPassController = TextEditingController();
+  final _newPassController = TextEditingController();
+  final _confirmPassController = TextEditingController();
 
   @override
   void dispose() {
+    _currentPassController.dispose();
     _newPassController.dispose();
     _confirmPassController.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    context.read<AuthBloc>().add(
+      PasswordChangeRequested(
+        currentPassword: _currentPassController.text,
+        newPassword: _newPassController.text,
+      ),
+    );
   }
 
   @override
@@ -27,56 +50,92 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              _buildBackButton(context),
-              const SizedBox(height: 32),
+        child: BlocListener<AuthBloc, AuthState>(
+          listenWhen: (previous, current) =>
+              current.action != previous.action &&
+              (current.action == AuthActionStatus.success || current.hasError),
+          listener: (context, state) {
+            if (state.hasError) {
+              AppSnackBar.error(context, state.errorMessage!);
+              context.read<AuthBloc>().add(const AuthMessageCleared());
+            } else if (state.action == AuthActionStatus.success) {
+              AppSnackBar.success(context, state.message!);
+              context.read<AuthBloc>().add(const AuthMessageCleared());
+              context.pop();
+            }
+          },
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  _buildBackButton(context),
+                  const SizedBox(height: 32),
 
-              const Text(
-                "Yangi parol",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.forestDark,
-                ),
+                  const Text(
+                    "Yangi parol",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.forestDark,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Yangi parolingizni kiriting va uni unutmang",
+                    style: TextStyle(fontSize: 15, color: AppColors.sage),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  AuthTextField(
+                    label: "Joriy parol",
+                    hint: "Hozirgi parolingizni kiriting",
+                    icon: Icons.lock_person_outlined,
+                    controller: _currentPassController,
+                    isPassword: true,
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => Validators.required(v, "Joriy parol"),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  AuthTextField(
+                    label: "Yangi parol",
+                    hint: "Yangi parolni kiriting",
+                    icon: Icons.lock_open_rounded,
+                    controller: _newPassController,
+                    isPassword: true,
+                    textInputAction: TextInputAction.next,
+                    validator: Validators.password,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  AuthTextField(
+                    label: "Yangi parolni tasdiqlang",
+                    hint: "Parolni qayta kiriting",
+                    icon: Icons.lock_outline,
+                    controller: _confirmPassController,
+                    isPassword: true,
+                    textInputAction: TextInputAction.done,
+                    validator: (v) => Validators.confirmPassword(
+                      v,
+                      _newPassController.text,
+                    ),
+                    onFieldSubmitted: (_) => _submit(),
+                  ),
+
+                  const Spacer(),
+
+                  _buildSubmitButton(),
+                  const SizedBox(height: 10),
+                ],
               ),
-              const SizedBox(height: 8),
-              const Text(
-                "Yangi parolingizni kiriting va uni unutmang",
-                style: TextStyle(fontSize: 15, color: AppColors.sage),
-              ),
-
-              const SizedBox(height: 40),
-
-              CustomAuthInputField(
-                label: "Yangi parol",
-                hint: "Yangi parolni kiriting",
-                prefixIcon: Icons.lock_open_rounded,
-                controller: _newPassController,
-                isPassword: true,
-                suffixIcon: Icons.remove_red_eye_outlined,
-              ),
-
-              const SizedBox(height: 24),
-
-              CustomAuthInputField(
-                label: "Yangi parolni tasdiqlang",
-                hint: "Parolni qayta kiriting",
-                prefixIcon: Icons.lock_outline,
-                controller: _confirmPassController,
-                isPassword: true,
-                suffixIcon: Icons.remove_red_eye_outlined,
-              ),
-
-              const Spacer(),
-
-              _buildSubmitButton(context),
-              const SizedBox(height: 10),
-            ],
+            ),
           ),
         ),
       ),
@@ -103,23 +162,34 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: () => context.push(PlatformRoutes.loginPage.route),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+  Widget _buildSubmitButton() {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) => SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: state.isLoading ? null : _submit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
           ),
-          elevation: 0,
-        ),
-        child: const Text(
-          "Tasdiqlash",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: state.isLoading
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Text(
+                  "Tasdiqlash",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
         ),
       ),
     );

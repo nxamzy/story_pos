@@ -21,10 +21,6 @@ class PlatformRoutes {
   static const signUpPage = RouteInfo(name: 'signup', route: '/signup');
   static const loginPage = RouteInfo(name: 'login', route: '/login');
   static const forgotPasswordPage = RouteInfo(name: 'forgot', route: '/forgot');
-  static const verification = RouteInfo(
-    name: 'verification',
-    route: '/verification',
-  );
   static const salePage = RouteInfo(name: 'sale', route: '/sale');
   static const chanegePassword = RouteInfo(name: 'change', route: '/change');
   static const selectProfilePage = RouteInfo(name: 'select', route: '/select');
@@ -72,6 +68,5 @@ class PlatformRoutes {
   );
   static const basketPage = RouteInfo(name: 'basket', route: '/basket');
   static const checkoutPage = RouteInfo(name: 'checkout', route: '/checkout');
-  static const scanProductPage = RouteInfo(name: 'scan', route: '/scan');
   static const receiptPage = RouteInfo(name: 'receipt', route: '/receipt');
 }

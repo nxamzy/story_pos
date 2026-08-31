@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 
 class AttendanceRecord {
@@ -108,7 +109,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
           icon: const Icon(
             Icons.edit_note_rounded,
             color: AppColors.primary,
@@ -170,20 +171,37 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
       child: Container(
         width: 70,
         height: 70,
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
+          color: AppColors.primary.withValues(alpha: 0.1),
           border: Border.all(
             color: AppColors.primary.withValues(alpha: 0.5),
             width: 2,
           ),
-          image: DecorationImage(
-            image: NetworkImage(
-              _currentEmployee.imageUrl.isNotEmpty
-                  ? _currentEmployee.imageUrl
-                  : 'https://i.pravatar.cc/150?u=${_currentEmployee.id}',
-            ),
-            fit: BoxFit.cover,
-          ),
+        ),
+        child: _currentEmployee.imageUrl.isNotEmpty
+            ? Image.network(
+                _currentEmployee.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildInitialsFallback(),
+              )
+            : _buildInitialsFallback(),
+      ),
+    );
+  }
+
+  Widget _buildInitialsFallback() {
+    return Center(
+      child: Text(
+        _currentEmployee.name.isNotEmpty
+            ? _currentEmployee.name[0].toUpperCase()
+            : "?",
+        style: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: AppColors.primary,
         ),
       ),
     );

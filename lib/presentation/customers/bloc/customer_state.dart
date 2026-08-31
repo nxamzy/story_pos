@@ -9,12 +9,18 @@ class CustomerState extends Equatable {
   final String? error;
   final String? actionMessage;
 
+  /// Endigina saqlangan mijoz — muvaffaqiyat varag'ini ko'rsatish uchun.
+  /// `actionMessage` kabi bir martalik: keyingi `copyWith`da qayta
+  /// uzatilmasa, `null`ga qaytadi.
+  final CustomerModel? createdCustomer;
+
   const CustomerState({
     this.status = BlocStatus.initial,
     this.customers = const [],
     this.query = '',
     this.error,
     this.actionMessage,
+    this.createdCustomer,
   });
 
   /// Qidiruv natijasi — ism yoki telefon bo'yicha.
@@ -36,6 +42,7 @@ class CustomerState extends Equatable {
     String? query,
     String? error,
     String? actionMessage,
+    CustomerModel? createdCustomer,
     bool clearError = false,
   }) {
     return CustomerState(
@@ -44,9 +51,17 @@ class CustomerState extends Equatable {
       query: query ?? this.query,
       error: clearError ? null : (error ?? this.error),
       actionMessage: actionMessage,
+      createdCustomer: createdCustomer,
     );
   }
 
   @override
-  List<Object?> get props => [status, customers, query, error, actionMessage];
+  List<Object?> get props => [
+    status,
+    customers,
+    query,
+    error,
+    actionMessage,
+    createdCustomer,
+  ];
 }

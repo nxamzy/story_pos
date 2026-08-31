@@ -17,7 +17,7 @@ class ProductState extends Equatable {
     this.status = BlocStatus.initial,
     this.products = const [],
     this.query = '',
-    this.category = 'All',
+    this.category = 'Barchasi',
     this.error,
     this.actionMessage,
   });
@@ -30,7 +30,7 @@ class ProductState extends Equatable {
           q.isEmpty ||
           p.name.toLowerCase().contains(q) ||
           p.barcode.toLowerCase().contains(q);
-      final matchesCategory = category == 'All' || p.category == category;
+      final matchesCategory = category == 'Barchasi' || p.category == category;
       return matchesQuery && matchesCategory;
     }).toList();
   }
@@ -42,7 +42,7 @@ class ProductState extends Equatable {
         .toSet()
         .toList()
       ..sort();
-    return ['All', ...all];
+    return ['Barchasi', ...all];
   }
 
   List<ProductModel> get lowStockProducts => products

@@ -4,19 +4,6 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 
-class AttendanceRecord {
-  final IconData icon;
-  final String title, time, status;
-  final Color color;
-  AttendanceRecord({
-    required this.icon,
-    required this.title,
-    required this.time,
-    required this.status,
-    required this.color,
-  });
-}
-
 class EmployeeHRMScreen extends StatefulWidget {
   final EmployeeModel? employee;
 
@@ -30,30 +17,6 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late EmployeeModel _currentEmployee;
-
-  final List<AttendanceRecord> attendanceList = [
-    AttendanceRecord(
-      icon: Icons.login_rounded,
-      title: 'Kelish',
-      time: '09:41 AM',
-      status: 'Vaqtida',
-      color: AppColors.primary,
-    ),
-    AttendanceRecord(
-      icon: Icons.coffee_rounded,
-      title: 'Tanaffus',
-      time: '12:30 PM',
-      status: 'Vaqtida',
-      color: Colors.orange,
-    ),
-    AttendanceRecord(
-      icon: Icons.logout_rounded,
-      title: 'Ketish',
-      time: '04:00 PM',
-      status: "Erta",
-      color: Colors.redAccent,
-    ),
-  ];
 
   @override
   void initState() {
@@ -217,7 +180,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
         ),
         const SizedBox(width: 8),
         Text(
-          'Last check in : ${_currentEmployee.lastCheckIn}',
+          'Oxirgi kelgan vaqti: ${_currentEmployee.lastCheckIn}',
           style: const TextStyle(color: AppColors.mintLight, fontSize: 14),
         ),
       ],
@@ -315,76 +278,40 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
   }
 
   Widget _buildActivityList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: 5,
-      itemBuilder: (context, index) => Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: BorderSide(color: Colors.grey.shade100),
-        ),
-        child: ListTile(
-          leading: const CircleAvatar(
-            backgroundColor: AppColors.background,
-            child: Icon(Icons.history, color: AppColors.primary),
-          ),
-          title: Text("Action #${index + 101}"),
-          subtitle: Text("Completed by ${_currentEmployee.name.split(' ')[0]}"),
-          trailing: const Icon(Icons.chevron_right, color: AppColors.sage),
-        ),
-      ),
+    // Xodim faoliyati jurnali hali ishlab chiqilmagan — bu tizim xodimlar
+    // uchun alohida login taqdim etmaydi, faoliyatni kim va qachon amalga
+    // oshirganini avtomatik yozib borish uchun alohida dizayn kerak.
+    return _buildEmptyTabState(
+      icon: Icons.history_toggle_off_rounded,
+      message: "Faoliyat tarixi hali mavjud emas",
     );
   }
 
   Widget _buildAttendanceContent() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildMiniCalendar(),
-        const SizedBox(height: 25),
-        ...attendanceList.map((item) => _AttendanceTile(record: item)),
-      ],
+    // Davomat (kelish/ketish) jurnali hali ishlab chiqilmagan — xuddi
+    // faoliyat jurnali kabi, buni yozib borish mexanizmi loyihalanmagan.
+    return _buildEmptyTabState(
+      icon: Icons.event_busy_rounded,
+      message: "Davomat ma'lumotlari hali mavjud emas",
     );
   }
 
-  Widget _buildMiniCalendar() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "March 2026",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              Icon(
-                Icons.calendar_today_rounded,
-                color: AppColors.primary,
-                size: 20,
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(
-              7,
-              (i) => _CalendarDay(
-                day: "${10 + i}",
-                label: i == 3 ? "Pay" : "Kun",
-                isSelected: i == 3,
-              ),
+  Widget _buildEmptyTabState({required IconData icon, required String message}) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 56, color: AppColors.mintMedium),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.sage, fontSize: 14),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -444,105 +371,3 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _AttendanceTile extends StatelessWidget {
-  final AttendanceRecord record;
-  const _AttendanceTile({required this.record});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: record.color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(record.icon, color: record.color, size: 22),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  record.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                Text(
-                  record.time,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: record.color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              record.status,
-              style: TextStyle(
-                color: record.color,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CalendarDay extends StatelessWidget {
-  final String day, label;
-  final bool isSelected;
-  const _CalendarDay({
-    required this.day,
-    required this.label,
-    required this.isSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10, color: AppColors.sage),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: 38,
-          height: 38,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            day,
-            style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.forestDark,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}

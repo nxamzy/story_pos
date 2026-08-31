@@ -26,6 +26,7 @@ import 'package:ocam_pos/data/repositories/user_repository.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/cashdrawer/bloc/cash_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_sales_bloc.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/onboarding/bloc/onboarding_bloc.dart';
@@ -117,6 +118,13 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<CashBloc>(() => CashBloc(repository: sl()))
     ..registerLazySingleton<ReportBloc>(() => ReportBloc(saleRepository: sl()))
     ..registerLazySingleton<OnboardingBloc>(() => OnboardingBloc());
+
+  // Sahifa-lokal BLoC — faqat bitta ekranga tegishli, shu sababli har safar
+  // yangi nusxa (`registerFactory`) va `main.dart`dagi umumiy
+  // MultiBlocProvider'da emas, o'sha sahifaning o'zida ta'minlanadi.
+  sl.registerFactory<CustomerSalesBloc>(
+    () => CustomerSalesBloc(repository: sl()),
+  );
 }
 
 /// Testlarda holatni tozalash uchun.

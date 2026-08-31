@@ -10,6 +10,9 @@ abstract class SaleRemoteDataSource {
 
   Stream<List<SaleModel>> watchSales({DateTime? from, DateTime? to, int? limit});
   Future<List<SaleModel>> getSales({DateTime? from, DateTime? to});
+
+  /// Bitta mijozning barcha xaridlari, eng yangisidan boshlab.
+  Future<List<SaleModel>> getSalesByCustomer(String customerId);
 }
 
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
@@ -120,5 +123,19 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
   Future<List<SaleModel>> getSales({DateTime? from, DateTime? to}) async {
     final snap = await _query(from: from, to: to).get();
     return snap.docs.map((d) => SaleModel.fromMap(d.data(), d.id)).toList();
+  }
+
+  @override
+  Future<List<SaleModel>> getSalesByCustomer(String customerId) async {
+    // Faqat `customerId` bo'yicha filtrlanadi (compound index shart emas) —
+    // saralash Dart tomonida qilinadi.
+    final snap = await _paths.sales
+        .where('customerId', isEqualTo: customerId)
+        .get();
+    final sales = snap.docs
+        .map((d) => SaleModel.fromMap(d.data(), d.id))
+        .toList();
+    sales.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return sales;
   }
 }

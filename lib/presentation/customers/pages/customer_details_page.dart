@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
+import 'package:ocam_pos/injection.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_sales_bloc.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_sales_event.dart';
+import 'package:ocam_pos/presentation/customers/bloc/customer_sales_state.dart';
 import 'package:ocam_pos/presentation/customers/widgets/customer_info_sheet.dart';
 import 'package:ocam_pos/presentation/customers/widgets/delete_customer_sheet.dart';
 import 'package:ocam_pos/presentation/customers/widgets/details_section_card.dart';
@@ -11,6 +18,21 @@ class CustomerDetailsPage extends StatelessWidget {
   final CustomerModel customer;
 
   const CustomerDetailsPage({super.key, required this.customer});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<CustomerSalesBloc>(
+      create: (_) =>
+          sl<CustomerSalesBloc>()..add(LoadCustomerSales(customer.id)),
+      child: _CustomerDetailsView(customer: customer),
+    );
+  }
+}
+
+class _CustomerDetailsView extends StatelessWidget {
+  final CustomerModel customer;
+
+  const _CustomerDetailsView({required this.customer});
 
   @override
   Widget build(BuildContext context) {
@@ -125,20 +147,56 @@ class CustomerDetailsPage extends StatelessWidget {
   }
 
   Widget _buildSaleInvoices(BuildContext context) {
-    return DetailsSectionCard(
-      title: "So'nggi xaridlar",
-      trailing: _SeeMoreButton(
-        onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
-      ),
-      child: Column(
-        children: const [
-          _InvoiceTile(
-            date: "Hozircha xaridlar yo'q",
-            price: "0 UZS",
-            isLast: true,
+    return BlocBuilder<CustomerSalesBloc, CustomerSalesState>(
+      builder: (context, state) {
+        return DetailsSectionCard(
+          title: "So'nggi xaridlar",
+          trailing: _SeeMoreButton(
+            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
           ),
-        ],
-      ),
+          child: _buildInvoiceList(state),
+        );
+      },
+    );
+  }
+
+  Widget _buildInvoiceList(CustomerSalesState state) {
+    if (state.status.isFirstLoad) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Center(
+          child: SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (state.sales.isEmpty) {
+      return const _InvoiceTile(
+        date: "Hozircha xaridlar yo'q",
+        price: "0 UZS",
+        isLast: true,
+      );
+    }
+
+    const maxShown = 5;
+    final shown = state.sales.take(maxShown).toList();
+
+    return Column(
+      children: [
+        for (int i = 0; i < shown.length; i++)
+          _InvoiceTile(
+            date: AppFormat.date(shown[i].createdAt),
+            price: AppFormat.money(shown[i].total),
+            isLast: i == shown.length - 1,
+          ),
+      ],
     );
   }
 }

@@ -18,4 +18,7 @@ class SaleRepository with RepositoryGuard {
 
   Future<List<SaleModel>> getSales({DateTime? from, DateTime? to}) =>
       guard(() => _remote.getSales(from: from, to: to));
+
+  Future<List<SaleModel>> getSalesByCustomer(String customerId) =>
+      guard(() => _remote.getSalesByCustomer(customerId));
 }

@@ -1,6 +1,7 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/data/models/cart_item_model.dart';
 
 class ReceiptPrinter {
@@ -32,7 +33,7 @@ class ReceiptPrinter {
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
                     pw.Text("${item.product.name} x${item.quantity}"),
-                    pw.Text("${item.subTotal.toStringAsFixed(2)} EGP"),
+                    pw.Text(AppFormat.money(item.subTotal)),
                   ],
                 ),
               ),
@@ -45,7 +46,7 @@ class ReceiptPrinter {
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                   pw.Text(
-                    "${total.toStringAsFixed(2)} EGP",
+                    AppFormat.money(total),
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ],

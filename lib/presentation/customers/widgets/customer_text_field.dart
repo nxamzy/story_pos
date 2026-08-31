@@ -29,16 +29,24 @@ class CustomInputField extends StatelessWidget {
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.sage, fontSize: 14),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: showClear && controller.text.isNotEmpty
-            ? IconButton(
-                icon: const Icon(
-                  Icons.cancel_outlined,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-                onPressed: () => controller.clear(),
-              )
-            : null,
+        // `showClear && controller.text.isNotEmpty`ni to'g'ridan-to'g'ri
+        // build()da tekshirish yetarli emas — bu StatelessWidget, matn
+        // o'zgarganda qayta build bo'lmaydi va tugma eskirib qoladi.
+        suffixIcon: !showClear
+            ? null
+            : ValueListenableBuilder<TextEditingValue>(
+                valueListenable: controller,
+                builder: (context, value, _) => value.text.isEmpty
+                    ? const SizedBox.shrink()
+                    : IconButton(
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        onPressed: controller.clear,
+                      ),
+              ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(

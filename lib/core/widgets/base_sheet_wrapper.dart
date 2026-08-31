@@ -55,7 +55,7 @@ class BaseSheetWrapper extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                   label: const Text(
-                    "Add New",
+                    "Yangi qo'shish",
                     style: TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,

@@ -29,7 +29,6 @@ import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_sales_bloc.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
-import 'package:ocam_pos/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/report/bloc/report_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
@@ -116,8 +115,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<SupplierBloc>(() => SupplierBloc(repository: sl()))
     ..registerLazySingleton<EmployeeBloc>(() => EmployeeBloc(repository: sl()))
     ..registerLazySingleton<CashBloc>(() => CashBloc(repository: sl()))
-    ..registerLazySingleton<ReportBloc>(() => ReportBloc(saleRepository: sl()))
-    ..registerLazySingleton<OnboardingBloc>(() => OnboardingBloc());
+    ..registerLazySingleton<ReportBloc>(() => ReportBloc(saleRepository: sl()));
 
   // Sahifa-lokal BLoC — faqat bitta ekranga tegishli, shu sababli har safar
   // yangi nusxa (`registerFactory`) va `main.dart`dagi umumiy

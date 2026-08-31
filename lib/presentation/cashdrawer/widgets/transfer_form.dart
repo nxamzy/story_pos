@@ -21,7 +21,7 @@ class TransferWidget extends StatelessWidget {
           decoration: InputDecoration(
             labelText: "Summa",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            prefixIcon: const Icon(Icons.attach_money),
+            prefixIcon: const Icon(Icons.payments_outlined),
           ),
         ),
         const SizedBox(height: 16),

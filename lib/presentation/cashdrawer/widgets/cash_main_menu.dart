@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 
 class CashMainMenuWidget extends StatelessWidget {
   final double balance;
@@ -45,7 +46,15 @@ class CashMainMenuWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.menu_outlined, color: AppColors.white),
+              InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () =>
+                    AppSnackBar.info(context, "Tez orada qo'shiladi"),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(Icons.menu_outlined, color: AppColors.white),
+                ),
+              ),
               const SizedBox(width: 20),
             ],
           ),

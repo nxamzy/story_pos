@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import 'package:ocam_pos/core/logic/app_bloc_observer.dart';
 import 'package:ocam_pos/core/navigation/app_router.dart';
@@ -27,6 +29,12 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await configureDependencies();
+
+  // Oy/kun nomlari (DateFormat'dagi 'MMMM', 'EEEE' kabi) shu ishga
+  // tushirilmasa har doim inglizcha chiqadi — butun ilova o'zbekcha
+  // bo'lgani uchun standart til ham shunga moslanadi.
+  await initializeDateFormatting('uz');
+  Intl.defaultLocale = 'uz';
 
   if (kDebugMode) Bloc.observer = const AppBlocObserver();
 

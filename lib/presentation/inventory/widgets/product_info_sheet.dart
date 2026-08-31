@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
@@ -41,10 +42,10 @@ class _EditProductSheetState extends State<EditProductSheet> {
     text: widget.product.stock.toString(),
   );
   late final salePriceController = TextEditingController(
-    text: widget.product.sellPrice.toString(),
+    text: AppFormat.editableNumber(widget.product.sellPrice),
   );
   late final buyPriceController = TextEditingController(
-    text: widget.product.buyPrice.toString(),
+    text: AppFormat.editableNumber(widget.product.buyPrice),
   );
   late final descriptionController = TextEditingController(
     text: widget.product.description ?? "",

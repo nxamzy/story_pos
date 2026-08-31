@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
+import 'package:ocam_pos/presentation/profile/widgets/edit_profile_sheet.dart';
 
 class ProfileInfoCard extends StatelessWidget {
-  final VoidCallback? onEditTap;
-
-  const ProfileInfoCard({super.key, this.onEditTap});
+  const ProfileInfoCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +45,9 @@ class ProfileInfoCard extends StatelessWidget {
             ),
           ),
           trailing: IconButton(
-            onPressed: onEditTap,
+            onPressed: state.user == null
+                ? null
+                : () => showEditProfileSheet(context, state.user!),
             icon: const Icon(
               Icons.edit_outlined,
               color: AppColors.forestDark,

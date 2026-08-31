@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_state.dart';
@@ -86,6 +88,8 @@ class NotificationPage extends StatelessWidget {
                               "${product.stock} ta qoldi!",
                     isHighlighted: true,
                     icon: Icons.warning_amber_rounded,
+                    onTap: () =>
+                        context.push(PlatformRoutes.inventoryPage.route),
                   ),
                 ),
 
@@ -101,12 +105,13 @@ class NotificationPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              const NotificationCard(
+              NotificationCard(
                 title: "Ombor tannarxi",
                 subtitle: "Umumiy",
                 message: "Ombordagi mahsulotlaringizni to'liq ko'rish uchun "
                     "\"Ombor\" bo'limiga o'ting.",
                 icon: Icons.inventory_2_outlined,
+                onTap: () => context.push(PlatformRoutes.inventoryPage.route),
               ),
             ],
           );

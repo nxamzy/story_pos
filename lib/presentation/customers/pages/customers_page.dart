@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
@@ -116,6 +117,8 @@ class _CustomersPageState extends State<CustomersPage> {
       onSelected: (value) {
         if (value == 2) {
           context.push(PlatformRoutes.addNewCustomerPage.route);
+        } else {
+          AppSnackBar.info(context, "Tez orada qo'shiladi");
         }
       },
       itemBuilder: (context) => [

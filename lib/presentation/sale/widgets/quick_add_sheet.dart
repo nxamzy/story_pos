@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/utils/validators.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
@@ -241,8 +242,8 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
 
     setState(() {
       nameController.text = match!.name;
-      salePriceController.text = match.sellPrice.toString();
-      purchasePriceController.text = match.buyPrice.toString();
+      salePriceController.text = AppFormat.editableNumber(match.sellPrice);
+      purchasePriceController.text = AppFormat.editableNumber(match.buyPrice);
       qtyController.text = match.stock.toString();
       categoryController.text = match.category ?? "Umumiy";
     });

@@ -37,4 +37,10 @@ class AppFormat {
     final cleaned = input.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.');
     return double.tryParse(cleaned) ?? 0;
   }
+
+  /// Tahrirlanadigan matn maydonini oldindan to'ldirish uchun — 5000.0 emas
+  /// "5000", faqat kasr qismi bo'lsa saqlanadi (5000.5 -> "5000.5").
+  static String editableNumber(num value) => value % 1 == 0
+      ? value.toInt().toString()
+      : value.toString();
 }

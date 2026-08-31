@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
+import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 
 class SupplierHeader extends StatelessWidget {
   const SupplierHeader({super.key});
@@ -63,6 +64,8 @@ class SupplierHeader extends StatelessWidget {
             onSelected: (value) {
               if (value == 2) {
                 context.push(PlatformRoutes.addNewSupplierPage.route);
+              } else {
+                AppSnackBar.info(context, "Tez orada qo'shiladi");
               }
             },
           ),

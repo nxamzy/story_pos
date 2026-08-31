@@ -7,6 +7,7 @@ class NotificationCard extends StatelessWidget {
   final String message;
   final bool isHighlighted;
   final IconData icon;
+  final VoidCallback? onTap;
 
   const NotificationCard({
     super.key,
@@ -15,6 +16,7 @@ class NotificationCard extends StatelessWidget {
     required this.message,
     this.isHighlighted = false,
     this.icon = Icons.notifications_none_rounded,
+    this.onTap,
   });
 
   @override
@@ -38,9 +40,12 @@ class NotificationCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
@@ -97,6 +102,7 @@ class NotificationCard extends StatelessWidget {
               color: AppColors.mintMedium,
             ),
           ],
+          ),
         ),
       ),
     );

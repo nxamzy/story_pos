@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="ocam_pos"
+        android:label="Ocam POS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         

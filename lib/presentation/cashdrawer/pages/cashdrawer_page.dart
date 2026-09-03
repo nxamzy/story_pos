@@ -30,6 +30,11 @@ class _CashDrawerPageState extends State<CashDrawerPage> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
 
+  /// Dropdown o'z tanlovini ichida saqlaydi. "Yangi xodim qo'shish"
+  /// bosilganda BLoC holati o'zgarmaydi, shu sababli maydon o'sha yozuvni
+  /// ko'rsatib qolardi — kalitni almashtirib uni asl holatiga qaytaramiz.
+  int _dropdownEpoch = 0;
+
   @override
   void initState() {
     super.initState();
@@ -159,6 +164,7 @@ class _CashDrawerPageState extends State<CashDrawerPage> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
+          key: ValueKey('$label-${current?.id}-$_dropdownEpoch'),
           initialValue: current?.id,
           isExpanded: true,
           hint: const Text("Kassa yoki xodimni tanlang"),
@@ -226,6 +232,7 @@ class _CashDrawerPageState extends State<CashDrawerPage> {
           ],
           onChanged: (value) {
             if (value == _addNewValue) {
+              setState(() => _dropdownEpoch++);
               _showAddEmployeeDialog(context);
               return;
             }

@@ -64,6 +64,10 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     UpdateEmployee event,
     Emitter<EmployeeState> emit,
   ) async {
+    if (event.employee.name.trim().isEmpty) {
+      emit(state.copyWith(error: "Xodim ismini kiriting"));
+      return;
+    }
     try {
       await _repository.updateEmployee(event.employee);
       emit(

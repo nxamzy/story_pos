@@ -47,7 +47,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final current = state.user;
-    if (current == null) return;
+    if (current == null) {
+      emit(state.copyWith(error: "Profil hali yuklanmadi, biroz kuting"));
+      return;
+    }
 
     try {
       await _repository.updateProfile(
@@ -68,7 +71,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     final current = state.user;
-    if (current == null) return;
+    if (current == null) {
+      emit(state.copyWith(error: "Profil hali yuklanmadi, biroz kuting"));
+      return;
+    }
 
     try {
       await _repository.updateProfile(

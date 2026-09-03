@@ -29,6 +29,10 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
   /// (`initState`da bir marta nusxa olinsa, eski qiymat qotib qolardi).
   EmployeeModel? _currentEmployee;
 
+  /// O'chirish so'ralganini eslab qolamiz: sahifa faqat amal muvaffaqiyatli
+  /// tugagach yopiladi, xato bo'lsa ochiq qolib xabar ko'rsatadi.
+  bool _isDeleting = false;
+
   @override
   void initState() {
     super.initState();
@@ -57,9 +61,16 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     );
 
     return BlocListener<EmployeeBloc, EmployeeState>(
-      listenWhen: (previous, current) => current.error != previous.error,
+      listenWhen: (previous, current) =>
+          current.error != previous.error || current.actionMessage != null,
       listener: (context, state) {
-        if (state.error != null) AppSnackBar.error(context, state.error!);
+        if (state.error != null) {
+          setState(() => _isDeleting = false);
+          AppSnackBar.error(context, state.error!);
+        } else if (_isDeleting && state.actionMessage != null) {
+          AppSnackBar.success(context, state.actionMessage!);
+          context.pop();
+        }
       },
       child: Scaffold(
         backgroundColor: AppColors.background,
@@ -107,8 +118,8 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     );
     if (!confirmed || !context.mounted) return;
 
+    setState(() => _isDeleting = true);
     context.read<EmployeeBloc>().add(DeleteEmployee(employee.id));
-    if (context.mounted) context.pop();
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {

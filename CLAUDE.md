@@ -43,9 +43,10 @@ lib/
     widgets/                      # app-wide reusable widgets (AppButton, AppSnackBar, BaseSheetWrapper,
                                   # showConfirmDialog, showTextInputDialog, ...)
 
-  presentation/<feature>/         # auth, home, inventory, sale, refunds, purchases, expenses,
-                                   # supplier, customers, employee, cashdrawer, profile, settings,
-                                   # notifications, more, report, onboarding
+  presentation/<feature>/         # auth, home, inventory, sale, sales_history, refunds,
+                                   # purchases, expenses, supplier, customers, employee,
+                                   # cashdrawer, profile, settings, notifications, more,
+                                   # report, onboarding
     bloc/                         # <feature>_bloc.dart + <feature>_event.dart + <feature>_state.dart — always 3 files
     pages/
     widgets/
@@ -104,6 +105,10 @@ Every money-moving action is a single Firestore transaction that touches several
 
 The receipt (`core/utils/receipt_printer.dart`) takes the optional `sale` and `store` (`UserModel`) so it can print the shop header (name, address, phone, STIR) plus payment method, paid amount and change. Store details are edited in Settings and live on the user document.
 
+### Finding an old sale
+
+The report shows one day at a time; `/salesHistory` (`SalesHistoryBloc`, screen-local `registerFactory`) covers a date range with search over customer, cashier and receipt id, and opens the receipt for any row. Refunded rows are struck through and left out of the total.
+
 ### Refunds
 
 `SaleRemoteDataSourceImpl.refundSale` reverses a sale in one transaction: restores each product's stock, takes the money back out of the drawer (cash sales only, and only if the drawer still holds enough), lowers the customer's `totalSpent` and flags the sale `refunded`. Refunded sales are excluded from every report total (`ReportState.countedSales`) and are listed on `/refunds`. A sale can only be refunded once.
@@ -128,10 +133,10 @@ The receipt (`core/utils/receipt_printer.dart`) takes the optional `sale` and `s
 
 ## Testing
 
-`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 78 in total:
+`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 87 in total:
 
 - `core/utils/` — Validators, AppFormat, PinHasher (pure functions)
-- `presentation/` — `auth_bloc_test.dart`, `sale_bloc_test.dart` (cart stock-limit, insufficient-payment guard), `product_state_test.dart`, `cashdrawer/cash_bloc_test.dart` (transfer validation, party resolution)
+- `presentation/` — `auth_bloc_test.dart`, `sale_bloc_test.dart` (cart stock-limit, insufficient-payment guard), `product_state_test.dart`, `cashdrawer/cash_bloc_test.dart` (transfer validation, party resolution), `sales_history/sales_history_state_test.dart`
 - `data/` — `sale_remote_datasource_test.dart` (sale + refund), `employee_remote_datasource_test.dart` (drawer transfers), `expense_remote_datasource_test.dart`, `purchase_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`: real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
 
 Money-moving code belongs in `data/` with a transaction test that asserts **both** the happy path and that a rejected operation leaves every document untouched.

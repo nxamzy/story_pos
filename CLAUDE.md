@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Ocam POS — a Flutter (Android/iOS first) point-of-sale app for shops: inventory, barcode scanning, cart/checkout, receipt printing, customers, suppliers, employees and a cash drawer. Backend is Firebase (Auth + Firestore), project `storepost-a64b8`. Firebase is abstracted behind a datasource layer so it can be swapped for a REST backend later without touching BLoCs or UI (see Architecture below).
+Ocam POS — a Flutter (Android/iOS first) point-of-sale app for shops: inventory, barcode scanning, cart/checkout, receipt printing, refunds, customers, suppliers, employees, supplier purchases (stock-in), shop expenses and a cash drawer. Backend is Firebase (Auth + Firestore), project `storepost-a64b8`. Firebase is abstracted behind a datasource layer so it can be swapped for a REST backend later without touching BLoCs or UI (see Architecture below).
 
 **UI text, error messages and code comments are written in Uzbek.** Keep new user-facing strings in Uzbek to stay consistent.
 
@@ -43,8 +43,9 @@ lib/
     widgets/                      # app-wide reusable widgets (AppButton, AppSnackBar, BaseSheetWrapper,
                                   # showConfirmDialog, showTextInputDialog, ...)
 
-  presentation/<feature>/         # auth, home, inventory, sale, supplier, customers, employee,
-                                   # cashdrawer, profile, settings, notifications, more, report, onboarding
+  presentation/<feature>/         # auth, home, inventory, sale, refunds, purchases, expenses,
+                                   # supplier, customers, employee, cashdrawer, profile, settings,
+                                   # notifications, more, report, onboarding
     bloc/                         # <feature>_bloc.dart + <feature>_event.dart + <feature>_state.dart — always 3 files
     pages/
     widgets/
@@ -77,8 +78,12 @@ users/{uid}/suppliers
 users/{uid}/sales
 users/{uid}/employees
 users/{uid}/transfer_logs
+users/{uid}/expenses
+users/{uid}/purchases
 users/{uid}/pos_settings/drawer_info
 ```
+
+Every money-moving action is a single Firestore transaction that touches several of these at once — sale, refund, purchase, expense and drawer transfer all follow the same read-everything-then-write shape, and all of them are covered by `test/data/` tests against `FakeFirebaseFirestore`.
 
 `FirestorePaths.uid` throws `UnauthenticatedException` if called with no signed-in user — datasources rely on this rather than null-checking.
 
@@ -99,6 +104,20 @@ users/{uid}/pos_settings/drawer_info
 
 The receipt (`core/utils/receipt_printer.dart`) takes the optional `sale` and `store` (`UserModel`) so it can print the shop header (name, address, phone, STIR) plus payment method, paid amount and change. Store details are edited in Settings and live on the user document.
 
+### Refunds
+
+`SaleRemoteDataSourceImpl.refundSale` reverses a sale in one transaction: restores each product's stock, takes the money back out of the drawer (cash sales only, and only if the drawer still holds enough), lowers the customer's `totalSpent` and flags the sale `refunded`. Refunded sales are excluded from every report total (`ReportState.countedSales`) and are listed on `/refunds`. A sale can only be refunded once.
+
+### Purchases and expenses
+
+- **Purchase** (`/purchases`, `PurchaseRemoteDataSourceImpl.createPurchase`) is stock-in from a supplier: it increments each product's `stock`, overwrites `buyPrice` with the price actually paid (profit maths depends on it) and, when paid from the drawer, decrements the drawer balance.
+- **Expense** (`/expenses`) is money leaving the shop for rent, utilities, transport and so on; `fromDrawer` expenses decrement the drawer and give the money back if the expense is deleted.
+- The daily report shows expenses and profit-after-expenses; purchases are *not* an expense there — their cost reaches the report through each product's `buyPrice` when it is sold.
+
+### Cashiers
+
+`EmployeeState.activeCashier` holds whoever is at the till (null = the owner). Switching is done from Profile → "Profilni almashtirish" and asks for the employee's PIN when one is set. `PinHasher` (`core/utils/pin_hasher.dart`) stores only a sha256 of `"<employeeId>:<pin>"` — the employee id is the salt, so the same PIN hashes differently per employee and a hash cannot be copied between them. This PIN is attribution, not authorization: the app's Firestore access still belongs to the owner's Firebase account. `CompleteSaleEvent` carries the active cashier so the sale document and the receipt record who sold.
+
 ### Cash drawer
 
 `users/{uid}/pos_settings/drawer_info.current_balance` grows on every cash sale. Money leaves it through a transfer: `TransferParty` (`data/models/transfer_party_model.dart`) makes the drawer and each employee interchangeable sides of `EmployeeRemoteDataSource.transferBalance`, which updates both documents (`current_balance` for the drawer, `balance` for an employee) and appends to `transfer_logs` in one transaction. `CashState` stores only the selected party **ids** and resolves balances from the live lists, so an open form never validates against a stale balance.
@@ -109,11 +128,13 @@ The receipt (`core/utils/receipt_printer.dart`) takes the optional `sale` and `s
 
 ## Testing
 
-`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 55 in total:
+`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 78 in total:
 
-- `core/utils/` — Validators, AppFormat (pure functions)
+- `core/utils/` — Validators, AppFormat, PinHasher (pure functions)
 - `presentation/` — `auth_bloc_test.dart`, `sale_bloc_test.dart` (cart stock-limit, insufficient-payment guard), `product_state_test.dart`, `cashdrawer/cash_bloc_test.dart` (transfer validation, party resolution)
-- `data/` — `sale_remote_datasource_test.dart`, `employee_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`: real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
+- `data/` — `sale_remote_datasource_test.dart` (sale + refund), `employee_remote_datasource_test.dart` (drawer transfers), `expense_remote_datasource_test.dart`, `purchase_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`: real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
+
+Money-moving code belongs in `data/` with a transaction test that asserts **both** the happy path and that a rejected operation leaves every document untouched.
 
 `test/widget_test.dart` (the unmodified counter template) was removed — it required an uninitialized Firebase and tested nothing about this app.
 
@@ -131,6 +152,6 @@ For a datasource test, build `FirestorePaths(db: FakeFirebaseFirestore(), auth: 
 - `firebase_core` is a direct dependency in `pubspec.yaml` now (was previously transitive-only and unlisted).
 - `SignUpBloc`-equivalent dead code has been removed. An alternate swipeable `PageView` onboarding (`onboarding_page.dart` + `OnboardingBloc`) was also removed — it was unrouted, still had the `ElevatedButton(shape: CircleBorder())` rendering bug (see below) unfixed, and was in English. The three routed splash pages (`first_splash_page.dart` / `second_splash_page.dart` / `third_splash_page.dart`, all built on `splash_content.dart`) are the only onboarding flow now.
 - A few screens (`presentation/profile/pages/select_profile_page.dart`'s "switch profile" flow) are intentionally wired to real data (employee list) but the actual "switch" action is a no-op placeholder — multi-cashier device switching needs a PIN/security design decision that hasn't been made yet.
-- The remaining `AppSnackBar.info(context, "Tez orada qo'shiladi")` placeholders are features with no backend/design yet: contact import (customers, suppliers), social login, loyalty/coupons/returns, purchases, expenses, invoices, language, help centre, profile switching. Everything else that looked like a placeholder has been implemented — check before adding another one.
+- The remaining `AppSnackBar.info(context, "Tez orada qo'shiladi")` placeholders are features that need a package or a backend that does not exist yet: contact import (customers, suppliers — needs a contacts plugin and permissions), social login, loyalty programme, coupons, invoices, language switching, help centre/FAQ, customer "share". Everything else that looked like a placeholder has been implemented — check before adding another one.
 - `AppConfig.currency` is still a compile-time constant, which is why the Settings → "Valyuta" item is a placeholder: changing it at runtime needs a settings store that every `AppFormat.money` call can read.
 - Colors come from `AppColors` constants (`core/theme/app_colors.dart`) but there is now a real `AppTheme.light` (`core/theme/app_theme.dart`) wired into `MaterialApp.router` — prefer using themed defaults (`ElevatedButton`, `TextFormField`, etc. already pick up the right colors) over hardcoding `AppColors.x` in new widgets where a theme default exists.

@@ -7,16 +7,19 @@ import 'package:ocam_pos/data/models/sale_model.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/sale/widgets/receipt_item_row.dart';
 
-/// Oxirgi yakunlangan savdoning cheki.
+/// Savdo cheki.
 ///
-/// `SaleBloc.state.completedSale` dan o'qiydi — savdo tugagach shu ma'lumot
-/// yangi savdo boshlanmaguncha state'da saqlanib qoladi.
+/// [sale] berilsa — o'sha savdo ko'rsatiladi (mijoz xaridlari tarixi yoki
+/// hisobotdagi ro'yxatdan ochilganda). Berilmasa — oxirgi yakunlangan savdo
+/// (`SaleBloc.state.completedSale`), ya'ni to'lov tugagandan keyingi holat.
 class ReceiptDetailScreen extends StatelessWidget {
-  const ReceiptDetailScreen({super.key});
+  final SaleModel? sale;
+
+  const ReceiptDetailScreen({super.key, this.sale});
 
   @override
   Widget build(BuildContext context) {
-    final sale = context.watch<SaleBloc>().state.completedSale;
+    final sale = this.sale ?? context.watch<SaleBloc>().state.completedSale;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -33,7 +36,9 @@ class ReceiptDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          sale == null ? "Chek" : "Chek #${sale.id.length >= 6 ? sale.id.substring(0, 6) : sale.id}",
+          sale == null
+              ? "Chek"
+              : "Chek #${sale.id.length >= 6 ? sale.id.substring(0, 6) : sale.id}",
           style: const TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -102,7 +107,11 @@ class ReceiptDetailScreen extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(thickness: 1, height: 40, color: AppColors.mintLight),
+              child: Divider(
+                thickness: 1,
+                height: 40,
+                color: AppColors.mintLight,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -151,7 +160,10 @@ class ReceiptDetailScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       sale.note,
-                      style: const TextStyle(color: AppColors.forestDark, fontSize: 13),
+                      style: const TextStyle(
+                        color: AppColors.forestDark,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ],
@@ -159,7 +171,11 @@ class ReceiptDetailScreen extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(thickness: 1, height: 40, color: AppColors.mintLight),
+              child: Divider(
+                thickness: 1,
+                height: 40,
+                color: AppColors.mintLight,
+              ),
             ),
             Container(
               width: double.infinity,
@@ -176,7 +192,11 @@ class ReceiptDetailScreen extends StatelessWidget {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.check_circle, color: AppColors.primary, size: 18),
+                      Icon(
+                        Icons.check_circle,
+                        color: AppColors.primary,
+                        size: 18,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         "Savdo yakunlandi",

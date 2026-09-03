@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
+import 'package:ocam_pos/data/models/sale_model.dart';
 import 'package:ocam_pos/injection.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_sales_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_sales_event.dart';
@@ -12,6 +14,7 @@ import 'package:ocam_pos/presentation/customers/bloc/customer_sales_state.dart';
 import 'package:ocam_pos/presentation/customers/widgets/customer_info_sheet.dart';
 import 'package:ocam_pos/presentation/customers/widgets/delete_customer_sheet.dart';
 import 'package:ocam_pos/presentation/customers/widgets/details_section_card.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailsPage extends StatelessWidget {
@@ -91,7 +94,7 @@ class _CustomerDetailsView extends StatelessWidget {
             const SizedBox(height: 16),
             _buildFinancialStats(),
             const SizedBox(height: 16),
-            _buildSaleInvoices(context),
+            const _CustomerSalesSection(),
           ],
         ),
       ),
@@ -154,22 +157,46 @@ class _CustomerDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildSaleInvoices(BuildContext context) {
+/// Mijozning xaridlari ro'yxati.
+///
+/// Ilgari faqat oxirgi 5 tasi ko'rsatilib, "Barchasini ko'rish" tugmasi
+/// "Tez orada" xabarini chiqarardi va qatorlarning strelkasi bosilmasdi.
+class _CustomerSalesSection extends StatefulWidget {
+  const _CustomerSalesSection();
+
+  @override
+  State<_CustomerSalesSection> createState() => _CustomerSalesSectionState();
+}
+
+class _CustomerSalesSectionState extends State<_CustomerSalesSection> {
+  static const _initialCount = 5;
+  bool _showAll = false;
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<CustomerSalesBloc, CustomerSalesState>(
       builder: (context, state) {
+        final hasMore = state.sales.length > _initialCount;
+
         return DetailsSectionCard(
           title: "So'nggi xaridlar",
-          trailing: _SeeMoreButton(
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
-          ),
-          child: _buildInvoiceList(state),
+          trailing: hasMore
+              ? _SeeMoreButton(
+                  label: _showAll
+                      ? "Kamroq ko'rsatish"
+                      : "Barchasini ko'rish (${state.sales.length})",
+                  onTap: () => setState(() => _showAll = !_showAll),
+                )
+              : null,
+          child: _buildInvoiceList(context, state),
         );
       },
     );
   }
 
-  Widget _buildInvoiceList(CustomerSalesState state) {
+  Widget _buildInvoiceList(BuildContext context, CustomerSalesState state) {
     if (state.status.isFirstLoad) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -186,24 +213,36 @@ class _CustomerDetailsView extends StatelessWidget {
       );
     }
 
-    if (state.sales.isEmpty) {
-      return const _InvoiceTile(
-        date: "Hozircha xaridlar yo'q",
-        price: "0 UZS",
-        isLast: true,
+    if (state.status.isFailure) {
+      return Text(
+        state.error ?? "Xaridlarni yuklab bo'lmadi",
+        style: const TextStyle(color: AppColors.error, fontSize: 13),
       );
     }
 
-    const maxShown = 5;
-    final shown = state.sales.take(maxShown).toList();
+    if (state.sales.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          "Hozircha xaridlar yo'q",
+          style: TextStyle(color: AppColors.sage),
+        ),
+      );
+    }
+
+    final shown = _showAll
+        ? state.sales
+        : state.sales.take(_initialCount).toList();
 
     return Column(
       children: [
         for (int i = 0; i < shown.length; i++)
           _InvoiceTile(
-            date: AppFormat.date(shown[i].createdAt),
-            price: AppFormat.money(shown[i].total),
+            sale: shown[i],
             isLast: i == shown.length - 1,
+            // Chek endi ochiladi — qatordagi strelka bekorga turmaydi.
+            onTap: () =>
+                context.push(PlatformRoutes.receiptPage.route, extra: shown[i]),
           ),
       ],
     );
@@ -352,67 +391,79 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _InvoiceTile extends StatelessWidget {
-  final String date;
-  final String price;
+  final SaleModel sale;
   final bool isLast;
+  final VoidCallback onTap;
+
   const _InvoiceTile({
-    required this.date,
-    required this.price,
+    required this.sale,
+    required this.onTap,
     this.isLast = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
-      decoration: BoxDecoration(
-        color: AppColors.background.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.receipt_long_outlined,
-            color: AppColors.primary,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                date,
-                style: const TextStyle(fontSize: 12, color: AppColors.sage),
-              ),
-              Text(
-                price,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.forestDark,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
+        decoration: BoxDecoration(
+          color: AppColors.background.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.mintLight),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.receipt_long_outlined,
+              color: AppColors.primary,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppFormat.dateTime(sale.createdAt),
+                  style: const TextStyle(fontSize: 12, color: AppColors.sage),
                 ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          const Icon(Icons.chevron_right, size: 18, color: AppColors.sage),
-        ],
+                Text(
+                  AppFormat.money(sale.total),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.forestDark,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              "${sale.itemCount} dona",
+              style: const TextStyle(fontSize: 12, color: AppColors.sage),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.sage),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _SeeMoreButton extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
-  const _SeeMoreButton({required this.onTap});
+  const _SeeMoreButton({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onTap,
-      child: const Text(
-        "Barchasini ko'rish >",
-        style: TextStyle(color: AppColors.primary, fontSize: 12),
+      child: Text(
+        label,
+        style: const TextStyle(color: AppColors.primary, fontSize: 12),
       ),
     );
   }

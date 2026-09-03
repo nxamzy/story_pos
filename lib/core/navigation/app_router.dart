@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/data/models/product_model.dart';
+import 'package:ocam_pos/data/models/sale_model.dart';
 import 'package:ocam_pos/data/models/supplier_model.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 
@@ -199,7 +200,9 @@ class AppRouter {
       ),
       GoRoute(
         path: PlatformRoutes.receiptPage.route,
-        builder: (context, state) => const ReceiptDetailScreen(),
+        // `extra` berilmasa — oxirgi yakunlangan savdo ko'rsatiladi.
+        builder: (context, state) =>
+            ReceiptDetailScreen(sale: state.extra as SaleModel?),
       ),
       GoRoute(
         path: PlatformRoutes.salePage.route,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
+import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/data/models/sale_model.dart';
@@ -158,10 +160,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Widget _buildHorizontalCalendar(DateTime selectedDate) {
     final today = DateTime.now();
-    final days = List.generate(
-      7,
-      (i) => today.subtract(Duration(days: 6 - i)),
-    );
+    final days = List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
 
     return Container(
       width: double.infinity,
@@ -272,50 +271,58 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildTransactionItem(SaleModel sale) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.mintLight),
-      ),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            backgroundColor: AppColors.background,
-            child: Icon(Icons.receipt_outlined, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  sale.customerName?.isNotEmpty == true
-                      ? sale.customerName!
-                      : "Chek #${sale.id.length >= 6 ? sale.id.substring(0, 6) : sale.id}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.forestDark,
+    return InkWell(
+      // Har bir qator o'z chekini ochadi — ilgari chek faqat savdo
+      // yakunlangan zahoti ko'rish mumkin edi.
+      onTap: () => context.push(PlatformRoutes.receiptPage.route, extra: sale),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.mintLight),
+        ),
+        child: Row(
+          children: [
+            const CircleAvatar(
+              backgroundColor: AppColors.background,
+              child: Icon(Icons.receipt_outlined, color: AppColors.primary),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sale.customerName?.isNotEmpty == true
+                        ? sale.customerName!
+                        : "Chek #${sale.id.length >= 6 ? sale.id.substring(0, 6) : sale.id}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.forestDark,
+                    ),
                   ),
-                ),
-                Text(
-                  AppFormat.time(sale.createdAt),
-                  style: const TextStyle(color: AppColors.sage, fontSize: 12),
-                ),
-              ],
+                  Text(
+                    AppFormat.time(sale.createdAt),
+                    style: const TextStyle(color: AppColors.sage, fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            AppFormat.money(sale.total),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-              fontSize: 16,
+            Text(
+              AppFormat.money(sale.total),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+                fontSize: 16,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.sage),
+          ],
+        ),
       ),
     );
   }

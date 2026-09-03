@@ -52,7 +52,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             await ReceiptPrinter.printReceipt(sale.items, sale.total);
           }
           if (context.mounted) {
-            showSuccessSheet(context, sale.total);
+            showSuccessSheet(context);
           }
         }
       },
@@ -305,11 +305,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   );
 
   Future<void> _selectDate(BuildContext context) async {
+    // Kelajakdagi sanaga savdo yozib bo'lmaydi — hisobot buziladi.
+    final now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime(now.year - 1),
+      lastDate: now,
     );
     if (picked != null) setState(() => _selectedDate = picked);
   }

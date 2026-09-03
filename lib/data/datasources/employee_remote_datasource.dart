@@ -37,12 +37,14 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
 
   @override
   Future<String> addEmployee(EmployeeModel employee) async {
-    final doc = employee.id.isEmpty
+    final isNew = employee.id.isEmpty;
+    final doc = isNew
         ? _paths.employees.doc()
         : _paths.employees.doc(employee.id);
     await doc.set({
       ...employee.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
+      // Mijozdagidek: `createdAt` faqat yangi yozuvda o'rnatiladi.
+      if (isNew) 'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
     return doc.id;
   }

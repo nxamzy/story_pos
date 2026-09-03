@@ -8,6 +8,7 @@ import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_event.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_state.dart';
 import 'package:ocam_pos/presentation/inventory/widgets/inventory_text_field.dart';
+import 'package:ocam_pos/presentation/sale/pages/scanner_page.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -58,6 +59,13 @@ class _AddProductScreenState extends State<AddProductScreen>
     _purchasePriceController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _scanBarcode() async {
+    final code = await openBarcodeScanner(context);
+    if (code != null && code.isNotEmpty) {
+      setState(() => _barcodeController.text = code);
+    }
   }
 
   void _saveProduct() {
@@ -174,6 +182,10 @@ class _AddProductScreenState extends State<AddProductScreen>
             label: "Shtrix-kod",
             controller: _barcodeController,
             suffixIcon: Icons.qr_code_scanner_rounded,
+            keyboardType: TextInputType.number,
+            // Ilgari bu belgi shunchaki rasm edi — bosilganda hech narsa
+            // bo'lmasdi. Endi kamerali skanerni ochadi.
+            onSuffixTap: _scanBarcode,
           ),
           CustomTextField(
             label: "Mahsulot nomi",

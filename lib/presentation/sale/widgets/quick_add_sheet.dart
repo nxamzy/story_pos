@@ -135,12 +135,7 @@ class _QuickAddProductSheetState extends State<QuickAddProductSheet> {
                         controller: barcodeController,
                         suffixIcon: Icons.qr_code_scanner,
                         onSuffixTap: () async {
-                          final String? result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ScannerPage(),
-                            ),
-                          );
+                          final result = await openBarcodeScanner(context);
                           if (result != null && result.isNotEmpty) {
                             setState(() => barcodeController.text = result);
                             _fillFromExisting(result);

@@ -1,60 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
-import 'package:ocam_pos/data/models/customer_model.dart';
-import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
-import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
-import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
+import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/presentation/customers/widgets/customer_text_field.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_event.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_state.dart';
 
-void showEditPersonalData(BuildContext context, CustomerModel customer) {
+/// Xodim ma'lumotini tahrirlash varag'i.
+///
+/// `EmployeeBloc`da `UpdateEmployee` eventi allaqachon tayyor edi, lekin uni
+/// hech bir ekran chaqirmasdi — xodim profilidagi qalam belgisi faqat
+/// "Tez orada" xabarini ko'rsatardi. Shu varaq o'sha bo'shliqni to'ldiradi.
+void showEditEmployeeSheet(BuildContext context, EmployeeModel employee) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: BlocProvider.value(
-          value: context.read<CustomerBloc>(),
-          child: EditPersonalDataSheet(customer: customer),
-        ),
-      );
-    },
+    builder: (sheetContext) => Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+      ),
+      child: BlocProvider.value(
+        value: context.read<EmployeeBloc>(),
+        child: EditEmployeeSheet(employee: employee),
+      ),
+    ),
   );
 }
 
-class EditPersonalDataSheet extends StatefulWidget {
-  final CustomerModel customer;
-  const EditPersonalDataSheet({super.key, required this.customer});
+class EditEmployeeSheet extends StatefulWidget {
+  final EmployeeModel employee;
+  const EditEmployeeSheet({super.key, required this.employee});
 
   @override
-  State<EditPersonalDataSheet> createState() => _EditPersonalDataSheetState();
+  State<EditEmployeeSheet> createState() => _EditEmployeeSheetState();
 }
 
-class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
-  late final nameController = TextEditingController(text: widget.customer.name);
-  late final phoneController = TextEditingController(text: widget.customer.phone);
-  late final altPhoneController = TextEditingController(
-    text: widget.customer.altPhone,
+class _EditEmployeeSheetState extends State<EditEmployeeSheet> {
+  late final nameController = TextEditingController(text: widget.employee.name);
+  late final roleController = TextEditingController(text: widget.employee.role);
+  late final phoneController = TextEditingController(
+    text: widget.employee.phone,
   );
-  late final emailController = TextEditingController(text: widget.customer.email);
-  late final addressController =
-      TextEditingController(text: widget.customer.address);
-  late final notesController = TextEditingController(text: widget.customer.notes);
+  late final altPhoneController = TextEditingController(
+    text: widget.employee.altPhone,
+  );
+  late final salaryController = TextEditingController(
+    text: AppFormat.editableNumber(widget.employee.salary),
+  );
+  late final notesController = TextEditingController(
+    text: widget.employee.notes,
+  );
 
   bool _isSaving = false;
 
   @override
   void dispose() {
     nameController.dispose();
+    roleController.dispose();
     phoneController.dispose();
     altPhoneController.dispose();
-    emailController.dispose();
-    addressController.dispose();
+    salaryController.dispose();
     notesController.dispose();
     super.dispose();
   }
@@ -62,14 +71,18 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
   void _onSave() {
     setState(() => _isSaving = true);
 
-    context.read<CustomerBloc>().add(
-      SaveCustomerEvent(
-        widget.customer.copyWith(
+    context.read<EmployeeBloc>().add(
+      // Balans bu yerda tahrirlanmaydi — u faqat kassa o'tkazmalari orqali
+      // o'zgaradi, aks holda o'tkazmalar tarixi bilan mos kelmay qoladi.
+      UpdateEmployee(
+        widget.employee.copyWith(
           name: nameController.text.trim(),
+          role: roleController.text.trim(),
           phone: phoneController.text.trim(),
           altPhone: altPhoneController.text.trim(),
-          email: emailController.text.trim(),
-          address: addressController.text.trim(),
+          salary:
+              double.tryParse(salaryController.text.replaceAll(',', '.')) ??
+              widget.employee.salary,
           notes: notesController.text.trim(),
         ),
       ),
@@ -78,7 +91,7 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CustomerBloc, CustomerState>(
+    return BlocListener<EmployeeBloc, EmployeeState>(
       listenWhen: (previous, current) =>
           current.actionMessage != null || current.error != null,
       listener: (context, state) {
@@ -86,7 +99,7 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
           setState(() => _isSaving = false);
           AppSnackBar.error(context, state.error!);
         } else if (state.actionMessage != null) {
-          AppSnackBar.success(context, "Ma'lumotlar yangilandi");
+          AppSnackBar.success(context, state.actionMessage!);
           Navigator.pop(context);
         }
       },
@@ -104,7 +117,7 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
               Center(child: _buildHandle()),
               const SizedBox(height: 20),
               const Text(
-                "Profilni tahrirlash",
+                "Xodim ma'lumotini tahrirlash",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -117,6 +130,8 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
                 controller: nameController,
                 showClear: true,
               ),
+              const SizedBox(height: 12),
+              CustomInputField(label: "Lavozimi", controller: roleController),
               const SizedBox(height: 12),
               CustomInputField(
                 label: "Telefon raqami",
@@ -131,12 +146,10 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
               ),
               const SizedBox(height: 12),
               CustomInputField(
-                label: "Email",
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
+                label: "Oylik maosh",
+                controller: salaryController,
+                keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 12),
-              CustomInputField(label: "Manzil", controller: addressController),
               const SizedBox(height: 12),
               CustomInputField(
                 label: "Eslatma",
@@ -185,7 +198,7 @@ class _EditPersonalDataSheetState extends State<EditPersonalDataSheet> {
                 ),
               )
             : const Text(
-                "Profilni yangilash",
+                "Saqlash",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

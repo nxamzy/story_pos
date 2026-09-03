@@ -23,9 +23,12 @@ class MenuGrid extends StatelessWidget {
       },
       {'title': 'Hisob-fakturalar', 'icon': Icons.receipt_long_outlined, 'route': null},
       {
+        // Xodimlar ro'yxati ochiladi. Ilgari bu yerdan `/employee` yo'liga
+        // (bitta xodim profiliga) hech qanday xodimsiz o'tilardi va ekran
+        // soxta "Administrator" profilini ko'rsatardi.
         'title': 'Xodimlar',
         'icon': Icons.admin_panel_settings_outlined,
-        'route': PlatformRoutes.employeeHRMPage.route,
+        'route': PlatformRoutes.showAllProfile.route,
       },
       {
         'title': 'Hisobotlar',

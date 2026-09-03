@@ -34,7 +34,7 @@ class _ShowAllProfileState extends State<ShowAllProfile> {
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
         ),
         title: const Text(
-          'Barcha profillar',
+          'Xodimlar',
           style: TextStyle(
             color: AppColors.primary,
             fontSize: 24,

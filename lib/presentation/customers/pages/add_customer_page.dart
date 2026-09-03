@@ -53,6 +53,8 @@ class _AddNewCustomerPageState extends State<AddNewCustomerPage> {
       id: '',
       name: nameController.text.trim(),
       phone: phoneController.text.trim(),
+      // Kiritilgan qo'shimcha raqam ilgari hech qayerga yozilmasdi.
+      altPhone: altPhoneController.text.trim(),
       email: emailController.text.trim(),
       address:
           "${cityController.text.trim()} ${addressController.text.trim()}"

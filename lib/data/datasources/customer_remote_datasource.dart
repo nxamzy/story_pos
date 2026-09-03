@@ -7,7 +7,6 @@ abstract class CustomerRemoteDataSource {
   Future<String> addCustomer(CustomerModel customer);
   Future<void> updateCustomer(CustomerModel customer);
   Future<void> deleteCustomer(String id);
-  Future<void> addSpending(String customerId, double amount);
 }
 
 class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
@@ -28,13 +27,18 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
 
   @override
   Future<String> addCustomer(CustomerModel customer) async {
-    final doc = customer.id.isEmpty
+    final isNew = customer.id.isEmpty;
+    final doc = isNew
         ? _paths.customers.doc()
         : _paths.customers.doc(customer.id);
 
     await doc.set({
       ...customer.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
+      // `createdAt` faqat yangi mijoz yaratilganda yoziladi. Ilgari u har
+      // saqlashda qayta yozilardi — mijozni tahrirlash uning "ro'yxatdan
+      // o'tgan sana"sini bugungi kunga o'zgartirib, ro'yxatdagi tartibini
+      // ham buzardi (ro'yxat createdAt bo'yicha saralanadi).
+      if (isNew) 'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
     return doc.id;
   }
@@ -43,12 +47,9 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
   Future<void> updateCustomer(CustomerModel customer) =>
       _paths.customers.doc(customer.id).update(customer.toMap());
 
+  // Eslatma: mijozning `totalSpent` maydoni savdo tranzaksiyasi ichida
+  // (`SaleRemoteDataSourceImpl.createSale`) yangilanadi — shu sababli bu
+  // yerda alohida metod yo'q.
   @override
   Future<void> deleteCustomer(String id) => _paths.customers.doc(id).delete();
-
-  @override
-  Future<void> addSpending(String customerId, double amount) =>
-      _paths.customers.doc(customerId).update({
-        'totalSpent': FieldValue.increment(amount),
-      });
 }

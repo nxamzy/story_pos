@@ -88,3 +88,14 @@ class _ScannerPageState extends State<ScannerPage> {
     );
   }
 }
+
+/// Skaner ekranini ochadi va o'qilgan shtrix-kodni qaytaradi.
+/// Foydalanuvchi bekor qilsa `null` qaytadi.
+///
+/// Skaner faqat sotuv ekranida emas — mahsulot qo'shish/tahrirlash
+/// formalarida ham kerak, shu sababli bitta joyda turadi.
+Future<String?> openBarcodeScanner(BuildContext context) =>
+    Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => const ScannerPage()),
+    );

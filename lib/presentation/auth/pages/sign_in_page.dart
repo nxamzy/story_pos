@@ -10,6 +10,7 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_back_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/social_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_text_field.dart';
+import 'package:ocam_pos/core/navigation/nav_extensions.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
@@ -65,7 +66,9 @@ class _LoginPageState extends State<LoginPage> {
                   AuthBackButton(
                     bg: AppColors.surface,
                     iconColor: AppColors.secondary,
-                    onTap: () => context.pop(),
+                    // Tizimdan chiqqandan keyin login sahifasi stack ildizi
+                    // bo'lib qoladi — bunda oddiy `pop()` xato beradi.
+                    onTap: () => context.popOrGo(PlatformRoutes.firstPage.route),
                   ),
                   const SizedBox(height: 24),
                   const Text(

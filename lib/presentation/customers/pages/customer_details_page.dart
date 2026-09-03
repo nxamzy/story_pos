@@ -62,7 +62,7 @@ class _CustomerDetailsView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete_outline, color: AppColors.primary),
             onPressed: () => showDeleteConfirmation(
-              context, // 🔥 MANA BU ETISHMAYOTGAN EDI!
+              context,
               customerId: customer.id,
               customerName: customer.name,
             ),
@@ -111,11 +111,18 @@ class _CustomerDetailsView extends StatelessWidget {
         children: [
           _InfoRow(label: "To'liq ism", value: customer.name),
           _InfoRow(label: "Telefon raqami", value: customer.phone),
+          if (customer.altPhone.isNotEmpty)
+            _InfoRow(label: "Qo'shimcha telefon", value: customer.altPhone),
+          if (customer.email.isNotEmpty)
+            _InfoRow(label: "Email", value: customer.email),
+          if (customer.address.isNotEmpty)
+            _InfoRow(label: "Manzil", value: customer.address),
+          if (customer.notes.isNotEmpty)
+            _InfoRow(label: "Eslatma", value: customer.notes),
           _InfoRow(label: "Ro'yxat ID", value: customer.id.toUpperCase()),
           _InfoRow(
             label: "Ro'yxatdan o'tgan sana",
-            value:
-                "${customer.createdAt.day}/${customer.createdAt.month}/${customer.createdAt.year}",
+            value: AppFormat.dateLong(customer.createdAt),
             isLast: true,
           ),
         ],
@@ -130,7 +137,9 @@ class _CustomerDetailsView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${customer.totalSpent.toStringAsFixed(0)} UZS",
+            // Valyuta va ming ajratgichlari ilova bo'ylab bir xil bo'lishi
+            // uchun qo'lda yozilgan "UZS" o'rniga AppFormat ishlatiladi.
+            AppFormat.money(customer.totalSpent),
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,

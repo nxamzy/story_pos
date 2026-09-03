@@ -6,6 +6,13 @@ class EmployeeModel extends Equatable {
   final String name;
   final String role;
   final String phone;
+
+  /// Qo'shimcha (muqobil) telefon raqami — formada bor edi, lekin ilgari
+  /// modelda maydon bo'lmagani uchun saqlanmasdan yo'qolib ketardi.
+  final String altPhone;
+
+  /// Xodim haqidagi ichki eslatma — xuddi shu sababdan saqlanmasdi.
+  final String notes;
   final String imageUrl;
   final String lastCheckIn;
   final double salary;
@@ -21,6 +28,8 @@ class EmployeeModel extends Equatable {
     required this.name,
     required this.role,
     required this.phone,
+    this.altPhone = '',
+    this.notes = '',
     this.imageUrl = '',
     this.lastCheckIn = "Kelmagan",
     this.salary = 0,
@@ -38,6 +47,8 @@ class EmployeeModel extends Equatable {
       name: ModelUtils.toStr(map['name']),
       role: ModelUtils.toStr(map['role']),
       phone: ModelUtils.toStr(map['phone']),
+      altPhone: ModelUtils.toStr(map['altPhone']),
+      notes: ModelUtils.toStr(map['notes']),
       imageUrl: ModelUtils.toStr(map['imageUrl']),
       lastCheckIn: ModelUtils.toStr(map['lastCheckIn'], 'Kelmagan'),
       salary: ModelUtils.toDouble(map['salary']),
@@ -55,6 +66,8 @@ class EmployeeModel extends Equatable {
       'name': name,
       'role': role,
       'phone': phone,
+      'altPhone': altPhone,
+      'notes': notes,
       'imageUrl': imageUrl,
       'lastCheckIn': lastCheckIn,
       'salary': salary,
@@ -71,6 +84,8 @@ class EmployeeModel extends Equatable {
     String? name,
     String? role,
     String? phone,
+    String? altPhone,
+    String? notes,
     String? imageUrl,
     String? lastCheckIn,
     double? salary,
@@ -86,6 +101,8 @@ class EmployeeModel extends Equatable {
       name: name ?? this.name,
       role: role ?? this.role,
       phone: phone ?? this.phone,
+      altPhone: altPhone ?? this.altPhone,
+      notes: notes ?? this.notes,
       imageUrl: imageUrl ?? this.imageUrl,
       lastCheckIn: lastCheckIn ?? this.lastCheckIn,
       salary: salary ?? this.salary,
@@ -104,6 +121,8 @@ class EmployeeModel extends Equatable {
     name,
     role,
     phone,
+    altPhone,
+    notes,
     imageUrl,
     salary,
     balance,

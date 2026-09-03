@@ -8,6 +8,7 @@ import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_event.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_state.dart';
 import 'package:ocam_pos/presentation/inventory/widgets/edit_input_field.dart';
+import 'package:ocam_pos/presentation/sale/pages/scanner_page.dart';
 
 void showEditProductData(BuildContext context, ProductModel product) {
   showModalBottomSheet(
@@ -74,6 +75,13 @@ class _EditProductSheetState extends State<EditProductSheet> {
     buyPriceController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _scanBarcode() async {
+    final code = await openBarcodeScanner(context);
+    if (code != null && code.isNotEmpty) {
+      setState(() => barcodeController.text = code);
+    }
   }
 
   void _updateProduct() {
@@ -145,6 +153,8 @@ class _EditProductSheetState extends State<EditProductSheet> {
                 label: "Shtrix-kod",
                 controller: barcodeController,
                 isBarcode: true,
+                keyboardType: TextInputType.number,
+                onScanTap: _scanBarcode,
               ),
               EditInputField(
                 label: "Mahsulot nomi",

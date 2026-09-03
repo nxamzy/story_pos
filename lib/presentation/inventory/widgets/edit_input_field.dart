@@ -10,6 +10,9 @@ class EditInputField extends StatelessWidget {
   final VoidCallback? onTap;
   final int maxLines;
 
+  /// Shtrix-kod belgisi bosilganda ishlaydi (skanerni ochish uchun).
+  final VoidCallback? onScanTap;
+
   const EditInputField({
     super.key,
     required this.label,
@@ -19,6 +22,7 @@ class EditInputField extends StatelessWidget {
     this.isDropdown = false,
     this.onTap,
     this.maxLines = 1,
+    this.onScanTap,
   });
 
   @override
@@ -96,10 +100,14 @@ class EditInputField extends StatelessWidget {
 
   Widget _buildSuffixIcon() {
     if (isBarcode) {
-      return const Icon(
-        Icons.qr_code_scanner_rounded,
-        color: AppColors.primary,
-        size: 24,
+      // Belgi bosiladigan bo'ldi — ilgari faqat bezak edi.
+      return GestureDetector(
+        onTap: onScanTap,
+        child: const Icon(
+          Icons.qr_code_scanner_rounded,
+          color: AppColors.primary,
+          size: 24,
+        ),
       );
     } else if (isDropdown) {
       return const Icon(

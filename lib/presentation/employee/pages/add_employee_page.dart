@@ -51,6 +51,9 @@ class _EmployeeAddPageState extends State<EmployeeAddPage> {
       id: '',
       name: nameController.text.trim(),
       phone: phoneController.text.trim(),
+      // Ilgari bu ikki maydon formada bor edi, lekin saqlanmasdi.
+      altPhone: altPhoneController.text.trim(),
+      notes: notesController.text.trim(),
       balance: double.tryParse(balanceController.text.trim()) ?? 0,
       role: roleController.text.trim(),
       salary: double.tryParse(salaryController.text.trim()) ?? 0,

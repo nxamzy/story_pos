@@ -42,16 +42,28 @@ class InventoryProductCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  imageUrl,
-                  width: 55,
-                  height: 55,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.inventory_2_rounded,
-                    color: AppColors.sage,
-                  ),
-                ),
+                // Bo'sh manzil bilan `Image.network('')` har bir kartochkada
+                // tarmoq xatosini keltirib chiqarardi — endi umuman
+                // chaqirilmaydi.
+                child: imageUrl.isEmpty
+                    ? const SizedBox(
+                        width: 55,
+                        height: 55,
+                        child: Icon(
+                          Icons.inventory_2_rounded,
+                          color: AppColors.sage,
+                        ),
+                      )
+                    : Image.network(
+                        imageUrl,
+                        width: 55,
+                        height: 55,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.inventory_2_rounded,
+                          color: AppColors.sage,
+                        ),
+                      ),
               ),
               const SizedBox(width: 16),
               Expanded(

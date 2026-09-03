@@ -11,6 +11,7 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_back_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/social_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_text_field.dart';
+import 'package:ocam_pos/core/navigation/nav_extensions.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -85,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   AuthBackButton(
                     bg: AppColors.surface,
                     iconColor: AppColors.secondary,
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.popOrGo(PlatformRoutes.loginPage.route),
                   ),
                   const SizedBox(height: 24),
                   const Text(

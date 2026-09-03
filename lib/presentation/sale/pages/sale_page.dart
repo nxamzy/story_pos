@@ -208,10 +208,7 @@ class _SaleScreenState extends State<SaleScreen> {
           const SizedBox(width: 12),
           InkWell(
             onTap: () async {
-              final String? scannedBarcode = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ScannerPage()),
-              );
+              final scannedBarcode = await openBarcodeScanner(context);
               if (scannedBarcode != null && scannedBarcode.isNotEmpty) {
                 await _onBarcodeScanned(scannedBarcode);
               }

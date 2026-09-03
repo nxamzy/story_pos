@@ -8,7 +8,7 @@ import 'package:ocam_pos/core/routes/app_routes.dart';
 
 /// Yakunlangan savdoni ko'rsatadi. `SaleBloc.state.completedSale` dan
 /// o'qiydi — chunki savat tozalangandan keyin ham shu ma'lumot state'da qoladi.
-void showSuccessSheet(BuildContext context, double totalAmount) {
+void showSuccessSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,

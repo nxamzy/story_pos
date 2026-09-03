@@ -59,7 +59,14 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
       // 3-qadam: yozish.
       transaction.set(saleDoc, {
         ...sale.toMap(),
-        'createdAt': FieldValue.serverTimestamp(),
+        // Odatda server vaqti yoziladi (qurilma soati noto'g'ri bo'lishi
+        // mumkin). Lekin kassir checkout'da boshqa kunni tanlagan bo'lsa
+        // (masalan kechagi savdoni keyinroq kiritish) — o'sha sana
+        // saqlanadi. Ilgari tanlangan sana e'tiborga olinmasdi: hisobotda
+        // savdo har doim bugungi kunga tushardi.
+        'createdAt': _isToday(sale.createdAt)
+            ? FieldValue.serverTimestamp()
+            : Timestamp.fromDate(sale.createdAt),
       });
 
       for (final item in sale.items) {
@@ -89,6 +96,13 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     });
 
     return saleDoc.id;
+  }
+
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   Query<Map<String, dynamic>> _query({DateTime? from, DateTime? to}) {

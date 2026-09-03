@@ -113,8 +113,13 @@ class CartItemCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: item.product.imageUrl != null
-            ? Image.network(item.product.imageUrl!, fit: BoxFit.cover)
+        child: (item.product.imageUrl?.isNotEmpty ?? false)
+            ? Image.network(
+                item.product.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.image, color: AppColors.sage),
+              )
             : const Icon(Icons.image, color: AppColors.sage),
       ),
     );

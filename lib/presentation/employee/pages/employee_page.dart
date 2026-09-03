@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/core/widgets/confirm_dialog.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_event.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_state.dart';
+import 'package:ocam_pos/presentation/employee/widgets/edit_employee_sheet.dart';
 
 class EmployeeHRMScreen extends StatefulWidget {
   final EmployeeModel? employee;
@@ -16,29 +23,16 @@ class EmployeeHRMScreen extends StatefulWidget {
 class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late EmployeeModel _currentEmployee;
+
+  /// Ekranda ko'rsatilayotgan xodim. Har build'da BLoC ro'yxatidan qayta
+  /// olinadi — shu sababli tahrirlashdan keyin sahifa darhol yangilanadi
+  /// (`initState`da bir marta nusxa olinsa, eski qiymat qotib qolardi).
+  EmployeeModel? _currentEmployee;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    _currentEmployee =
-        widget.employee ??
-        EmployeeModel(
-          id: "ID-0001",
-          name: "Administrator",
-          role: "Do'kon egasi",
-          phone: "+998 00 000 00 00",
-          imageUrl: "",
-          salary: 0.0,
-          lastCheckIn: "Kelmagan",
-          earlyLeaves: 0,
-          absents: 0,
-          presentDays: 0,
-          lateIns: 0,
-          createdAt: DateTime.now(),
-        );
   }
 
   @override
@@ -49,13 +43,72 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(context),
-      body: Column(
-        children: [_buildHeader(), _buildStatsGrid(), _buildTabSection()],
+    final initial = widget.employee;
+
+    // Xodim uzatilmagan bo'lsa soxta "Administrator" profili ko'rsatilardi —
+    // ilovada bunday xodim umuman mavjud emas edi. Endi rost holat
+    // ko'rsatiladi.
+    if (initial == null) return _buildNoEmployeeScreen(context);
+
+    final employees = context.watch<EmployeeBloc>().state.employees;
+    _currentEmployee = employees.firstWhere(
+      (e) => e.id == initial.id,
+      orElse: () => initial,
+    );
+
+    return BlocListener<EmployeeBloc, EmployeeState>(
+      listenWhen: (previous, current) => current.error != previous.error,
+      listener: (context, state) {
+        if (state.error != null) AppSnackBar.error(context, state.error!);
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: _buildAppBar(context),
+        body: Column(
+          children: [_buildHeader(), _buildStatsGrid(), _buildTabSection()],
+        ),
       ),
     );
+  }
+
+  Widget _buildNoEmployeeScreen(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.forestDark,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
+          onPressed: () => context.pop(),
+        ),
+        title: const Text(
+          'Xodim profili',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: _buildEmptyTabState(
+        icon: Icons.badge_outlined,
+        message: "Xodim tanlanmagan.\nRo'yxatdan xodimni tanlang.",
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final employee = _currentEmployee;
+    if (employee == null) return;
+
+    final confirmed = await showConfirmDialog(
+      context,
+      title: "Xodimni o'chirish",
+      message:
+          "\"${employee.name}\" o'chirilsinmi? Bu amalni ortga qaytarib "
+          "bo'lmaydi.",
+      confirmLabel: "Ha, o'chirish",
+    );
+    if (!confirmed || !context.mounted) return;
+
+    context.read<EmployeeBloc>().add(DeleteEmployee(employee.id));
+    if (context.mounted) context.pop();
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
@@ -72,11 +125,20 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
       ),
       actions: [
         IconButton(
-          onPressed: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          tooltip: "Tahrirlash",
+          onPressed: () => showEditEmployeeSheet(context, _currentEmployee!),
           icon: const Icon(
             Icons.edit_note_rounded,
             color: AppColors.primary,
             size: 28,
+          ),
+        ),
+        IconButton(
+          tooltip: "O'chirish",
+          onPressed: () => _confirmDelete(context),
+          icon: const Icon(
+            Icons.delete_outline_rounded,
+            color: AppColors.primary,
           ),
         ),
       ],
@@ -101,7 +163,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _currentEmployee.name,
+                      _currentEmployee!.name,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -110,7 +172,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'ID: ${_currentEmployee.id.substring(0, 5)}... | ${_currentEmployee.role}',
+                      _employeeSubtitle(_currentEmployee!),
                       style: const TextStyle(
                         color: AppColors.mintLight,
                         fontSize: 14,
@@ -130,7 +192,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
 
   Widget _buildProfileImage() {
     return Hero(
-      tag: _currentEmployee.id,
+      tag: _currentEmployee!.id,
       child: Container(
         width: 70,
         height: 70,
@@ -143,9 +205,9 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
             width: 2,
           ),
         ),
-        child: _currentEmployee.imageUrl.isNotEmpty
+        child: _currentEmployee!.imageUrl.isNotEmpty
             ? Image.network(
-                _currentEmployee.imageUrl,
+                _currentEmployee!.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
                     _buildInitialsFallback(),
@@ -158,8 +220,8 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
   Widget _buildInitialsFallback() {
     return Center(
       child: Text(
-        _currentEmployee.name.isNotEmpty
-            ? _currentEmployee.name[0].toUpperCase()
+        _currentEmployee!.name.isNotEmpty
+            ? _currentEmployee!.name[0].toUpperCase()
             : "?",
         style: const TextStyle(
           fontSize: 28,
@@ -180,7 +242,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
         ),
         const SizedBox(width: 8),
         Text(
-          'Oxirgi kelgan vaqti: ${_currentEmployee.lastCheckIn}',
+          'Oxirgi kelgan vaqti: ${_currentEmployee!.lastCheckIn}',
           style: const TextStyle(color: AppColors.mintLight, fontSize: 14),
         ),
       ],
@@ -200,25 +262,25 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
         children: [
           _StatCard(
             title: "Erta ketish",
-            value: '${_currentEmployee.earlyLeaves}',
+            value: '${_currentEmployee!.earlyLeaves}',
             color: Colors.purple,
             icon: Icons.exit_to_app,
           ),
           _StatCard(
             title: 'Kelmagan',
-            value: '${_currentEmployee.absents}',
+            value: '${_currentEmployee!.absents}',
             color: Colors.redAccent,
             icon: Icons.person_off,
           ),
           _StatCard(
             title: 'Kelgan',
-            value: '${_currentEmployee.presentDays}',
+            value: '${_currentEmployee!.presentDays}',
             color: AppColors.primary,
             icon: Icons.how_to_reg,
           ),
           _StatCard(
             title: 'Kech qolgan',
-            value: '${_currentEmployee.lateIns}',
+            value: '${_currentEmployee!.lateIns}',
             color: Colors.orange,
             icon: Icons.timer_outlined,
           ),
@@ -242,7 +304,7 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [_buildActivityList(), _buildAttendanceContent()],
+                children: [_buildInfoTab(), _buildAttendanceContent()],
               ),
             ),
           ],
@@ -270,20 +332,68 @@ class _EmployeeHRMScreenState extends State<EmployeeHRMScreen>
         unselectedLabelColor: AppColors.sage,
         dividerColor: Colors.transparent,
         tabs: const [
-          Tab(text: 'Faoliyat'),
+          Tab(text: "Ma'lumot"),
           Tab(text: 'Davomat'),
         ],
       ),
     );
   }
 
-  Widget _buildActivityList() {
-    // Xodim faoliyati jurnali hali ishlab chiqilmagan — bu tizim xodimlar
-    // uchun alohida login taqdim etmaydi, faoliyatni kim va qachon amalga
-    // oshirganini avtomatik yozib borish uchun alohida dizayn kerak.
-    return _buildEmptyTabState(
-      icon: Icons.history_toggle_off_rounded,
-      message: "Faoliyat tarixi hali mavjud emas",
+  String _employeeSubtitle(EmployeeModel employee) {
+    // Firestore hujjat id'si uzun bo'ladi, lekin qisqa id ham bo'lishi
+    // mumkin — `substring(0, 5)` bunday holatda yiqilardi.
+    final shortId = employee.id.length > 5
+        ? '${employee.id.substring(0, 5)}...'
+        : employee.id;
+    return 'ID: $shortId | ${employee.role}';
+  }
+
+  /// "Ma'lumot" bo'limi — telefon, maosh va balans ilgari ilovaning
+  /// hech bir ekranida ko'rinmasdi.
+  Widget _buildInfoTab() {
+    final employee = _currentEmployee!;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+      physics: const BouncingScrollPhysics(),
+      children: [
+        _InfoTile(
+          icon: Icons.badge_outlined,
+          label: "Lavozimi",
+          value: employee.role.isEmpty ? "Ko'rsatilmagan" : employee.role,
+        ),
+        _InfoTile(
+          icon: Icons.phone_outlined,
+          label: "Telefon",
+          value: employee.phone.isEmpty ? "Ko'rsatilmagan" : employee.phone,
+        ),
+        if (employee.altPhone.isNotEmpty)
+          _InfoTile(
+            icon: Icons.add_call,
+            label: "Qo'shimcha telefon",
+            value: employee.altPhone,
+          ),
+        _InfoTile(
+          icon: Icons.payments_outlined,
+          label: "Oylik maosh",
+          value: AppFormat.money(employee.salary),
+        ),
+        _InfoTile(
+          icon: Icons.account_balance_wallet_outlined,
+          label: "Qo'lidagi balans",
+          value: AppFormat.money(employee.balance),
+        ),
+        _InfoTile(
+          icon: Icons.event_outlined,
+          label: "Qo'shilgan sana",
+          value: AppFormat.dateLong(employee.createdAt),
+        ),
+        if (employee.notes.isNotEmpty)
+          _InfoTile(
+            icon: Icons.edit_note_outlined,
+            label: "Eslatma",
+            value: employee.notes,
+          ),
+      ],
     );
   }
 
@@ -371,3 +481,53 @@ class _StatCard extends StatelessWidget {
   }
 }
 
+class _InfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.mintLight),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 22),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: AppColors.sage, fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: AppColors.forestDark,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

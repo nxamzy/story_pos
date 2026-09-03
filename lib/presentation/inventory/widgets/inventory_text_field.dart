@@ -10,6 +10,10 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final String? Function(String?)? validator;
 
+  /// Suffiks belgisi bosilganda ishlaydi (masalan shtrix-kod skaneri).
+  /// Berilmasa belgi shunchaki bezak bo'ladi.
+  final VoidCallback? onSuffixTap;
+
   const CustomTextField({
     super.key,
     required this.label,
@@ -19,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.maxLines = 1,
     this.validator,
+    this.onSuffixTap,
   });
 
   @override
@@ -48,9 +53,18 @@ class CustomTextField extends StatelessWidget {
                 color: AppColors.mintMedium,
                 fontSize: 14,
               ),
-              suffixIcon: suffixIcon != null
-                  ? Icon(suffixIcon, color: AppColors.mintMedium, size: 22)
-                  : null,
+              suffixIcon: suffixIcon == null
+                  ? null
+                  : IconButton(
+                      onPressed: onSuffixTap,
+                      icon: Icon(
+                        suffixIcon,
+                        color: onSuffixTap == null
+                            ? AppColors.mintMedium
+                            : AppColors.primary,
+                        size: 22,
+                      ),
+                    ),
               filled: true,
               fillColor: AppColors.white,
               contentPadding: const EdgeInsets.symmetric(

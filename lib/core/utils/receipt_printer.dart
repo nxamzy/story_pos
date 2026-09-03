@@ -35,6 +35,8 @@ class ReceiptPrinter {
               _line("Chek", '#${_shortId(sale.id)}'),
             if (sale?.customerName != null && sale!.customerName!.isNotEmpty)
               _line("Mijoz", sale.customerName!),
+            if (sale?.cashierName != null && sale!.cashierName!.isNotEmpty)
+              _line("Kassir", sale.cashierName!),
             pw.Divider(),
 
             ...items.map(

@@ -14,6 +14,11 @@ class SaleModel extends Equatable {
   final String paymentMethod;
   final String? customerId;
   final String? customerName;
+
+  /// Savdoni rasmiylashtirgan kassir (Profil -> "Profilni almashtirish"
+  /// orqali tanlanadi). Bo'sh bo'lsa — do'kon egasi o'zi sotgan.
+  final String? cashierId;
+  final String? cashierName;
   final String note;
   final DateTime createdAt;
 
@@ -34,6 +39,8 @@ class SaleModel extends Equatable {
     this.paymentMethod = 'cash',
     this.customerId,
     this.customerName,
+    this.cashierId,
+    this.cashierName,
     this.note = '',
     required this.createdAt,
     this.refunded = false,
@@ -63,6 +70,8 @@ class SaleModel extends Equatable {
       paymentMethod: ModelUtils.toStr(map['paymentMethod'], 'cash'),
       customerId: map['customerId'] as String?,
       customerName: map['customerName'] as String?,
+      cashierId: map['cashierId'] as String?,
+      cashierName: map['cashierName'] as String?,
       note: ModelUtils.toStr(map['note']),
       refunded: map['refunded'] == true,
       refundedAt: ModelUtils.dateOrNull(map['refundedAt']),
@@ -82,6 +91,8 @@ class SaleModel extends Equatable {
       'paymentMethod': paymentMethod,
       'customerId': customerId,
       'customerName': customerName,
+      'cashierId': cashierId,
+      'cashierName': cashierName,
       'note': note,
       'itemCount': itemCount,
       'profit': profit,

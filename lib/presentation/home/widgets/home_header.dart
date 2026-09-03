@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_state.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
@@ -68,6 +70,26 @@ class _HeaderState extends State<Header> {
                             fontWeight: FontWeight.bold,
                           ),
                           overflow: TextOverflow.ellipsis,
+                        ),
+                        // Kassada boshqa xodim turgan bo'lsa buni ko'rsatib
+                        // turamiz — savdo o'sha kassir nomiga yoziladi.
+                        BlocBuilder<EmployeeBloc, EmployeeState>(
+                          buildWhen: (p, c) =>
+                              p.activeCashier != c.activeCashier,
+                          builder: (context, employeeState) {
+                            final cashier = employeeState.activeCashier;
+                            if (cashier == null) return const SizedBox.shrink();
+
+                            return Text(
+                              "Kassir: ${cashier.name}",
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
                         ),
                       ],
                     );

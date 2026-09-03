@@ -36,6 +36,18 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     on<SelectEmployee>(
       (event, emit) => emit(state.copyWith(selected: event.employee)),
     );
+    on<SetActiveCashier>(
+      (event, emit) => emit(
+        state.copyWith(
+          activeCashier: event.employee,
+          clearActiveCashier: event.employee == null,
+          actionMessage: event.employee == null
+              ? "Do'kon egasi rejimiga qaytildi"
+              : "${event.employee!.name} kassaga o'tdi",
+          clearError: true,
+        ),
+      ),
+    );
   }
 
   void _onLoad(LoadEmployees event, Emitter<EmployeeState> emit) {

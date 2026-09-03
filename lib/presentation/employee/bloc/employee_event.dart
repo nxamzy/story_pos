@@ -59,3 +59,13 @@ class SelectEmployee extends EmployeeEvent {
   @override
   List<Object?> get props => [employee];
 }
+
+/// Kassada ishlayotgan xodimni belgilaydi (PIN tekshirilgandan keyin).
+/// `null` — do'kon egasiga qaytish.
+class SetActiveCashier extends EmployeeEvent {
+  final EmployeeModel? employee;
+  const SetActiveCashier(this.employee);
+
+  @override
+  List<Object?> get props => [employee];
+}

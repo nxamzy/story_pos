@@ -3,19 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/pin_hasher.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/core/widgets/confirm_dialog.dart';
+import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_event.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_state.dart';
+import 'package:ocam_pos/presentation/profile/widgets/cashier_pin_dialog.dart';
 import 'package:ocam_pos/presentation/profile/widgets/profile_selection_item.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 
-/// Kassir profillari orasida almashtirish.
+/// Kassada ishlayotgan xodimni almashtirish.
 ///
-/// Eslatma: hozircha faqat ko'rish uchun — haqiqiy "almashtirish" PIN yoki
-/// boshqa xavfsizlik tekshiruvi talab qiladi, u hali loyihalanmagan.
-/// Shu sababli tugma haqiqatda hech narsani o'zgartirmasdan yopilib
-/// qolmasin deb, "Tez orada" xabarini ko'rsatadi.
+/// Xodim uchun PIN o'rnatilgan bo'lsa (xodim profilida), almashtirish uchun
+/// shu PIN so'raladi. Tanlangandan keyin savdolar o'sha kassir nomiga
+/// yoziladi (chekda ham ko'rinadi).
 void showConfirmSelect(BuildContext context) {
   final employeeBloc = context.read<EmployeeBloc>()..add(const LoadEmployees());
   String? selectedId;
@@ -105,7 +108,14 @@ void showConfirmSelect(BuildContext context) {
 
                     const SizedBox(height: 24),
 
-                    _buildSwitchBtn(context),
+                    _buildSwitchBtn(
+                      context,
+                      onPressed: () => _switchProfile(
+                        context,
+                        employeeBloc,
+                        selectedId,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                   ],
                 ),
@@ -148,12 +158,72 @@ Widget _buildShowAllBtn(BuildContext context) {
   );
 }
 
-Widget _buildSwitchBtn(BuildContext context) {
+/// Tanlangan xodimni kassaga o'tkazadi: PIN o'rnatilgan bo'lsa tekshiradi,
+/// bo'lmasa ogohlantirish bilan tasdiqlatadi.
+Future<void> _switchProfile(
+  BuildContext context,
+  EmployeeBloc employeeBloc,
+  String? selectedId,
+) async {
+  if (selectedId == null) {
+    AppSnackBar.error(context, "Avval xodimni tanlang");
+    return;
+  }
+
+  EmployeeModel? employee;
+  for (final item in employeeBloc.state.employees) {
+    if (item.id == selectedId) {
+      employee = item;
+      break;
+    }
+  }
+  if (employee == null) return;
+
+  if (employee.pinHash.isEmpty) {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: "PIN o'rnatilmagan",
+      message:
+          "${employee.name} uchun PIN kod o'rnatilmagan. Baribir kassaga "
+          "o'tkazilsinmi? PIN'ni xodim profilidan o'rnatishingiz mumkin.",
+      confirmLabel: "Ha, o'tkazish",
+      isDanger: false,
+    );
+    if (!confirmed || !context.mounted) return;
+  } else {
+    final pin = await showCashierPinDialog(
+      context,
+      employeeName: employee.name,
+    );
+    if (pin == null || !context.mounted) return;
+
+    final ok = PinHasher.matches(
+      pin: pin,
+      storedHash: employee.pinHash,
+      salt: employee.id,
+    );
+    if (!ok) {
+      AppSnackBar.error(context, "PIN kod noto'g'ri");
+      return;
+    }
+  }
+
+  employeeBloc.add(SetActiveCashier(employee));
+  if (context.mounted) {
+    AppSnackBar.success(context, "${employee.name} kassaga o'tdi");
+    Navigator.pop(context);
+  }
+}
+
+Widget _buildSwitchBtn(
+  BuildContext context, {
+  required VoidCallback onPressed,
+}) {
   return SizedBox(
     width: double.infinity,
     height: 58,
     child: ElevatedButton(
-      onPressed: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,

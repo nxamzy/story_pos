@@ -190,6 +190,8 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
       paymentMethod: state.paymentMethod,
       customerId: state.customer?.id,
       customerName: state.customer?.name,
+      cashierId: event.cashierId,
+      cashierName: event.cashierName,
       note: event.note ?? '',
       createdAt: event.date ?? DateTime.now(),
     );
@@ -212,6 +214,8 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
             paymentMethod: sale.paymentMethod,
             customerId: sale.customerId,
             customerName: sale.customerName,
+            cashierId: sale.cashierId,
+            cashierName: sale.cashierName,
             note: sale.note,
             createdAt: sale.createdAt,
           ),

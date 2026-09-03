@@ -217,7 +217,28 @@ class _ReceiptDetailScreenState extends State<ReceiptDetailScreen> {
                           ),
                         ),
                       ],
-                      if (sale.note.isNotEmpty) ...[
+                      if (sale.cashierName != null &&
+                      sale.cashierName!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    const Text(
+                      "Kassir",
+                      style: TextStyle(
+                        color: AppColors.sage,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      sale.cashierName!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.forestDark,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                  if (sale.note.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         const Text(
                           "Eslatma",

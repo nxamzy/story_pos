@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/utils/pin_hasher.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/presentation/customers/widgets/customer_text_field.dart';
@@ -55,6 +56,9 @@ class _EditEmployeeSheetState extends State<EditEmployeeSheet> {
     text: widget.employee.notes,
   );
 
+  /// Yangi PIN. Bo'sh qoldirilsa mavjud PIN o'zgarmaydi.
+  final pinController = TextEditingController();
+
   bool _isSaving = false;
 
   @override
@@ -65,10 +69,17 @@ class _EditEmployeeSheetState extends State<EditEmployeeSheet> {
     altPhoneController.dispose();
     salaryController.dispose();
     notesController.dispose();
+    pinController.dispose();
     super.dispose();
   }
 
   void _onSave() {
+    final pin = pinController.text.trim();
+    if (pin.isNotEmpty && !PinHasher.isValidPin(pin)) {
+      AppSnackBar.error(context, "PIN ${PinHasher.pinLength} ta raqamdan iborat bo'lsin");
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     context.read<EmployeeBloc>().add(
@@ -84,6 +95,11 @@ class _EditEmployeeSheetState extends State<EditEmployeeSheet> {
               double.tryParse(salaryController.text.replaceAll(',', '.')) ??
               widget.employee.salary,
           notes: notesController.text.trim(),
+          // PIN kiritilmagan bo'lsa eskisi qoladi; kiritilgan bo'lsa
+          // faqat xeshi saqlanadi.
+          pinHash: pin.isEmpty
+              ? widget.employee.pinHash
+              : PinHasher.hash(pin, salt: widget.employee.id),
         ),
       ),
     );
@@ -155,6 +171,22 @@ class _EditEmployeeSheetState extends State<EditEmployeeSheet> {
                 label: "Eslatma",
                 controller: notesController,
                 maxLines: 2,
+              ),
+              const SizedBox(height: 12),
+              CustomInputField(
+                label: widget.employee.pinHash.isEmpty
+                    ? "Kassir PIN kodi (${PinHasher.pinLength} raqam)"
+                    : "Yangi PIN (bo'sh qoldirilsa o'zgarmaydi)",
+                controller: pinController,
+                keyboardType: TextInputType.number,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 6, left: 4),
+                child: Text(
+                  "PIN kassir profilini almashtirishda so'raladi. "
+                  "Ochiq matnda saqlanmaydi.",
+                  style: TextStyle(color: AppColors.sage, fontSize: 11),
+                ),
               ),
               const SizedBox(height: 30),
               _buildSaveButton(),

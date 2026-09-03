@@ -5,6 +5,7 @@ import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/utils/receipt_printer.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
@@ -116,11 +117,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   return;
                 }
 
+                final cashier = context
+                    .read<EmployeeBloc>()
+                    .state
+                    .activeCashier;
+
                 context.read<SaleBloc>().add(
                   CompleteSaleEvent(
                     amountPaid: paid,
                     note: _noteController.text.trim(),
                     date: _selectedDate,
+                    cashierId: cashier?.id,
+                    cashierName: cashier?.name,
                   ),
                 );
               },

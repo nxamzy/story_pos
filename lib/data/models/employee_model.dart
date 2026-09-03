@@ -14,6 +14,10 @@ class EmployeeModel extends Equatable {
   /// Xodim haqidagi ichki eslatma — xuddi shu sababdan saqlanmasdi.
   final String notes;
   final String imageUrl;
+
+  /// Kassir PIN kodining sha256 xeshi (ochiq PIN saqlanmaydi).
+  /// Bo'sh bo'lsa — bu xodim uchun PIN o'rnatilmagan.
+  final String pinHash;
   final String lastCheckIn;
   final double salary;
   final double balance;
@@ -31,6 +35,7 @@ class EmployeeModel extends Equatable {
     this.altPhone = '',
     this.notes = '',
     this.imageUrl = '',
+    this.pinHash = '',
     this.lastCheckIn = "Kelmagan",
     this.salary = 0,
     this.balance = 0,
@@ -50,6 +55,7 @@ class EmployeeModel extends Equatable {
       altPhone: ModelUtils.toStr(map['altPhone']),
       notes: ModelUtils.toStr(map['notes']),
       imageUrl: ModelUtils.toStr(map['imageUrl']),
+      pinHash: ModelUtils.toStr(map['pinHash']),
       lastCheckIn: ModelUtils.toStr(map['lastCheckIn'], 'Kelmagan'),
       salary: ModelUtils.toDouble(map['salary']),
       balance: ModelUtils.toDouble(map['balance']),
@@ -69,6 +75,7 @@ class EmployeeModel extends Equatable {
       'altPhone': altPhone,
       'notes': notes,
       'imageUrl': imageUrl,
+      'pinHash': pinHash,
       'lastCheckIn': lastCheckIn,
       'salary': salary,
       'balance': balance,
@@ -87,6 +94,7 @@ class EmployeeModel extends Equatable {
     String? altPhone,
     String? notes,
     String? imageUrl,
+    String? pinHash,
     String? lastCheckIn,
     double? salary,
     double? balance,
@@ -104,6 +112,7 @@ class EmployeeModel extends Equatable {
       altPhone: altPhone ?? this.altPhone,
       notes: notes ?? this.notes,
       imageUrl: imageUrl ?? this.imageUrl,
+      pinHash: pinHash ?? this.pinHash,
       lastCheckIn: lastCheckIn ?? this.lastCheckIn,
       salary: salary ?? this.salary,
       balance: balance ?? this.balance,
@@ -124,6 +133,7 @@ class EmployeeModel extends Equatable {
     altPhone,
     notes,
     imageUrl,
+    pinHash,
     salary,
     balance,
     presentDays,

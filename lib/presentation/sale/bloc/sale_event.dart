@@ -106,10 +106,27 @@ class CompleteSaleEvent extends SaleEvent {
   final String? note;
   final DateTime? date;
 
-  const CompleteSaleEvent({required this.amountPaid, this.note, this.date});
+  /// Kassada turgan xodim (tanlangan bo'lsa) — chekda va savdo yozuvida
+  /// kim sotgani ko'rinishi uchun.
+  final String? cashierId;
+  final String? cashierName;
+
+  const CompleteSaleEvent({
+    required this.amountPaid,
+    this.note,
+    this.date,
+    this.cashierId,
+    this.cashierName,
+  });
 
   @override
-  List<Object?> get props => [amountPaid, note, date];
+  List<Object?> get props => [
+    amountPaid,
+    note,
+    date,
+    cashierId,
+    cashierName,
+  ];
 }
 
 /// Yakunlangan savdoni qaytaradi (bekor qiladi).

@@ -38,6 +38,9 @@ dependencies:
   intl: ^0.18.1
   url_launcher: ^6.3.2
 
+  # Kassir PIN kodini xeshlab saqlash uchun (ochiq matnda saqlanmaydi)
+  crypto: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

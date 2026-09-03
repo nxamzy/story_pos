@@ -6,11 +6,16 @@ class SettingsItem extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
+  /// Sozlamaning joriy qiymati (masalan do'kon nomi). Bo'sh bo'lsa
+  /// "Kiritilmagan" ko'rsatiladi.
+  final String? value;
+
   const SettingsItem({
     super.key,
     required this.title,
     required this.icon,
     required this.onTap,
+    this.value,
   });
 
   @override
@@ -40,6 +45,15 @@ class SettingsItem extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
+        subtitle: value == null
+            ? null
+            : Text(
+                value!.isEmpty ? "Kiritilmagan" : value!,
+                style: TextStyle(
+                  color: value!.isEmpty ? AppColors.mintMedium : AppColors.sage,
+                  fontSize: 13,
+                ),
+              ),
         trailing: const Icon(
           Icons.chevron_right,
           color: AppColors.sage,

@@ -9,6 +9,14 @@ class UserModel extends Equatable {
   final String phone;
   final String? photoUrl;
   final String storeName;
+
+  /// Do'konning aloqa raqami — foydalanuvchining shaxsiy raqamidan
+  /// alohida (chekda va sozlamalarda shu ko'rsatiladi).
+  final String storePhone;
+  final String address;
+
+  /// STIR (soliq to'lovchi identifikatsiya raqami).
+  final String taxId;
   final DateTime? createdAt;
 
   const UserModel({
@@ -19,6 +27,9 @@ class UserModel extends Equatable {
     this.phone = '',
     this.photoUrl,
     this.storeName = '',
+    this.storePhone = '',
+    this.address = '',
+    this.taxId = '',
     this.createdAt,
   });
 
@@ -43,6 +54,9 @@ class UserModel extends Equatable {
       phone: ModelUtils.toStr(map['phone']),
       photoUrl: map['photoUrl'] as String?,
       storeName: ModelUtils.toStr(map['storeName']),
+      storePhone: ModelUtils.toStr(map['storePhone']),
+      address: ModelUtils.toStr(map['address']),
+      taxId: ModelUtils.toStr(map['taxId']),
       createdAt: ModelUtils.dateOrNull(map['createdAt']),
     );
   }
@@ -56,6 +70,9 @@ class UserModel extends Equatable {
       'phone': phone,
       'photoUrl': photoUrl,
       'storeName': storeName,
+      'storePhone': storePhone,
+      'address': address,
+      'taxId': taxId,
     };
   }
 
@@ -67,6 +84,9 @@ class UserModel extends Equatable {
     String? phone,
     String? photoUrl,
     String? storeName,
+    String? storePhone,
+    String? address,
+    String? taxId,
     DateTime? createdAt,
   }) {
     return UserModel(
@@ -77,6 +97,9 @@ class UserModel extends Equatable {
       phone: phone ?? this.phone,
       photoUrl: photoUrl ?? this.photoUrl,
       storeName: storeName ?? this.storeName,
+      storePhone: storePhone ?? this.storePhone,
+      address: address ?? this.address,
+      taxId: taxId ?? this.taxId,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -90,5 +113,8 @@ class UserModel extends Equatable {
     phone,
     photoUrl,
     storeName,
+    storePhone,
+    address,
+    taxId,
   ];
 }

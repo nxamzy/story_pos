@@ -44,3 +44,22 @@ class UpdateUserProfile extends ProfileEvent {
   @override
   List<Object?> get props => [firstName, lastName, phone];
 }
+
+/// Do'kon ma'lumotlari (Sozlamalar sahifasidan). Faqat berilgan maydon
+/// yangilanadi — qolganlari o'zgarmaydi.
+class UpdateStoreInfo extends ProfileEvent {
+  final String? storeName;
+  final String? storePhone;
+  final String? address;
+  final String? taxId;
+
+  const UpdateStoreInfo({
+    this.storeName,
+    this.storePhone,
+    this.address,
+    this.taxId,
+  });
+
+  @override
+  List<Object?> get props => [storeName, storePhone, address, taxId];
+}

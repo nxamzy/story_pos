@@ -30,6 +30,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ),
     );
     on<UpdateUserProfile>(_onUpdate);
+    on<UpdateStoreInfo>(_onUpdateStore);
   }
 
   void _onLoad(LoadUserProfile event, Emitter<ProfileState> emit) {
@@ -57,6 +58,33 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         ),
       );
       emit(state.copyWith(actionMessage: "Profil yangilandi", clearError: true));
+    } catch (error) {
+      emit(state.copyWith(error: Failure.from(error).message));
+    }
+  }
+
+  Future<void> _onUpdateStore(
+    UpdateStoreInfo event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final current = state.user;
+    if (current == null) return;
+
+    try {
+      await _repository.updateProfile(
+        current.copyWith(
+          storeName: event.storeName,
+          storePhone: event.storePhone,
+          address: event.address,
+          taxId: event.taxId,
+        ),
+      );
+      emit(
+        state.copyWith(
+          actionMessage: "Do'kon ma'lumoti yangilandi",
+          clearError: true,
+        ),
+      );
     } catch (error) {
       emit(state.copyWith(error: Failure.from(error).message));
     }

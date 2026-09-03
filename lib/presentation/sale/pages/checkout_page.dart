@@ -5,6 +5,7 @@ import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/utils/receipt_printer.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
@@ -49,7 +50,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         final sale = state.completedSale;
         if (sale != null) {
           if (_printReceipt) {
-            await ReceiptPrinter.printReceipt(sale.items, sale.total);
+            await ReceiptPrinter.printReceipt(
+              sale.items,
+              sale.total,
+              sale: sale,
+              store: context.read<ProfileBloc>().state.user,
+            );
           }
           if (context.mounted) {
             showSuccessSheet(context);

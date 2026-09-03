@@ -4,6 +4,7 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/utils/receipt_printer.dart';
 import 'package:ocam_pos/data/models/sale_model.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/sale/widgets/receipt_item_row.dart';
 
@@ -53,7 +54,12 @@ class ReceiptDetailScreen extends StatelessWidget {
               ),
               onSelected: (value) {
                 if (value == 'print') {
-                  ReceiptPrinter.printReceipt(sale.items, sale.total);
+                  ReceiptPrinter.printReceipt(
+                    sale.items,
+                    sale.total,
+                    sale: sale,
+                    store: context.read<ProfileBloc>().state.user,
+                  );
                 }
               },
               itemBuilder: (context) => [

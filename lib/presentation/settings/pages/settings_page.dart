@@ -4,9 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/core/widgets/confirm_dialog.dart';
+import 'package:ocam_pos/core/widgets/text_input_dialog.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
+import 'package:ocam_pos/data/models/user_model.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_event.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
 import 'package:ocam_pos/presentation/settings/widgets/settings_item.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -44,72 +49,64 @@ class SettingsPage extends StatelessWidget {
           child: Divider(height: 1, color: AppColors.mintLight),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle("Do'kon ma'lumoti"),
-            SettingsItem(
-              title: "Do'kon nomi",
-              icon: Icons.store_outlined,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "Aloqa raqami",
-              icon: Icons.phone_in_talk_outlined,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "STIR",
-              icon: Icons.assignment_outlined,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "Manzil",
-              icon: Icons.location_on_outlined,
-              onTap: () => _comingSoon(context),
-            ),
+      body: BlocListener<ProfileBloc, ProfileState>(
+        listenWhen: (previous, current) =>
+            current.actionMessage != null || current.error != null,
+        listener: (context, state) {
+          if (state.error != null) {
+            AppSnackBar.error(context, state.error!);
+          } else if (state.actionMessage != null) {
+            AppSnackBar.success(context, state.actionMessage!);
+          }
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle("Do'kon ma'lumoti"),
+              const _StoreInfoSection(),
 
-            _buildSectionTitle("Kassa sozlamalari"),
-            SettingsItem(
-              title: "Valyuta",
-              icon: Icons.payments_outlined,
-              onTap: () => _comingSoon(context),
-            ),
+              _buildSectionTitle("Kassa sozlamalari"),
+              SettingsItem(
+                title: "Valyuta",
+                icon: Icons.payments_outlined,
+                onTap: () => _comingSoon(context),
+              ),
 
-            _buildSectionTitle("Qurilma sozlamalari"),
-            SettingsItem(
-              title: "Printer",
-              icon: Icons.print_outlined,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "Shtrix-kod skaneri",
-              icon: Icons.qr_code_scanner_outlined,
-              onTap: () => _comingSoon(context),
-            ),
+              _buildSectionTitle("Qurilma sozlamalari"),
+              SettingsItem(
+                title: "Printer",
+                icon: Icons.print_outlined,
+                onTap: () => _comingSoon(context),
+              ),
+              SettingsItem(
+                title: "Shtrix-kod skaneri",
+                icon: Icons.qr_code_scanner_outlined,
+                onTap: () => _comingSoon(context),
+              ),
 
-            _buildSectionTitle("Umumiy sozlamalar"),
-            SettingsItem(
-              title: "Bildirishnomalar",
-              icon: Icons.notifications_none_outlined,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "Vaqt formati",
-              icon: Icons.access_time,
-              onTap: () => _comingSoon(context),
-            ),
-            SettingsItem(
-              title: "Parolni o'zgartirish",
-              icon: Icons.lock_outline,
-              onTap: () => context.push(PlatformRoutes.chanegePassword.route),
-            ),
+              _buildSectionTitle("Umumiy sozlamalar"),
+              SettingsItem(
+                title: "Bildirishnomalar",
+                icon: Icons.notifications_none_outlined,
+                onTap: () => _comingSoon(context),
+              ),
+              SettingsItem(
+                title: "Vaqt formati",
+                icon: Icons.access_time,
+                onTap: () => _comingSoon(context),
+              ),
+              SettingsItem(
+                title: "Parolni o'zgartirish",
+                icon: Icons.lock_outline,
+                onTap: () => context.push(PlatformRoutes.chanegePassword.route),
+              ),
 
-            const SizedBox(height: 20),
-            _buildLogoutButton(context),
-          ],
+              const SizedBox(height: 20),
+              _buildLogoutButton(context),
+            ],
+          ),
         ),
       ),
     );
@@ -153,12 +150,105 @@ class SettingsPage extends StatelessWidget {
         leading: const Icon(Icons.logout, color: AppColors.error),
         title: const Text(
           "Chiqish",
-          style: TextStyle(
-            color: AppColors.error,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
         ),
       ),
+    );
+  }
+}
+
+/// Do'kon ma'lumotlari: nomi, aloqa raqami, STIR va manzil.
+///
+/// Bu to'rt sozlama ilgari faqat "Tez orada" xabarini ko'rsatardi, holbuki
+/// `UserModel`da ular uchun joy bor edi. Endi haqiqatan saqlanadi va chekda
+/// chop etiladi.
+class _StoreInfoSection extends StatelessWidget {
+  const _StoreInfoSection();
+
+  Future<void> _edit(
+    BuildContext context, {
+    required String title,
+    required String current,
+    String? hint,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    required UpdateStoreInfo Function(String value) toEvent,
+  }) async {
+    final value = await showTextInputDialog(
+      context,
+      title: title,
+      initialValue: current,
+      hint: hint,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+    );
+    if (value == null || !context.mounted || value == current) return;
+
+    context.read<ProfileBloc>().add(toEvent(value));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final user = state.user ?? const UserModel(uid: '', email: '');
+
+        return Column(
+          children: [
+            SettingsItem(
+              title: "Do'kon nomi",
+              icon: Icons.store_outlined,
+              value: user.storeName,
+              onTap: () => _edit(
+                context,
+                title: "Do'kon nomi",
+                current: user.storeName,
+                hint: "masalan: Ocam Market",
+                toEvent: (value) => UpdateStoreInfo(storeName: value),
+              ),
+            ),
+            SettingsItem(
+              title: "Aloqa raqami",
+              icon: Icons.phone_in_talk_outlined,
+              value: user.storePhone,
+              onTap: () => _edit(
+                context,
+                title: "Aloqa raqami",
+                current: user.storePhone,
+                hint: "+998 90 123 45 67",
+                keyboardType: TextInputType.phone,
+                toEvent: (value) => UpdateStoreInfo(storePhone: value),
+              ),
+            ),
+            SettingsItem(
+              title: "STIR",
+              icon: Icons.assignment_outlined,
+              value: user.taxId,
+              onTap: () => _edit(
+                context,
+                title: "STIR",
+                current: user.taxId,
+                hint: "9 xonali raqam",
+                keyboardType: TextInputType.number,
+                toEvent: (value) => UpdateStoreInfo(taxId: value),
+              ),
+            ),
+            SettingsItem(
+              title: "Manzil",
+              icon: Icons.location_on_outlined,
+              value: user.address,
+              onTap: () => _edit(
+                context,
+                title: "Manzil",
+                current: user.address,
+                hint: "Shahar, ko'cha, uy",
+                maxLines: 2,
+                toEvent: (value) => UpdateStoreInfo(address: value),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

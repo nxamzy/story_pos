@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 import 'package:ocam_pos/core/utils/receipt_printer.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_event.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_state.dart';
@@ -53,6 +54,7 @@ class BasketScreen extends StatelessWidget {
                     await ReceiptPrinter.printReceipt(
                       state.cartItems,
                       state.totalAmount,
+                      store: context.read<ProfileBloc>().state.user,
                     );
                   } else if (value == 'clear') {
                     context.read<SaleBloc>().add(const ClearCartEvent());

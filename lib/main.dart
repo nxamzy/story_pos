@@ -15,6 +15,7 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/cashdrawer/bloc/cash_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
+import 'package:ocam_pos/presentation/expenses/bloc/expense_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
@@ -71,6 +72,7 @@ class MyApp extends StatelessWidget {
         BlocProvider.value(value: sl<SupplierBloc>()),
         BlocProvider.value(value: sl<EmployeeBloc>()),
         BlocProvider.value(value: sl<CashBloc>()),
+        BlocProvider.value(value: sl<ExpenseBloc>()),
         BlocProvider.value(value: sl<ReportBloc>()),
       ],
       // Profil ma'lumoti (ism, email) Home ekranidagi sarlavhada ko'rinadi,

@@ -1,11 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
+import 'package:ocam_pos/data/models/expense_model.dart';
 import 'package:ocam_pos/data/models/sale_model.dart';
 
 class ReportState extends Equatable {
   final BlocStatus status;
   final DateTime selectedDate;
   final List<SaleModel> todaySales;
+  final List<ExpenseModel> todayExpenses;
   final double yearlyTotal;
   final String? error;
 
@@ -13,6 +15,7 @@ class ReportState extends Equatable {
     this.status = BlocStatus.initial,
     DateTime? selectedDate,
     this.todaySales = const [],
+    this.todayExpenses = const [],
     this.yearlyTotal = 0,
     this.error,
   }) : selectedDate = selectedDate ?? DateTime.now();
@@ -30,10 +33,19 @@ class ReportState extends Equatable {
 
   int get productsSold => countedSales.fold(0, (sum, s) => sum + s.itemCount);
 
+  /// Shu kundagi xarajatlar summasi.
+  double get expenseTotal =>
+      todayExpenses.fold(0, (sum, e) => sum + e.amount);
+
+  /// Xarajatlar chiqarib tashlangandan keyingi foyda — savdodagi sof
+  /// foydaning o'zi do'konning haqiqiy daromadi emas.
+  double get profitAfterExpenses => netIncome - expenseTotal;
+
   ReportState copyWith({
     BlocStatus? status,
     DateTime? selectedDate,
     List<SaleModel>? todaySales,
+    List<ExpenseModel>? todayExpenses,
     double? yearlyTotal,
     String? error,
     bool clearError = false,
@@ -42,6 +54,7 @@ class ReportState extends Equatable {
       status: status ?? this.status,
       selectedDate: selectedDate ?? this.selectedDate,
       todaySales: todaySales ?? this.todaySales,
+      todayExpenses: todayExpenses ?? this.todayExpenses,
       yearlyTotal: yearlyTotal ?? this.yearlyTotal,
       error: clearError ? null : (error ?? this.error),
     );
@@ -52,6 +65,7 @@ class ReportState extends Equatable {
     status,
     selectedDate,
     todaySales,
+    todayExpenses,
     yearlyTotal,
     error,
   ];

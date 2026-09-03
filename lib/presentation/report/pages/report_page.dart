@@ -100,6 +100,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                   "${state.productsSold}",
                                   "Sotilgan mahsulot",
                                 ),
+                                _buildStatCard(
+                                  Icons.payments_outlined,
+                                  AppColors.error,
+                                  AppFormat.money(state.expenseTotal),
+                                  "Xarajat",
+                                ),
+                                _buildStatCard(
+                                  Icons.savings_outlined,
+                                  AppColors.emeraldBase,
+                                  AppFormat.money(state.profitAfterExpenses),
+                                  "Xarajatdan keyin",
+                                ),
                               ],
                             ),
                           ),

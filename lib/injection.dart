@@ -10,6 +10,7 @@ import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/data/datasources/auth_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/customer_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/employee_remote_datasource.dart';
+import 'package:ocam_pos/data/datasources/expense_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/product_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/sale_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/supplier_remote_datasource.dart';
@@ -18,6 +19,7 @@ import 'package:ocam_pos/data/datasources/user_remote_datasource.dart';
 import 'package:ocam_pos/data/repositories/auth_repository.dart';
 import 'package:ocam_pos/data/repositories/customer_repository.dart';
 import 'package:ocam_pos/data/repositories/employee_repository.dart';
+import 'package:ocam_pos/data/repositories/expense_repository.dart';
 import 'package:ocam_pos/data/repositories/product_repository.dart';
 import 'package:ocam_pos/data/repositories/sale_repository.dart';
 import 'package:ocam_pos/data/repositories/supplier_repository.dart';
@@ -28,6 +30,7 @@ import 'package:ocam_pos/presentation/cashdrawer/bloc/cash_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_sales_bloc.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
+import 'package:ocam_pos/presentation/expenses/bloc/expense_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/refunds/bloc/refunds_bloc.dart';
@@ -80,6 +83,9 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton<EmployeeRemoteDataSource>(
       () => EmployeeRemoteDataSourceImpl(paths: sl()),
+    )
+    ..registerLazySingleton<ExpenseRemoteDataSource>(
+      () => ExpenseRemoteDataSourceImpl(paths: sl()),
     );
 
   // ---------- Repository'lar ----------
@@ -98,6 +104,9 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<SaleRepository>(() => SaleRepository(remote: sl()))
     ..registerLazySingleton<EmployeeRepository>(
       () => EmployeeRepository(remote: sl()),
+    )
+    ..registerLazySingleton<ExpenseRepository>(
+      () => ExpenseRepository(remote: sl()),
     );
 
   // ---------- BLoC'lar ----------
@@ -116,7 +125,10 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<SupplierBloc>(() => SupplierBloc(repository: sl()))
     ..registerLazySingleton<EmployeeBloc>(() => EmployeeBloc(repository: sl()))
     ..registerLazySingleton<CashBloc>(() => CashBloc(repository: sl()))
-    ..registerLazySingleton<ReportBloc>(() => ReportBloc(saleRepository: sl()));
+    ..registerLazySingleton<ExpenseBloc>(() => ExpenseBloc(repository: sl()))
+    ..registerLazySingleton<ReportBloc>(
+      () => ReportBloc(saleRepository: sl(), expenseRepository: sl()),
+    );
 
   // Sahifa-lokal BLoC — faqat bitta ekranga tegishli, shu sababli har safar
   // yangi nusxa (`registerFactory`) va `main.dart`dagi umumiy

@@ -15,7 +15,11 @@ class MenuGrid extends StatelessWidget {
         'icon': Icons.shopping_bag_outlined,
         'route': null,
       },
-      {'title': 'Xarajatlar', 'icon': Icons.payments_outlined, 'route': null},
+      {
+        'title': 'Xarajatlar',
+        'icon': Icons.payments_outlined,
+        'route': PlatformRoutes.expensesPage.route,
+      },
       {
         'title': 'Mijozlar',
         'icon': Icons.people_outline,

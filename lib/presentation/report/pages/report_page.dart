@@ -55,6 +55,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           return Column(
             children: [
               _buildHorizontalCalendar(state.selectedDate),
+              _buildPeriodChips(state),
               const Divider(height: 1, color: AppColors.mintLight),
               Expanded(
                 child: state.status.isFirstLoad
@@ -79,8 +80,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 _buildStatCard(
                                   Icons.show_chart_rounded,
                                   Colors.blue,
-                                  AppFormat.money(state.todayTotal),
-                                  "Bugungi savdo",
+                                  AppFormat.money(state.salesTotal),
+                                  "${state.period.label} savdosi",
                                 ),
                                 _buildStatCard(
                                   Icons.calendar_today_rounded,
@@ -117,6 +118,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           ),
 
                           SliverToBoxAdapter(
+                            child: _buildTopProducts(state),
+                          ),
+
+                          SliverToBoxAdapter(
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
                               child: Row(
@@ -145,7 +150,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             ),
                           ),
 
-                          if (state.todaySales.isEmpty)
+                          if (state.sales.isEmpty)
                             const SliverToBoxAdapter(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
@@ -154,7 +159,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "Bu kunda savdo bo'lmagan",
+                                    "Bu davrda savdo bo'lmagan",
                                     style: TextStyle(color: AppColors.sage),
                                   ),
                                 ),
@@ -168,9 +173,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               sliver: SliverList(
                                 delegate: SliverChildBuilderDelegate(
                                   (context, index) => _buildTransactionItem(
-                                    state.todaySales[index],
+                                    state.sales[index],
                                   ),
-                                  childCount: state.todaySales.length,
+                                  childCount: state.sales.length,
                                 ),
                               ),
                             ),
@@ -181,6 +186,107 @@ class _ReportsScreenState extends State<ReportsScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  /// Kun / hafta / oy tanlash.
+  Widget _buildPeriodChips(ReportState state) {
+    return Container(
+      color: AppColors.white,
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+      child: Row(
+        children: ReportPeriod.values.map((period) {
+          final isSelected = state.period == period;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(period.label),
+              selected: isSelected,
+              onSelected: (_) =>
+                  context.read<ReportBloc>().add(SelectReportPeriod(period)),
+              selectedColor: AppColors.primary,
+              backgroundColor: AppColors.background,
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.white : AppColors.forestDark,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              side: const BorderSide(color: AppColors.mintLight),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// Davr ichida eng ko'p sotilgan mahsulotlar — do'kon egasi nimani
+  /// ko'proq zaxira qilish kerakligini shu yerdan ko'radi.
+  Widget _buildTopProducts(ReportState state) {
+    final top = state.topProducts;
+    if (top.isEmpty) return const SizedBox.shrink();
+
+    final maxQuantity = top.first.quantity;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 32, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Eng ko'p sotilganlar",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.forestDark,
+            ),
+          ),
+          const SizedBox(height: 12),
+          for (final product in top)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.forestDark,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        "${product.quantity} dona · "
+                        "${AppFormat.money(product.revenue)}",
+                        style: const TextStyle(
+                          color: AppColors.sage,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: maxQuantity == 0
+                          ? 0
+                          : product.quantity / maxQuantity,
+                      minHeight: 6,
+                      backgroundColor: AppColors.mintLight,
+                      valueColor: const AlwaysStoppedAnimation(
+                        AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

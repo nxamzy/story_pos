@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/presentation/report/bloc/report_state.dart';
 
 abstract class ReportEvent extends Equatable {
   const ReportEvent();
@@ -7,13 +8,15 @@ abstract class ReportEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Tanlangan kunning hisobotini yuklaydi.
+/// Tanlangan sana va davr bo'yicha hisobotni yuklaydi.
 class LoadReport extends ReportEvent {
   final DateTime date;
-  const LoadReport(this.date);
+  final ReportPeriod? period;
+
+  const LoadReport(this.date, {this.period});
 
   @override
-  List<Object?> get props => [date];
+  List<Object?> get props => [date, period];
 }
 
 class SelectReportDate extends ReportEvent {
@@ -22,4 +25,13 @@ class SelectReportDate extends ReportEvent {
 
   @override
   List<Object?> get props => [date];
+}
+
+/// Kun / hafta / oy o'rtasida almashish.
+class SelectReportPeriod extends ReportEvent {
+  final ReportPeriod period;
+  const SelectReportPeriod(this.period);
+
+  @override
+  List<Object?> get props => [period];
 }

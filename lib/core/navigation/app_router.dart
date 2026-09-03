@@ -27,6 +27,7 @@ import 'package:ocam_pos/presentation/expenses/pages/expenses_page.dart';
 import 'package:ocam_pos/presentation/purchases/pages/add_purchase_page.dart';
 import 'package:ocam_pos/presentation/purchases/pages/purchases_page.dart';
 import 'package:ocam_pos/presentation/refunds/pages/refunds_page.dart';
+import 'package:ocam_pos/presentation/sales_history/pages/sales_history_page.dart';
 import 'package:ocam_pos/presentation/report/pages/report_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/basket_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/checkout_page.dart';
@@ -223,6 +224,10 @@ class AppRouter {
       GoRoute(
         path: PlatformRoutes.addPurchasePage.route,
         builder: (context, state) => const AddPurchasePage(),
+      ),
+      GoRoute(
+        path: PlatformRoutes.salesHistoryPage.route,
+        builder: (context, state) => const SalesHistoryPage(),
       ),
       GoRoute(
         path: PlatformRoutes.salePage.route,

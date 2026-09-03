@@ -80,12 +80,22 @@ class _RefundsView extends StatelessWidget {
             children: [
               _Summary(count: state.sales.length, total: state.totalAmount),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: state.sales.length,
-                  itemBuilder: (context, index) =>
-                      _RefundTile(sale: state.sales[index]),
+                // Chekdan qilingan yangi qaytarish shu ro'yxatga faqat
+                // qayta yuklangandan keyin tushadi (bir martalik so'rov,
+                // stream emas) — shuning uchun tortib yangilash bor.
+                child: RefreshIndicator(
+                  color: AppColors.primary,
+                  onRefresh: () async =>
+                      context.read<RefundsBloc>().add(const LoadRefunds()),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    itemCount: state.sales.length,
+                    itemBuilder: (context, index) =>
+                        _RefundTile(sale: state.sales[index]),
+                  ),
                 ),
               ),
             ],

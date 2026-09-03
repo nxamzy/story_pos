@@ -79,4 +79,8 @@ class PlatformRoutes {
     name: 'addPurchase',
     route: '/addPurchase',
   );
+  static const salesHistoryPage = RouteInfo(
+    name: 'salesHistory',
+    route: '/salesHistory',
+  );
 }

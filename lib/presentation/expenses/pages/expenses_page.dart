@@ -87,9 +87,16 @@ class _ExpensesPageState extends State<ExpensesPage> {
         label: const Text("Xarajat"),
       ),
       body: BlocListener<ExpenseBloc, ExpenseState>(
-        listenWhen: (previous, current) => current.error != null,
+        listenWhen: (previous, current) =>
+            current.error != null || current.actionMessage != null,
         listener: (context, state) {
-          if (state.error != null) AppSnackBar.error(context, state.error!);
+          if (state.error != null) {
+            AppSnackBar.error(context, state.error!);
+          } else if (state.actionMessage != null) {
+            // O'chirish ham shu yerda tasdiqlanadi — ilgari hech qanday
+            // xabar chiqmasdi.
+            AppSnackBar.success(context, state.actionMessage!);
+          }
         },
         child: BlocBuilder<ExpenseBloc, ExpenseState>(
           builder: (context, state) {

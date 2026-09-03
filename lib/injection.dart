@@ -39,6 +39,7 @@ import 'package:ocam_pos/presentation/purchases/bloc/purchase_bloc.dart';
 import 'package:ocam_pos/presentation/refunds/bloc/refunds_bloc.dart';
 import 'package:ocam_pos/presentation/report/bloc/report_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
+import 'package:ocam_pos/presentation/sales_history/bloc/sales_history_bloc.dart';
 import 'package:ocam_pos/presentation/supplier/bloc/supplier_bloc.dart';
 
 /// Butun ilovaning bog'liqliklari shu yerda ro'yxatdan o'tadi.
@@ -147,7 +148,10 @@ Future<void> configureDependencies() async {
     ..registerFactory<CustomerSalesBloc>(
       () => CustomerSalesBloc(repository: sl()),
     )
-    ..registerFactory<RefundsBloc>(() => RefundsBloc(repository: sl()));
+    ..registerFactory<RefundsBloc>(() => RefundsBloc(repository: sl()))
+    ..registerFactory<SalesHistoryBloc>(
+      () => SalesHistoryBloc(repository: sl()),
+    );
 }
 
 /// Testlarda holatni tozalash uchun.

@@ -25,7 +25,14 @@ class MenuGrid extends StatelessWidget {
         'icon': Icons.people_outline,
         'route': PlatformRoutes.customersPage.route,
       },
-      {'title': 'Hisob-fakturalar', 'icon': Icons.receipt_long_outlined, 'route': null},
+      {
+        // Ilgari "Hisob-fakturalar" deb turgan, lekin hech qanday hujjat
+        // tizimi yo'q edi. Do'konga kerak bo'ladigan narsa — eski chekni
+        // topish, shuning uchun savdolar tarixi.
+        'title': 'Savdolar tarixi',
+        'icon': Icons.receipt_long_outlined,
+        'route': PlatformRoutes.salesHistoryPage.route,
+      },
       {
         // Xodimlar ro'yxati ochiladi. Ilgari bu yerdan `/employee` yo'liga
         // (bitta xodim profiliga) hech qanday xodimsiz o'tilardi va ekran

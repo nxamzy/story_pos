@@ -440,8 +440,12 @@ class _InvoiceTile extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              "${sale.itemCount} dona",
-              style: const TextStyle(fontSize: 12, color: AppColors.sage),
+              sale.refunded ? "Qaytarilgan" : "${sale.itemCount} dona",
+              style: TextStyle(
+                fontSize: 12,
+                color: sale.refunded ? AppColors.error : AppColors.sage,
+                fontWeight: sale.refunded ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
             const SizedBox(width: 6),
             const Icon(Icons.chevron_right, size: 18, color: AppColors.sage),

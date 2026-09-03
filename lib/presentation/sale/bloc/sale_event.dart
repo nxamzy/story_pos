@@ -112,6 +112,15 @@ class CompleteSaleEvent extends SaleEvent {
   List<Object?> get props => [amountPaid, note, date];
 }
 
+/// Yakunlangan savdoni qaytaradi (bekor qiladi).
+class RefundSaleEvent extends SaleEvent {
+  final String saleId;
+  const RefundSaleEvent(this.saleId);
+
+  @override
+  List<Object?> get props => [saleId];
+}
+
 /// Ko'rsatilgan xabar/xato o'qildi.
 class SaleMessageCleared extends SaleEvent {
   const SaleMessageCleared();

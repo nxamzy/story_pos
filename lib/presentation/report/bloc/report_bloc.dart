@@ -40,10 +40,10 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
       final todaySales = results[0];
       final yearlySales = results[1];
-      final yearlyTotal = yearlySales.fold<double>(
-        0,
-        (sum, s) => sum + s.total,
-      );
+      // Qaytarilgan savdolar yillik summaga ham qo'shilmaydi.
+      final yearlyTotal = yearlySales
+          .where((sale) => !sale.refunded)
+          .fold<double>(0, (sum, s) => sum + s.total);
 
       emit(
         state.copyWith(

@@ -107,6 +107,67 @@ void main() {
     expect(saved.day, kecha.day);
   });
 
+  group('refundSale', () {
+    test('ombor tiklanadi, kassadan pul yechiladi', () async {
+      final product = await addProduct(stock: 10);
+      final saleId = await dataSource.createSale(saleOf(product, quantity: 2));
+
+      // Savdodan keyingi holat: 8 dona qoldiq, kassada 16 000.
+      await dataSource.refundSale(saleId);
+
+      final updated = await paths.products.doc(product.id).get();
+      expect(updated.data()!['stock'], 10);
+
+      final drawer = await paths.drawer.get();
+      expect(drawer.data()!['current_balance'], 0);
+
+      final sale = await paths.sales.doc(saleId).get();
+      expect(sale.data()!['refunded'], isTrue);
+      expect(sale.data()!['refundedAt'], isNotNull);
+    });
+
+    test('bir savdoni ikki marta qaytarib bo\'lmaydi', () async {
+      final product = await addProduct(stock: 10);
+      final saleId = await dataSource.createSale(saleOf(product));
+
+      await dataSource.refundSale(saleId);
+
+      await expectLater(
+        dataSource.refundSale(saleId),
+        throwsA(isA<ValidationException>()),
+      );
+
+      // Ombor ikki marta oshib ketmagan.
+      final updated = await paths.products.doc(product.id).get();
+      expect(updated.data()!['stock'], 10);
+    });
+
+    test('kassada pul qolmagan bo\'lsa qaytarish rad etiladi', () async {
+      final product = await addProduct(stock: 10);
+      final saleId = await dataSource.createSale(saleOf(product));
+
+      // Pul kassadan chiqarib yuborilgan holat.
+      await paths.drawer.set({'current_balance': 0});
+
+      await expectLater(
+        dataSource.refundSale(saleId),
+        throwsA(isA<ValidationException>()),
+      );
+
+      final sale = await paths.sales.doc(saleId).get();
+      expect(sale.data()!['refunded'], isFalse);
+      final updated = await paths.products.doc(product.id).get();
+      expect(updated.data()!['stock'], 8);
+    });
+
+    test('mavjud bo\'lmagan savdo uchun xato', () async {
+      await expectLater(
+        dataSource.refundSale('yoq-id'),
+        throwsA(isA<NotFoundException>()),
+      );
+    });
+  });
+
   test('bo\'sh savatni yakunlab bo\'lmaydi', () async {
     final bosh = SaleModel(
       id: '',

@@ -13,6 +13,14 @@ abstract class SaleRemoteDataSource {
 
   /// Bitta mijozning barcha xaridlari, eng yangisidan boshlab.
   Future<List<SaleModel>> getSalesByCustomer(String customerId);
+
+  /// Savdoni qaytaradi (bekor qiladi): ombor tiklanadi, naqd to'lov bo'lsa
+  /// kassadan yechiladi, mijozning sarfi kamayadi — hammasi bitta
+  /// tranzaksiyada.
+  Future<void> refundSale(String saleId);
+
+  /// So'nggi [days] kun ichida qaytarilgan savdolar.
+  Future<List<SaleModel>> getRefundedSales({int days});
 }
 
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
@@ -96,6 +104,85 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     });
 
     return saleDoc.id;
+  }
+
+  @override
+  Future<void> refundSale(String saleId) async {
+    final saleRef = _paths.sales.doc(saleId);
+    final drawerRef = _paths.drawer;
+
+    await _paths.db.runTransaction((transaction) async {
+      // 1-qadam: Firestore tranzaksiyasida avval BARCHA o'qish amallari.
+      final saleSnap = await transaction.get(saleRef);
+      if (!saleSnap.exists) {
+        throw const NotFoundException("Savdo topilmadi");
+      }
+
+      final sale = SaleModel.fromMap(saleSnap.data()!, saleSnap.id);
+      if (sale.refunded) {
+        throw const ValidationException("Bu savdo allaqachon qaytarilgan");
+      }
+
+      final productSnaps = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+      for (final item in sale.items) {
+        final id = item.product.id;
+        if (id.isEmpty || productSnaps.containsKey(id)) continue;
+        productSnaps[id] = await transaction.get(_paths.products.doc(id));
+      }
+
+      final isCash = sale.paymentMethod == 'cash';
+      final drawerSnap = isCash ? await transaction.get(drawerRef) : null;
+
+      // 2-qadam: naqd pul qaytariladigan bo'lsa, kassada yetarli mablag'
+      // borligini tekshiramiz — aks holda kassa balansi manfiyga tushardi.
+      if (isCash) {
+        final balance =
+            (drawerSnap?.data()?['current_balance'] as num?)?.toDouble() ?? 0;
+        if (balance < sale.total) {
+          throw const ValidationException(
+            "Kassada yetarli mablag' yo'q — avval kassani to'ldiring",
+          );
+        }
+      }
+
+      // 3-qadam: yozish.
+      for (final item in sale.items) {
+        final snap = productSnaps[item.product.id];
+        // Mahsulot o'chirilgan bo'lsa qoldiqni tiklab bo'lmaydi — savdo
+        // baribir qaytarilgan deb belgilanadi.
+        if (snap == null || !snap.exists) continue;
+        transaction.update(_paths.products.doc(item.product.id), {
+          'stock': FieldValue.increment(item.quantity),
+        });
+      }
+
+      if (isCash) {
+        transaction.update(drawerRef, {
+          'current_balance': FieldValue.increment(-sale.total),
+        });
+      }
+
+      if (sale.customerId != null && sale.customerId!.isNotEmpty) {
+        transaction.update(_paths.customers.doc(sale.customerId!), {
+          'totalSpent': FieldValue.increment(-sale.total),
+        });
+      }
+
+      transaction.update(saleRef, {
+        'refunded': true,
+        'refundedAt': FieldValue.serverTimestamp(),
+      });
+    });
+  }
+
+  @override
+  Future<List<SaleModel>> getRefundedSales({int days = 30}) async {
+    // Faqat sana bo'yicha so'raladi va `refunded` Dart tomonida
+    // filtrlanadi — shunda Firestore'da qo'shimcha kompozit indeks kerak
+    // bo'lmaydi.
+    final from = DateTime.now().subtract(Duration(days: days));
+    final sales = await getSales(from: from);
+    return sales.where((sale) => sale.refunded).toList();
   }
 
   bool _isToday(DateTime date) {

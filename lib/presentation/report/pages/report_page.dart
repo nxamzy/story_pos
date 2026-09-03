@@ -104,16 +104,31 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             ),
                           ),
 
-                          const SliverToBoxAdapter(
+                          SliverToBoxAdapter(
                             child: Padding(
-                              padding: EdgeInsets.fromLTRB(20, 32, 20, 16),
-                              child: Text(
-                                "So'nggi savdolar",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.forestDark,
-                                ),
+                              padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "So'nggi savdolar",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.forestDark,
+                                    ),
+                                  ),
+                                  if (state.refundedCount > 0)
+                                    Text(
+                                      "${state.refundedCount} ta qaytarilgan",
+                                      style: const TextStyle(
+                                        color: AppColors.error,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ),

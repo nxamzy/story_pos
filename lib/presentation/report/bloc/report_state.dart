@@ -17,12 +17,18 @@ class ReportState extends Equatable {
     this.error,
   }) : selectedDate = selectedDate ?? DateTime.now();
 
-  double get todayTotal => todaySales.fold(0, (sum, s) => sum + s.total);
+  /// Qaytarilgan savdolar hisobotga kirmaydi — ular bo'yicha pul ham,
+  /// mahsulot ham qaytarib berilgan.
+  List<SaleModel> get countedSales =>
+      todaySales.where((sale) => !sale.refunded).toList();
 
-  double get netIncome => todaySales.fold(0, (sum, s) => sum + s.profit);
+  int get refundedCount => todaySales.length - countedSales.length;
 
-  int get productsSold =>
-      todaySales.fold(0, (sum, s) => sum + s.itemCount);
+  double get todayTotal => countedSales.fold(0, (sum, s) => sum + s.total);
+
+  double get netIncome => countedSales.fold(0, (sum, s) => sum + s.profit);
+
+  int get productsSold => countedSales.fold(0, (sum, s) => sum + s.itemCount);
 
   ReportState copyWith({
     BlocStatus? status,

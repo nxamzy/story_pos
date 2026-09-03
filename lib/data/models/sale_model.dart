@@ -17,6 +17,12 @@ class SaleModel extends Equatable {
   final String note;
   final DateTime createdAt;
 
+  /// Savdo qaytarilgan (bekor qilingan) bo'lsa `true` — ombor, kassa va
+  /// mijoz sarfi orqaga qaytarilgan demakdir. Hisobotda bunday savdolar
+  /// summaga qo'shilmaydi.
+  final bool refunded;
+  final DateTime? refundedAt;
+
   const SaleModel({
     required this.id,
     required this.items,
@@ -30,6 +36,8 @@ class SaleModel extends Equatable {
     this.customerName,
     this.note = '',
     required this.createdAt,
+    this.refunded = false,
+    this.refundedAt,
   });
 
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
@@ -56,6 +64,8 @@ class SaleModel extends Equatable {
       customerId: map['customerId'] as String?,
       customerName: map['customerName'] as String?,
       note: ModelUtils.toStr(map['note']),
+      refunded: map['refunded'] == true,
+      refundedAt: ModelUtils.dateOrNull(map['refundedAt']),
       // Eski yozuvlarda sana `date` deb saqlangan.
       createdAt: ModelUtils.date(map['createdAt'] ?? map['date']),
     );
@@ -75,9 +85,18 @@ class SaleModel extends Equatable {
       'note': note,
       'itemCount': itemCount,
       'profit': profit,
+      'refunded': refunded,
     };
   }
 
   @override
-  List<Object?> get props => [id, items, total, paid, change, createdAt];
+  List<Object?> get props => [
+    id,
+    items,
+    total,
+    paid,
+    change,
+    createdAt,
+    refunded,
+  ];
 }

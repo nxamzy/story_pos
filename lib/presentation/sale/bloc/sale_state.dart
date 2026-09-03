@@ -18,6 +18,14 @@ class SaleState extends Equatable {
   /// Savdo yuborilayotgan payt — "To'lash" tugmasi bloklanadi.
   final bool isProcessing;
 
+  /// Qaytarish so'rovi yuborilgan payt.
+  final bool isRefunding;
+
+  /// Endigina qaytarilgan savdo id'si — chek ekrani shunga qarab
+  /// "Qaytarilgan" holatiga o'tadi. Bir martalik: keyingi `copyWith`da
+  /// `null`ga qaytadi.
+  final String? refundedSaleId;
+
   /// Oxirgi yakunlangan savdo — chek ekrani shuni ko'rsatadi.
   final SaleModel? completedSale;
 
@@ -33,6 +41,8 @@ class SaleState extends Equatable {
     this.customer,
     this.paymentMethod = 'cash',
     this.isProcessing = false,
+    this.isRefunding = false,
+    this.refundedSaleId,
     this.completedSale,
     this.error,
     this.actionMessage,
@@ -89,6 +99,8 @@ class SaleState extends Equatable {
     CustomerModel? customer,
     String? paymentMethod,
     bool? isProcessing,
+    bool? isRefunding,
+    String? refundedSaleId,
     SaleModel? completedSale,
     String? error,
     String? actionMessage,
@@ -105,6 +117,8 @@ class SaleState extends Equatable {
       customer: clearCustomer ? null : (customer ?? this.customer),
       paymentMethod: paymentMethod ?? this.paymentMethod,
       isProcessing: isProcessing ?? this.isProcessing,
+      isRefunding: isRefunding ?? this.isRefunding,
+      refundedSaleId: refundedSaleId,
       completedSale: clearCompletedSale
           ? null
           : (completedSale ?? this.completedSale),
@@ -123,6 +137,8 @@ class SaleState extends Equatable {
     customer,
     paymentMethod,
     isProcessing,
+    isRefunding,
+    refundedSaleId,
     completedSale,
     error,
     actionMessage,

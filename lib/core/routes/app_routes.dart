@@ -69,4 +69,5 @@ class PlatformRoutes {
   static const basketPage = RouteInfo(name: 'basket', route: '/basket');
   static const checkoutPage = RouteInfo(name: 'checkout', route: '/checkout');
   static const receiptPage = RouteInfo(name: 'receipt', route: '/receipt');
+  static const refundsPage = RouteInfo(name: 'refunds', route: '/refunds');
 }

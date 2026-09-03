@@ -69,6 +69,7 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
       (event, emit) => emit(state.copyWith(paymentMethod: event.method)),
     );
     on<CompleteSaleEvent>(_onComplete);
+    on<RefundSaleEvent>(_onRefund);
     on<SaleMessageCleared>(
       (event, emit) => emit(state.copyWith(clearError: true)),
     );
@@ -222,6 +223,31 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
       emit(
         state.copyWith(
           isProcessing: false,
+          error: Failure.from(error).message,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onRefund(
+    RefundSaleEvent event,
+    Emitter<SaleState> emit,
+  ) async {
+    emit(state.copyWith(isRefunding: true, clearError: true));
+    try {
+      await _saleRepository.refundSale(event.saleId);
+      emit(
+        state.copyWith(
+          isRefunding: false,
+          refundedSaleId: event.saleId,
+          actionMessage: "Savdo qaytarildi",
+          clearError: true,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isRefunding: false,
           error: Failure.from(error).message,
         ),
       );

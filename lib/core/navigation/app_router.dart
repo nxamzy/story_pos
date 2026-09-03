@@ -23,6 +23,7 @@ import 'package:ocam_pos/presentation/inventory/pages/product_details_page.dart'
 import 'package:ocam_pos/presentation/notifications/pages/notifications_page.dart';
 import 'package:ocam_pos/presentation/profile/pages/profile_page.dart';
 import 'package:ocam_pos/presentation/profile/pages/show_all_profiles_page.dart';
+import 'package:ocam_pos/presentation/refunds/pages/refunds_page.dart';
 import 'package:ocam_pos/presentation/report/pages/report_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/basket_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/checkout_page.dart';
@@ -203,6 +204,10 @@ class AppRouter {
         // `extra` berilmasa — oxirgi yakunlangan savdo ko'rsatiladi.
         builder: (context, state) =>
             ReceiptDetailScreen(sale: state.extra as SaleModel?),
+      ),
+      GoRoute(
+        path: PlatformRoutes.refundsPage.route,
+        builder: (context, state) => const RefundsPage(),
       ),
       GoRoute(
         path: PlatformRoutes.salePage.route,

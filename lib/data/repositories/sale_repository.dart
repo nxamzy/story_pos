@@ -21,4 +21,10 @@ class SaleRepository with RepositoryGuard {
 
   Future<List<SaleModel>> getSalesByCustomer(String customerId) =>
       guard(() => _remote.getSalesByCustomer(customerId));
+
+  Future<void> refundSale(String saleId) =>
+      guard(() => _remote.refundSale(saleId));
+
+  Future<List<SaleModel>> getRefundedSales({int days = 30}) =>
+      guard(() => _remote.getRefundedSales(days: days));
 }

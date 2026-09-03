@@ -89,7 +89,7 @@ class POSHubPage extends StatelessWidget {
         HubCard(
           title: "Qaytarishlar",
           icon: Icons.assignment_return_rounded,
-          onTap: () => _comingSoon(context),
+          onTap: () => context.push(PlatformRoutes.refundsPage.route),
         ),
         HubCard(
           title: "Kupon yaratish",

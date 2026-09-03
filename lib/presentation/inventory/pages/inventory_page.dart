@@ -22,6 +22,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
   final _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Qidiruv maydoni bo'sh ochiladi — BLoC'dagi eski so'rov qolib
+    // ketmasligi uchun filtr ham tozalanadi.
+    context.read<ProductBloc>().add(const SearchProducts(''));
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();

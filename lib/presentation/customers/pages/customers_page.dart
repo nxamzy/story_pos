@@ -21,7 +21,11 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CustomerBloc>().add(const LoadCustomersEvent());
+    context.read<CustomerBloc>()
+      ..add(const LoadCustomersEvent())
+      // Qidiruv maydoni bo'sh holda ochiladi — filtrni ham tozalaymiz,
+      // aks holda ro'yxat oldingi so'rov bo'yicha filtrlangan qolardi.
+      ..add(const SearchCustomerEvent(''));
   }
 
   @override

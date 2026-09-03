@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
@@ -60,6 +61,14 @@ class _ShowAllProfileState extends State<ShowAllProfile> {
       ),
       body: BlocBuilder<EmployeeBloc, EmployeeState>(
         builder: (context, state) {
+          // Yuklanish holati ko'rsatilmasa, ro'yxat kelguncha "xodimlar
+          // yo'q" degan noto'g'ri xabar chiqib turardi.
+          if (state.status.isFirstLoad && state.employees.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
+
           if (state.employees.isEmpty) {
             return const Center(
               child: Text(

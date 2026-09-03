@@ -25,6 +25,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<SupplierBloc>().add(const SearchSuppliers(''));
     context.read<SupplierBloc>().add(const LoadSuppliers());
   }
 

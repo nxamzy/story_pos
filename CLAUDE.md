@@ -34,12 +34,14 @@ lib/
 
   core/
     navigation/app_router.dart    # GoRouter instance, auth redirect
+    navigation/nav_extensions.dart# context.popOrGo(fallback) — safe back navigation
     routes/app_routes.dart        # PlatformRoutes — every path as a RouteInfo constant
     network/                      # ApiClient (future REST), FirestorePaths, Failure, AppException, NetworkInfo
     logic/                        # AppBlocObserver, BlocStatus enum
     theme/                        # AppColors, AppTextStyles, AppTheme (real ThemeData)
     utils/                        # AppFormat, Validators, AppConfig, ReceiptPrinter
-    widgets/                      # app-wide reusable widgets (AppButton, AppSnackBar, BaseSheetWrapper, ...)
+    widgets/                      # app-wide reusable widgets (AppButton, AppSnackBar, BaseSheetWrapper,
+                                  # showConfirmDialog, showTextInputDialog, ...)
 
   presentation/<feature>/         # auth, home, inventory, sale, supplier, customers, employee,
                                    # cashdrawer, profile, settings, notifications, more, report, onboarding
@@ -93,19 +95,42 @@ users/{uid}/pos_settings/drawer_info
 
 `SaleScreen` → `SaleBloc.LoadSaleProducts` → cart events (`ScanBarcodeEvent` looks a product up by barcode within the user's own `products`) → `BasketScreen` → `CheckoutScreen` → `CompleteSaleEvent`. `SaleRemoteDataSourceImpl.createSale` runs a single Firestore transaction that writes the sale doc, decrements each product's `stock`, credits the cash drawer balance (cash payments only), and updates the customer's `totalSpent` if one was attached — all or nothing. `SaleBloc` also blocks adding more of a product to the cart than its current `stock` client-side, before the transaction is ever attempted.
 
+`createSale` writes `createdAt` as `FieldValue.serverTimestamp()` for a sale dated today, but as `Timestamp.fromDate(sale.createdAt)` when the cashier picked an earlier day on `CheckoutScreen` (backdating a sale is allowed, future dates are not).
+
+The receipt (`core/utils/receipt_printer.dart`) takes the optional `sale` and `store` (`UserModel`) so it can print the shop header (name, address, phone, STIR) plus payment method, paid amount and change. Store details are edited in Settings and live on the user document.
+
+### Cash drawer
+
+`users/{uid}/pos_settings/drawer_info.current_balance` grows on every cash sale. Money leaves it through a transfer: `TransferParty` (`data/models/transfer_party_model.dart`) makes the drawer and each employee interchangeable sides of `EmployeeRemoteDataSource.transferBalance`, which updates both documents (`current_balance` for the drawer, `balance` for an employee) and appends to `transfer_logs` in one transaction. `CashState` stores only the selected party **ids** and resolves balances from the live lists, so an open form never validates against a stale balance.
+
 ## Known runtime gotcha (verified on-device, not visible from reading the code)
 
 `ElevatedButton(shape: const CircleBorder(), ...)` inside a `Row` that sits below a `ClipPath`-clipped `Stack` (as in `presentation/onboarding/widgets/splash_content.dart`) silently fails to paint on the Impeller/OpenGLES rendering backend — no exception, no overflow warning, the whole `Row` (siblings included) just never renders, and its tap targets don't exist. Confirmed by bisection on a physical build + emulator; `RepaintBoundary` did not fix it. Workaround in place: a circular next-button built from `Material(shape: CircleBorder()) + InkWell` instead of `ElevatedButton`. If you need a circular Material button elsewhere in this app, use that pattern, not `ElevatedButton` + `CircleBorder`.
 
 ## Testing
 
-`test/` has real unit and bloc tests (`bloc_test` + `mocktail`): `core/utils/` (Validators, AppFormat — pure functions), `presentation/auth/auth_bloc_test.dart`, `presentation/sale/sale_bloc_test.dart` (cart stock-limit enforcement, insufficient-payment guard), `presentation/inventory/product_state_test.dart`. `test/widget_test.dart` (the unmodified counter template) has been removed — it required an uninitialized Firebase and tested nothing about this app.
+`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 55 in total:
+
+- `core/utils/` — Validators, AppFormat (pure functions)
+- `presentation/` — `auth_bloc_test.dart`, `sale_bloc_test.dart` (cart stock-limit, insufficient-payment guard), `product_state_test.dart`, `cashdrawer/cash_bloc_test.dart` (transfer validation, party resolution)
+- `data/` — `sale_remote_datasource_test.dart`, `employee_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`: real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
+
+`test/widget_test.dart` (the unmodified counter template) was removed — it required an uninitialized Firebase and tested nothing about this app.
 
 When adding a repository-backed BLoC test, mock the `*Repository` class directly with `mocktail` (`class MockXRepository extends Mock implements XRepository {}`) — repositories are plain classes with a single named-required-param constructor, easy to mock; don't mock the datasource layer from a BLoC test.
 
+For a datasource test, build `FirestorePaths(db: FakeFirebaseFirestore(), auth: mockAuth)` where `mockAuth.currentUser.uid` returns a fake uid — that is the only Firebase seam the data layer needs.
+
 ## Gotchas
 
+- **Never return `Expanded` from a widget that callers already wrap in `Expanded`** — the home tab did exactly that and Flutter reported "Incorrect use of ParentDataWidget" on every build (two `Expanded`s writing parent data to the same RenderObject). Cheap to reproduce in a widget test with `tester.takeException()`.
+- Search filters live in the BLoC, but the search `TextField`s are page-local and start empty. Pages therefore dispatch their `Search…('')` event in `initState` — otherwise re-entering a list shows it filtered by a query the user can no longer see.
+- Any icon that looks tappable must actually do something: the barcode icons on the product forms, the arrows in the purchase/report lists and the employee edit pencil were all decoration until they were wired up. When adding a suffix icon to an input, give it an `onTap` (`CustomTextField.onSuffixTap`, `EditInputField.onScanTap`) or don't draw it.
+- `openBarcodeScanner(context)` (`presentation/sale/pages/scanner_page.dart`) is the single entry point to the camera scanner; it returns the barcode or `null`.
+- Documents are created with `createdAt: FieldValue.serverTimestamp()` **only when new** (`if (isNew)`) — a `SetOptions(merge: true)` save that always writes it would reset a customer's registration date and reorder every list sorted by `createdAt`.
 - `firebase_core` is a direct dependency in `pubspec.yaml` now (was previously transitive-only and unlisted).
 - `SignUpBloc`-equivalent dead code has been removed. An alternate swipeable `PageView` onboarding (`onboarding_page.dart` + `OnboardingBloc`) was also removed — it was unrouted, still had the `ElevatedButton(shape: CircleBorder())` rendering bug (see below) unfixed, and was in English. The three routed splash pages (`first_splash_page.dart` / `second_splash_page.dart` / `third_splash_page.dart`, all built on `splash_content.dart`) are the only onboarding flow now.
 - A few screens (`presentation/profile/pages/select_profile_page.dart`'s "switch profile" flow) are intentionally wired to real data (employee list) but the actual "switch" action is a no-op placeholder — multi-cashier device switching needs a PIN/security design decision that hasn't been made yet.
+- The remaining `AppSnackBar.info(context, "Tez orada qo'shiladi")` placeholders are features with no backend/design yet: contact import (customers, suppliers), social login, loyalty/coupons/returns, purchases, expenses, invoices, language, help centre, profile switching. Everything else that looked like a placeholder has been implemented — check before adding another one.
+- `AppConfig.currency` is still a compile-time constant, which is why the Settings → "Valyuta" item is a placeholder: changing it at runtime needs a settings store that every `AppFormat.money` call can read.
 - Colors come from `AppColors` constants (`core/theme/app_colors.dart`) but there is now a real `AppTheme.light` (`core/theme/app_theme.dart`) wired into `MaterialApp.router` — prefer using themed defaults (`ElevatedButton`, `TextFormField`, etc. already pick up the right colors) over hardcoding `AppColors.x` in new widgets where a theme default exists.

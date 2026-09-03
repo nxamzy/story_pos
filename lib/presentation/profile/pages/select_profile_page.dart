@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
@@ -62,6 +63,15 @@ void showConfirmSelect(BuildContext context) {
 
                     BlocBuilder<EmployeeBloc, EmployeeState>(
                       builder: (context, state) {
+                        if (state.status.isFirstLoad &&
+                            state.employees.isEmpty) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                          );
+                        }
                         if (state.employees.isEmpty) {
                           return const Padding(
                             padding: EdgeInsets.symmetric(vertical: 12),

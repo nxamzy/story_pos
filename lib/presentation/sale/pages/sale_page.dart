@@ -30,7 +30,10 @@ class _SaleScreenState extends State<SaleScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<SaleBloc>().add(const LoadSaleProducts());
+    context.read<SaleBloc>()
+      ..add(const LoadSaleProducts())
+      // Qidiruv maydoni bo'sh — BLoC'dagi eski so'rov ham tozalanadi.
+      ..add(const SearchSaleProducts(''));
   }
 
   @override

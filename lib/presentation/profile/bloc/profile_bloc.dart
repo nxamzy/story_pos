@@ -83,6 +83,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           storePhone: event.storePhone,
           address: event.address,
           taxId: event.taxId,
+          currency: event.currency,
         ),
       );
       emit(

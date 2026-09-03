@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/core/widgets/confirm_dialog.dart';
 import 'package:ocam_pos/core/widgets/text_input_dialog.dart';
@@ -68,11 +69,7 @@ class SettingsPage extends StatelessWidget {
               const _StoreInfoSection(),
 
               _buildSectionTitle("Kassa sozlamalari"),
-              SettingsItem(
-                title: "Valyuta",
-                icon: Icons.payments_outlined,
-                onTap: () => _comingSoon(context),
-              ),
+              const _CurrencySetting(),
 
               _buildSectionTitle("Qurilma sozlamalari"),
               SettingsItem(
@@ -247,6 +244,46 @@ class _StoreInfoSection extends StatelessWidget {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+/// Do'kon valyutasi. Butun ilovadagi narxlar shu belgida ko'rsatiladi.
+class _CurrencySetting extends StatelessWidget {
+  const _CurrencySetting();
+
+  /// Ko'p ishlatiladigan valyutalar; ro'yxatda yo'q bo'lsa qo'lda kiritsa
+  /// ham bo'ladi.
+  static const _suggestions = ['UZS', 'USD', 'EUR', 'RUB'];
+
+  Future<void> _edit(BuildContext context, String current) async {
+    final value = await showTextInputDialog(
+      context,
+      title: "Valyuta",
+      initialValue: current,
+      hint: "masalan: ${_suggestions.join(', ')}",
+    );
+    if (value == null || !context.mounted) return;
+
+    final currency = value.trim().toUpperCase();
+    if (currency.isEmpty || currency == current) return;
+
+    context.read<ProfileBloc>().add(UpdateStoreInfo(currency: currency));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final currency = state.user?.currency ?? AppConfig.defaultCurrency;
+
+        return SettingsItem(
+          title: "Valyuta",
+          icon: Icons.payments_outlined,
+          value: currency,
+          onTap: () => _edit(context, currency),
         );
       },
     );

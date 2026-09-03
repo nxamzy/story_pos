@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/data/models/model_utils.dart';
 
 class UserModel extends Equatable {
@@ -17,6 +18,9 @@ class UserModel extends Equatable {
 
   /// STIR (soliq to'lovchi identifikatsiya raqami).
   final String taxId;
+
+  /// Do'kon valyutasi (masalan `UZS`). Bo'sh bo'lsa standart qiymat.
+  final String currency;
   final DateTime? createdAt;
 
   const UserModel({
@@ -30,6 +34,7 @@ class UserModel extends Equatable {
     this.storePhone = '',
     this.address = '',
     this.taxId = '',
+    this.currency = AppConfig.defaultCurrency,
     this.createdAt,
   });
 
@@ -57,6 +62,7 @@ class UserModel extends Equatable {
       storePhone: ModelUtils.toStr(map['storePhone']),
       address: ModelUtils.toStr(map['address']),
       taxId: ModelUtils.toStr(map['taxId']),
+      currency: ModelUtils.toStr(map['currency'], AppConfig.defaultCurrency),
       createdAt: ModelUtils.dateOrNull(map['createdAt']),
     );
   }
@@ -73,6 +79,7 @@ class UserModel extends Equatable {
       'storePhone': storePhone,
       'address': address,
       'taxId': taxId,
+      'currency': currency,
     };
   }
 
@@ -87,6 +94,7 @@ class UserModel extends Equatable {
     String? storePhone,
     String? address,
     String? taxId,
+    String? currency,
     DateTime? createdAt,
   }) {
     return UserModel(
@@ -100,6 +108,7 @@ class UserModel extends Equatable {
       storePhone: storePhone ?? this.storePhone,
       address: address ?? this.address,
       taxId: taxId ?? this.taxId,
+      currency: currency ?? this.currency,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -116,5 +125,6 @@ class UserModel extends Equatable {
     storePhone,
     address,
     taxId,
+    currency,
   ];
 }

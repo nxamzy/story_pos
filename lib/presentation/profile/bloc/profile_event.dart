@@ -52,14 +52,22 @@ class UpdateStoreInfo extends ProfileEvent {
   final String? storePhone;
   final String? address;
   final String? taxId;
+  final String? currency;
 
   const UpdateStoreInfo({
     this.storeName,
     this.storePhone,
     this.address,
     this.taxId,
+    this.currency,
   });
 
   @override
-  List<Object?> get props => [storeName, storePhone, address, taxId];
+  List<Object?> get props => [
+    storeName,
+    storePhone,
+    address,
+    taxId,
+    currency,
+  ];
 }

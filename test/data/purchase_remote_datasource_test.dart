@@ -123,6 +123,18 @@ void main() {
     expect((await paths.purchases.get()).docs, isEmpty);
   });
 
+  test('tannarx kiritilmagan bo\'lsa mahsulotning eski narxi saqlanadi',
+      () async {
+    await addProduct(stock: 5, buyPrice: 5000);
+    await paths.drawer.set({'current_balance': 100000});
+
+    await dataSource.createPurchase(purchase(quantity: 3, buyPrice: 0));
+
+    final product = await paths.products.doc('p1').get();
+    expect(product.data()!['stock'], 8);
+    expect(product.data()!['buyPrice'], 5000);
+  });
+
   test('bo\'sh xaridni saqlab bo\'lmaydi', () async {
     await expectLater(
       dataSource.createPurchase(

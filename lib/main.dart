@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:ocam_pos/core/logic/app_bloc_observer.dart';
 import 'package:ocam_pos/core/navigation/app_router.dart';
 import 'package:ocam_pos/core/theme/app_theme.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/injection.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
@@ -21,6 +22,7 @@ import 'package:ocam_pos/presentation/inventory/bloc/product_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/purchases/bloc/purchase_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_event.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
 import 'package:ocam_pos/presentation/report/bloc/report_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
 import 'package:ocam_pos/presentation/supplier/bloc/supplier_bloc.dart';
@@ -65,9 +67,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider.value(value: sl<AuthBloc>()),
         BlocProvider.value(value: sl<ProfileBloc>()),
-        BlocProvider.value(
-          value: sl<ProductBloc>()..add(const LoadProducts()),
-        ),
+        BlocProvider.value(value: sl<ProductBloc>()..add(const LoadProducts())),
         BlocProvider.value(value: sl<SaleBloc>()),
         BlocProvider.value(value: sl<CustomerBloc>()),
         BlocProvider.value(value: sl<SupplierBloc>()),
@@ -87,8 +87,42 @@ class MyApp extends StatelessWidget {
             !previous.isAuthenticated && current.isAuthenticated,
         listener: (context, state) =>
             context.read<ProfileBloc>().add(const LoadUserProfile()),
-        child: const AppContent(),
+        child: const CurrencyScope(child: AppContent()),
       ),
+    );
+  }
+}
+
+/// Do'kon valyutasini `AppConfig`ga o'rnatib turadi.
+///
+/// `AppFormat.money` valyutani `AppConfig`dan o'qiydi (u global qiymat,
+/// chunki narx formatlash butun ilovada, widget daraxtidan tashqarida ham
+/// ishlatiladi). Sozlamada valyuta o'zgarganda shu joy ilovani qayta
+/// chizadi — aks holda eski belgi ekranda qolib ketardi.
+class CurrencyScope extends StatefulWidget {
+  final Widget child;
+
+  const CurrencyScope({super.key, required this.child});
+
+  @override
+  State<CurrencyScope> createState() => _CurrencyScopeState();
+}
+
+class _CurrencyScopeState extends State<CurrencyScope> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<ProfileBloc, ProfileState>(
+      listenWhen: (previous, current) =>
+          previous.user?.currency != current.user?.currency,
+      listener: (context, state) {
+        final currency = state.user?.currency;
+        setState(() {
+          AppConfig.currency = (currency == null || currency.isEmpty)
+              ? AppConfig.defaultCurrency
+              : currency;
+        });
+      },
+      child: widget.child,
     );
   }
 }

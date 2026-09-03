@@ -2,8 +2,13 @@
 class AppConfig {
   const AppConfig._();
 
-  /// Pul birligi. Boshqa valyutaga o'tish uchun shu bitta qatorni o'zgartiring.
-  static const String currency = 'UZS';
+  /// Standart pul birligi — do'kon sozlamasida boshqasi tanlanmagan bo'lsa.
+  static const String defaultCurrency = 'UZS';
+
+  /// Joriy pul birligi. Sozlamalar -> "Valyuta" orqali o'zgartiriladi va
+  /// profil yuklanganda `main.dart`da o'rnatiladi (`AppFormat.money` shu
+  /// qiymatni o'qiydi).
+  static String currency = defaultCurrency;
 
   /// Savdo ustiga qo'shiladigan soliq foizi (0 = soliqsiz).
   static const double taxRate = 0.0;

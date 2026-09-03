@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
 
 void main() {
@@ -24,6 +25,21 @@ void main() {
 
     test('vergul bilan yozilgan sonni to\'g\'ri o\'qiydi', () {
       expect(AppFormat.parseAmount('12,5'), 12.5);
+    });
+  });
+
+  group('Valyuta sozlamasi', () {
+    tearDown(() => AppConfig.currency = AppConfig.defaultCurrency);
+
+    test('AppFormat.money sozlamadagi valyutani ishlatadi', () {
+      AppConfig.currency = 'USD';
+
+      expect(AppFormat.money(1200), '1 200 USD');
+    });
+
+    test('standart valyuta UZS', () {
+      expect(AppConfig.defaultCurrency, 'UZS');
+      expect(AppFormat.money(1200), '1 200 UZS');
     });
   });
 }

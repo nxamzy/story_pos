@@ -82,8 +82,9 @@ class PurchaseRemoteDataSourceImpl implements PurchaseRemoteDataSource {
         transaction.update(_paths.products.doc(item.productId), {
           'stock': FieldValue.increment(item.quantity),
           // Tannarx oxirgi xariddagi narxga yangilanadi — foyda hisobi shu
-          // qiymatga tayanadi.
-          'buyPrice': item.buyPrice,
+          // qiymatga tayanadi. Narx kiritilmagan (0) bo'lsa mahsulotning
+          // eski tannarxi saqlanadi, aks holda foyda hisobi buzilardi.
+          if (item.buyPrice > 0) 'buyPrice': item.buyPrice,
         });
       }
 

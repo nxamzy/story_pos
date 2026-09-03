@@ -185,7 +185,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             value: product.description?.isNotEmpty == true
                 ? product.description!
                 : "Tavsif yo'q",
-            isArabic: false,
           ),
         ],
       ),

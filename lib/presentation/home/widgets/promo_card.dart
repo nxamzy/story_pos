@@ -72,17 +72,14 @@ class PromoCard extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.asset(
-          'assets/images/calculator_promo.png',
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) => const Icon(
-            Icons.qr_code_2_rounded,
-            size: 50,
-            color: Colors.white,
-          ),
-        ),
+      // Ilgari bu yerda `assets/images/calculator_promo.png` yuklanardi,
+      // lekin bunday asset ilovada umuman yo'q (pubspec'da assets bo'limi
+      // ham yopiq) — har build'da xato holatiga tushib, shu belgini
+      // ko'rsatardi.
+      child: const Icon(
+        Icons.qr_code_2_rounded,
+        size: 50,
+        color: Colors.white,
       ),
     );
   }

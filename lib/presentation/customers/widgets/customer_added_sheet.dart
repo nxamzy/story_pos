@@ -29,14 +29,13 @@ class SuccessCustomerSheet extends StatelessWidget {
         children: [
           _buildHandle(),
 
-          Image.network(
-            'https://ouch-cdn2.icons8.com/6U8m8mB9zWz_Y_XnS2vH7W_pUuQ6Z8-I1_2O6_0v8q8/rs:fit:256:256/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvMzcy/L2M4ZGM0ZTMtM2Fj/Ny00YmU0LWJmMTYt/NjQ5YmQ4YjA1YjYy/LnBuZw.png',
-            height: 160,
-            errorBuilder: (context, error, stackTrace) => const Icon(
-              Icons.check_circle_rounded,
-              size: 120,
-              color: AppColors.primary,
-            ),
+          // Ilgari bu yerda tashqi CDN'dagi rasm yuklanardi (andozadan
+          // qolgan havola) — internetsiz har safar xato berardi va ilova
+          // ichidagi rasmga hech qanday aloqasi yo'q edi.
+          const Icon(
+            Icons.check_circle_rounded,
+            size: 120,
+            color: AppColors.primary,
           ),
           const SizedBox(height: 20),
 

@@ -4,14 +4,12 @@ import 'package:ocam_pos/core/theme/app_colors.dart';
 class DetailRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool isArabic;
   final bool isCategory;
 
   const DetailRow({
     super.key,
     required this.label,
     required this.value,
-    this.isArabic = false,
     this.isCategory = false,
   });
 
@@ -51,11 +49,10 @@ class DetailRow extends StatelessWidget {
           else
             Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.forestDark,
-                fontFamily: isArabic ? 'Arial' : null,
               ),
             ),
           const SizedBox(height: 12),

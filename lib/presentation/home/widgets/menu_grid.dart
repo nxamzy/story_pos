@@ -13,7 +13,7 @@ class MenuGrid extends StatelessWidget {
       {
         'title': 'Xaridlar',
         'icon': Icons.shopping_bag_outlined,
-        'route': null,
+        'route': PlatformRoutes.purchasesPage.route,
       },
       {
         'title': 'Xarajatlar',

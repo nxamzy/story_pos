@@ -49,6 +49,9 @@ class FirestorePaths {
   CollectionReference<Map<String, dynamic>> get expenses =>
       userDoc.collection('expenses');
 
+  CollectionReference<Map<String, dynamic>> get purchases =>
+      userDoc.collection('purchases');
+
   /// Kassa (drawer) hujjati — do'kon bo'yicha bitta.
   DocumentReference<Map<String, dynamic>> get drawer =>
       userDoc.collection('pos_settings').doc('drawer_info');

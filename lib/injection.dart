@@ -12,6 +12,7 @@ import 'package:ocam_pos/data/datasources/customer_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/employee_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/expense_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/product_remote_datasource.dart';
+import 'package:ocam_pos/data/datasources/purchase_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/sale_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/supplier_remote_datasource.dart';
 import 'package:ocam_pos/data/datasources/user_remote_datasource.dart';
@@ -21,6 +22,7 @@ import 'package:ocam_pos/data/repositories/customer_repository.dart';
 import 'package:ocam_pos/data/repositories/employee_repository.dart';
 import 'package:ocam_pos/data/repositories/expense_repository.dart';
 import 'package:ocam_pos/data/repositories/product_repository.dart';
+import 'package:ocam_pos/data/repositories/purchase_repository.dart';
 import 'package:ocam_pos/data/repositories/sale_repository.dart';
 import 'package:ocam_pos/data/repositories/supplier_repository.dart';
 import 'package:ocam_pos/data/repositories/user_repository.dart';
@@ -33,6 +35,7 @@ import 'package:ocam_pos/presentation/employee/bloc/employee_bloc.dart';
 import 'package:ocam_pos/presentation/expenses/bloc/expense_bloc.dart';
 import 'package:ocam_pos/presentation/inventory/bloc/product_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
+import 'package:ocam_pos/presentation/purchases/bloc/purchase_bloc.dart';
 import 'package:ocam_pos/presentation/refunds/bloc/refunds_bloc.dart';
 import 'package:ocam_pos/presentation/report/bloc/report_bloc.dart';
 import 'package:ocam_pos/presentation/sale/bloc/sale_bloc.dart';
@@ -86,6 +89,9 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton<ExpenseRemoteDataSource>(
       () => ExpenseRemoteDataSourceImpl(paths: sl()),
+    )
+    ..registerLazySingleton<PurchaseRemoteDataSource>(
+      () => PurchaseRemoteDataSourceImpl(paths: sl()),
     );
 
   // ---------- Repository'lar ----------
@@ -107,6 +113,9 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton<ExpenseRepository>(
       () => ExpenseRepository(remote: sl()),
+    )
+    ..registerLazySingleton<PurchaseRepository>(
+      () => PurchaseRepository(remote: sl()),
     );
 
   // ---------- BLoC'lar ----------
@@ -126,6 +135,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<EmployeeBloc>(() => EmployeeBloc(repository: sl()))
     ..registerLazySingleton<CashBloc>(() => CashBloc(repository: sl()))
     ..registerLazySingleton<ExpenseBloc>(() => ExpenseBloc(repository: sl()))
+    ..registerLazySingleton<PurchaseBloc>(() => PurchaseBloc(repository: sl()))
     ..registerLazySingleton<ReportBloc>(
       () => ReportBloc(saleRepository: sl(), expenseRepository: sl()),
     );

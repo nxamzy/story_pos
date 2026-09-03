@@ -71,4 +71,12 @@ class PlatformRoutes {
   static const receiptPage = RouteInfo(name: 'receipt', route: '/receipt');
   static const refundsPage = RouteInfo(name: 'refunds', route: '/refunds');
   static const expensesPage = RouteInfo(name: 'expenses', route: '/expenses');
+  static const purchasesPage = RouteInfo(
+    name: 'purchases',
+    route: '/purchases',
+  );
+  static const addPurchasePage = RouteInfo(
+    name: 'addPurchase',
+    route: '/addPurchase',
+  );
 }

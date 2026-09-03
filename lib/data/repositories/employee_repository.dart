@@ -1,6 +1,7 @@
 import 'package:ocam_pos/data/datasources/employee_remote_datasource.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/data/models/transfer_log_model.dart';
+import 'package:ocam_pos/data/models/transfer_party_model.dart';
 import 'package:ocam_pos/data/repositories/repository_guard.dart';
 
 class EmployeeRepository with RepositoryGuard {
@@ -28,8 +29,8 @@ class EmployeeRepository with RepositoryGuard {
       guardStream(() => _remote.watchTransferLogs(limit: limit));
 
   Future<void> transferBalance({
-    required EmployeeModel from,
-    required EmployeeModel to,
+    required TransferParty from,
+    required TransferParty to,
     required double amount,
     required String note,
   }) => guard(

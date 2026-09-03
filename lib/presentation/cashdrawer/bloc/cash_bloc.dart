@@ -30,10 +30,10 @@ class CashBloc extends Bloc<CashEvent, CashState> {
     on<TransferFormChanged>(
       (event, emit) => emit(
         state.copyWith(
-          from: event.from,
-          to: event.to,
-          clearFrom: event.from == null,
-          clearTo: event.to == null,
+          fromId: event.fromId,
+          toId: event.toId,
+          clearFrom: event.fromId == null,
+          clearTo: event.toId == null,
           clearError: true,
         ),
       ),
@@ -86,12 +86,17 @@ class CashBloc extends Bloc<CashEvent, CashState> {
     Emitter<CashState> emit,
   ) async {
     final amount = AppFormat.parseAmount(event.amount);
+    // Taraflar (va ularning joriy balansi) state'dan olinadi — forma
+    // ochilgandan keyin balans o'zgargan bo'lsa ham tekshiruv to'g'ri
+    // bo'ladi.
+    final from = state.from;
+    final to = state.to;
 
-    if (event.from == null || event.to == null) {
+    if (from == null || to == null) {
       emit(state.copyWith(error: "Yuboruvchi va qabul qiluvchini tanlang"));
       return;
     }
-    if (event.from!.id == event.to!.id) {
+    if (from.id == to.id) {
       emit(state.copyWith(error: "O'ziga o'tkazma qilib bo'lmaydi"));
       return;
     }
@@ -99,23 +104,30 @@ class CashBloc extends Bloc<CashEvent, CashState> {
       emit(state.copyWith(error: "To'g'ri summa kiriting"));
       return;
     }
-    if (event.from!.balance < amount) {
-      emit(state.copyWith(error: "Yuboruvchida mablag' yetarli emas"));
+    if (from.balance < amount) {
+      emit(
+        state.copyWith(
+          error: from.isDrawer
+              ? "Kassada mablag' yetarli emas"
+              : "Yuboruvchida mablag' yetarli emas",
+        ),
+      );
       return;
     }
 
     emit(state.copyWith(isTransferring: true, clearError: true));
     try {
       await _repository.transferBalance(
-        from: event.from!,
-        to: event.to!,
+        from: from,
+        to: to,
         amount: amount,
         note: event.note,
       );
       emit(
         state.copyWith(
           isTransferring: false,
-          actionMessage: "${AppFormat.money(amount)} o'tkazildi",
+          actionMessage:
+              "${from.name} -> ${to.name}: ${AppFormat.money(amount)} o'tkazildi",
           clearError: true,
         ),
       );

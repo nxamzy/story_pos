@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/data/models/employee_model.dart';
 import 'package:ocam_pos/data/models/transfer_log_model.dart';
+import 'package:ocam_pos/data/models/transfer_party_model.dart';
 
 class CashState extends Equatable {
   final BlocStatus status;
@@ -11,8 +12,13 @@ class CashState extends Equatable {
   final double balance;
   final List<EmployeeModel> employees;
   final List<TransferLogModel> logs;
-  final EmployeeModel? from;
-  final EmployeeModel? to;
+
+  /// Tanlangan taraflarning id'si. Obyektning o'zi emas, aynan id
+  /// saqlanadi — shunda balans o'zgarganda ([balance], [employees] yangi
+  /// qiymat olganda) tanlov eskirgan summani ko'rsatib qolmaydi.
+  final String? fromId;
+  final String? toId;
+
   final String? error;
   final String? actionMessage;
 
@@ -22,11 +28,28 @@ class CashState extends Equatable {
     this.balance = 0,
     this.employees = const [],
     this.logs = const [],
-    this.from,
-    this.to,
+    this.fromId,
+    this.toId,
     this.error,
     this.actionMessage,
   });
+
+  /// O'tkazmada qatnasha oladigan taraflar: kassa va barcha xodimlar.
+  List<TransferParty> get parties => [
+    TransferParty.drawer(balance),
+    ...employees.map(TransferParty.fromEmployee),
+  ];
+
+  TransferParty? get from => partyById(fromId);
+  TransferParty? get to => partyById(toId);
+
+  TransferParty? partyById(String? id) {
+    if (id == null) return null;
+    for (final party in parties) {
+      if (party.id == id) return party;
+    }
+    return null;
+  }
 
   CashState copyWith({
     BlocStatus? status,
@@ -34,8 +57,8 @@ class CashState extends Equatable {
     double? balance,
     List<EmployeeModel>? employees,
     List<TransferLogModel>? logs,
-    EmployeeModel? from,
-    EmployeeModel? to,
+    String? fromId,
+    String? toId,
     String? error,
     String? actionMessage,
     bool clearError = false,
@@ -48,8 +71,8 @@ class CashState extends Equatable {
       balance: balance ?? this.balance,
       employees: employees ?? this.employees,
       logs: logs ?? this.logs,
-      from: clearFrom ? null : (from ?? this.from),
-      to: clearTo ? null : (to ?? this.to),
+      fromId: clearFrom ? null : (fromId ?? this.fromId),
+      toId: clearTo ? null : (toId ?? this.toId),
       error: clearError ? null : (error ?? this.error),
       actionMessage: actionMessage,
     );
@@ -62,8 +85,8 @@ class CashState extends Equatable {
     balance,
     employees,
     logs,
-    from,
-    to,
+    fromId,
+    toId,
     error,
     actionMessage,
   ];

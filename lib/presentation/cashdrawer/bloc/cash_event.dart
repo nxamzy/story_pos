@@ -32,29 +32,26 @@ class CashFailed extends CashEvent {
   List<Object?> get props => [message];
 }
 
+/// O'tkazmani bajaradi. Taraflar state'dagi tanlovdan olinadi — shu sababli
+/// bu yerda faqat summa va izoh keladi.
 class TransferRequested extends CashEvent {
-  final EmployeeModel? from;
-  final EmployeeModel? to;
   final String amount;
   final String note;
 
-  const TransferRequested({
-    required this.from,
-    required this.to,
-    required this.amount,
-    this.note = '',
-  });
+  const TransferRequested({required this.amount, this.note = ''});
 
   @override
-  List<Object?> get props => [from, to, amount, note];
+  List<Object?> get props => [amount, note];
 }
 
+/// Yuboruvchi/qabul qiluvchi tanlovi o'zgardi. `null` — tanlov bekor
+/// qilingani (masalan o'tkazmadan keyin forma tozalanadi).
 class TransferFormChanged extends CashEvent {
-  final EmployeeModel? from;
-  final EmployeeModel? to;
+  final String? fromId;
+  final String? toId;
 
-  const TransferFormChanged({this.from, this.to});
+  const TransferFormChanged({this.fromId, this.toId});
 
   @override
-  List<Object?> get props => [from, to];
+  List<Object?> get props => [fromId, toId];
 }

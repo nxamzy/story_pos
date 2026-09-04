@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ocam POS — Maxfiylik siyosati</title>
+<style>
+  :root{
+    --bg:#f7faf8; --card:#ffffff; --text:#16241d; --muted:#5c7268;
+    --line:#dcebe3; --accent:#1f7a5a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1714; --card:#151f1b; --text:#e6efea; --muted:#9ab0a6;
+      --line:#243530; --accent:#4fbf95;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:32px 20px 72px}
+  header{border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:28px}
+  h1{font-size:26px; margin:0 0 6px; letter-spacing:-.3px}
+  h2{font-size:20px; margin:36px 0 10px; letter-spacing:-.2px}
+  h3{font-size:16px; margin:24px 0 6px}
+  p,li{color:var(--text)}
+  .muted{color:var(--muted); font-size:14px; margin:0}
+  .langbar{display:flex; gap:10px; margin-bottom:22px; font-size:14px}
+  .langbar a{
+    text-decoration:none; color:var(--accent); border:1px solid var(--line);
+    padding:5px 12px; border-radius:999px;
+  }
+  a{color:var(--accent)}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; display:block; overflow-x:auto}
+  th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top}
+  th{background:var(--card); font-weight:600}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; margin:18px 0;
+  }
+  ul{padding-left:20px}
+  li{margin:4px 0}
+  hr{border:0; border-top:1px solid var(--line); margin:56px 0}
+  code{background:var(--card); border:1px solid var(--line); padding:1px 5px; border-radius:5px; font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="langbar">
+  <a href="#uz">O'zbekcha</a>
+  <a href="#en">English</a>
+  <a href="delete-account.html">Hisobni o'chirish</a>
+</div>
+
+<header id="uz">
+  <h1>Ocam POS — Maxfiylik siyosati</h1>
+  <p class="muted">Oxirgi yangilanish: 2026-yil 4-sentabr</p>
+</header>
+
+<p>Ocam POS — do'konlar uchun kassa, ombor va hisobot dasturi. Bu hujjat
+ilova qanday ma'lumot yig'ishini, uni nima uchun ishlatishini, qayerda
+saqlashini va uni qanday o'chirishingiz mumkinligini tushuntiradi.</p>
+
+<div class="card">
+<strong>Qisqacha:</strong> ilova reklama ko'rsatmaydi, kuzatuv (analytics)
+vositalaridan foydalanmaydi va ma'lumotingizni hech kimga sotmaydi hamda
+uchinchi shaxsga bermaydi. Kiritgan hamma narsangiz faqat sizning
+hisobingizga bog'langan va faqat siz ko'ra olasiz. Hisobni istagan
+vaqtda ilova ichidan butunlay o'chirishingiz mumkin.
+</div>
+
+<h2>1. Qanday ma'lumot yig'iladi</h2>
+
+<h3>1.1. Hisob ma'lumoti</h3>
+<table>
+<tr><th>Ma'lumot</th><th>Nima uchun</th></tr>
+<tr><td>Email manzil</td><td>Hisobga kirish va parolni tiklash</td></tr>
+<tr><td>Parol</td><td>Google Firebase Authentication tomonidan shifrlangan holda saqlanadi. Biz parolingizni ko'ra olmaymiz.</td></tr>
+<tr><td>Ism va familiya</td><td>Ilovada va chekda ko'rsatish</td></tr>
+<tr><td>Telefon raqami (ixtiyoriy)</td><td>Profil ma'lumoti</td></tr>
+</table>
+
+<h3>1.2. Do'kon ma'lumoti</h3>
+<p>Sozlamalarda kiritiladi va chekda chop etiladi: do'kon nomi, aloqa
+raqami, manzil, STIR, valyuta hamda qurilma sozlamalari (chek qog'ozi
+o'lchami, skaner tebranishi, ogohlantirish chegarasi, vaqt formati).</p>
+
+<h3>1.3. Siz kiritadigan ish ma'lumoti</h3>
+<p>Ilovaning asosiy vazifasi shu ma'lumotni saqlash va hisoblashdir:</p>
+<ul>
+  <li><strong>Mahsulotlar</strong> — nomi, shtrix-kodi, sotib olish va sotish narxi, qoldiq, kategoriya, tavsif</li>
+  <li><strong>Mijozlar</strong> — ismi, telefon raqamlari, email, manzil, eslatma, jami xarid summasi</li>
+  <li><strong>Ta'minotchilar</strong> — nomi, telefon, email, manzil, eslatma</li>
+  <li><strong>Xodimlar</strong> — ismi, lavozimi, telefon raqamlari, oylik, balans, davomat, eslatma va kassir PIN kodining <em>sha256 xesh</em>i (PIN ochiq matnda saqlanmaydi)</li>
+  <li><strong>Savdolar va qaytarishlar</strong> — mahsulotlar, summalar, to'lov turi, mijoz va kassir nomi, sana</li>
+  <li><strong>Xaridlar, xarajatlar, kassa balansi va o'tkazmalar tarixi</strong></li>
+</ul>
+
+<div class="card">
+<strong>Muhim:</strong> mijoz, ta'minotchi va xodim ma'lumotini ilovaga
+<em>siz</em> kiritasiz. Boshqa odamlarning shaxsiy ma'lumotini kiritish
+va saqlash uchun qonuniy asosga ega bo'lish sizning javobgarligingizda.
+</div>
+
+<h3>1.4. Kamera</h3>
+<p>Ilova shtrix-kodni o'qish uchun kameradan foydalanadi. Kamera
+tasviri <strong>saqlanmaydi va hech qayerga yuborilmaydi</strong> —
+undan faqat kodning raqami ajratib olinadi.</p>
+
+<h3>1.5. Yig'ilmaydigan ma'lumot</h3>
+<ul>
+  <li>Joylashuv (GPS)</li>
+  <li>Telefon kontaktlari</li>
+  <li>Galereya, rasm va videolar</li>
+  <li>SMS va qo'ng'iroqlar tarixi</li>
+  <li>Reklama identifikatori, kuzatuv yoki foydalanish statistikasi</li>
+</ul>
+
+<h2>2. Ma'lumot qayerda saqlanadi</h2>
+<p>Barcha ma'lumot Google'ning <strong>Firebase</strong> xizmatida
+(Cloud Firestore va Firebase Authentication) saqlanadi. Serverlar
+<strong>Amerika Qo'shma Shtatlarida</strong> joylashgan (<code>nam5</code>
+mintaqasi). Ilovadan serverga uzatiladigan hamma narsa HTTPS orqali
+shifrlangan holda yuboriladi.</p>
+
+<p>Google bu yerda bizning nomimizdan ma'lumotni qayta ishlovchi
+sifatida ishlaydi. Google Firebase maxfiylik shartlari:
+<a href="https://firebase.google.com/support/privacy">firebase.google.com/support/privacy</a></p>
+
+<h2>3. Ma'lumotga kim kira oladi</h2>
+<p>Har bir do'konning ma'lumoti server qoidalari bilan himoyalangan:
+hujjatlarga faqat o'sha hisobning egasi kira oladi. Boshqa foydalanuvchi
+sizning mahsulotingizni, savdongizni, mijozingizni yoki kassa
+balansingizni ko'ra olmaydi.</p>
+<p>Ma'lumotingiz reklama maqsadida ishlatilmaydi, sotilmaydi va
+uchinchi shaxslarga berilmaydi.</p>
+
+<h2>4. Kassir PIN kodi haqida</h2>
+<p>Xodimga o'rnatiladigan PIN kod ochiq matnda saqlanmaydi — faqat uning
+sha256 xeshi saqlanadi va har bir xodim uchun alohida "tuz" (xodim
+identifikatori) qo'shiladi. Bu PIN <strong>himoya emas, imzo</strong>:
+u savdo kim tomonidan qilinganini chekka va hisobotga yozish uchun
+ishlatiladi. Qurilmadagi barcha ma'lumot baribir do'kon egasining
+hisobiga tegishli.</p>
+
+<h2>5. Ma'lumot qancha saqlanadi</h2>
+<p>Siz hisobingizni o'chirmaguningizcha. Hisob o'chirilgan zahoti
+do'koningizning barcha hujjatlari (mahsulot, savdo, mijoz, ta'minotchi,
+xodim, xarajat, xarid, kassa) serverdan butunlay o'chiriladi.</p>
+
+<h2>6. Hisobni va ma'lumotni o'chirish</h2>
+<p><strong>Ilova ichidan:</strong> Sozlamalar → "Xavfli hudud" →
+"Hisobni butunlay o'chirish". Parolingiz qayta so'raladi. Tasdiqlagach
+ma'lumot va hisob darhol o'chiriladi.</p>
+<p><strong>Ilovasiz:</strong> <a href="delete-account.html">hisobni
+o'chirish sahifasi</a>dagi ko'rsatma bo'yicha so'rov yuboring.</p>
+<p>Bu amalni ortga qaytarib bo'lmaydi.</p>
+
+<h2>7. Bolalar</h2>
+<p>Ocam POS — tadbirkorlar uchun mo'ljallangan ish dasturi. U 13 yoshgacha
+bo'lgan bolalar uchun mo'ljallanmagan va ulardan ataylab ma'lumot
+yig'maydi.</p>
+
+<h2>8. Sizning huquqlaringiz</h2>
+<ul>
+  <li>Ma'lumotingizni ko'rish va tahrirlash — ilovaning o'zida</li>
+  <li>Ma'lumotingizni o'chirish — yuqoridagi 6-bo'lim</li>
+  <li>Savol berish yoki shikoyat qilish — quyidagi manzil orqali</li>
+</ul>
+
+<h2>9. Siyosatdagi o'zgarishlar</h2>
+<p>Ushbu hujjat o'zgarsa, yuqoridagi "Oxirgi yangilanish" sanasi
+yangilanadi. Muhim o'zgarishlar haqida ilova orqali xabar beriladi.</p>
+
+<h2>10. Bog'lanish</h2>
+<p>Savollaringiz bo'lsa yozing: <a href="mailto:ALMASHTIRING@example.com">ALMASHTIRING@example.com</a></p>
+
+<hr>
+
+<header id="en">
+  <h1>Ocam POS — Privacy Policy</h1>
+  <p class="muted">Last updated: 4 September 2026</p>
+</header>
+
+<p>Ocam POS is a point-of-sale, inventory and reporting app for shops.
+This document explains what data the app collects, why, where it is
+stored, and how you can delete it.</p>
+
+<div class="card">
+<strong>In short:</strong> the app shows no ads, uses no analytics or
+tracking SDKs, and never sells or shares your data with third parties.
+Everything you enter is tied to your own account and visible only to
+you. You can permanently delete your account from inside the app at any
+time.
+</div>
+
+<h2>1. Data we collect</h2>
+
+<h3>1.1. Account data</h3>
+<table>
+<tr><th>Data</th><th>Purpose</th></tr>
+<tr><td>Email address</td><td>Sign-in and password recovery</td></tr>
+<tr><td>Password</td><td>Stored encrypted by Google Firebase Authentication. We cannot read it.</td></tr>
+<tr><td>First and last name</td><td>Shown in the app and on receipts</td></tr>
+<tr><td>Phone number (optional)</td><td>Profile information</td></tr>
+</table>
+
+<h3>1.2. Shop details</h3>
+<p>Entered in Settings and printed on receipts: shop name, contact phone,
+address, tax ID (STIR), currency, and device preferences (receipt paper
+size, scanner haptics, low-stock threshold, time format).</p>
+
+<h3>1.3. Business data you enter</h3>
+<p>Storing and calculating this data is the core purpose of the app:</p>
+<ul>
+  <li><strong>Products</strong> — name, barcode, buy and sell price, stock, category, description</li>
+  <li><strong>Customers</strong> — name, phone numbers, email, address, notes, total spent</li>
+  <li><strong>Suppliers</strong> — name, phone, email, address, notes</li>
+  <li><strong>Employees</strong> — name, role, phone numbers, salary, balance, attendance, notes, and a <em>sha256 hash</em> of the cashier PIN (the PIN itself is never stored)</li>
+  <li><strong>Sales and refunds</strong> — items, totals, payment method, customer and cashier name, date</li>
+  <li><strong>Purchases, expenses, cash drawer balance and transfer history</strong></li>
+</ul>
+
+<div class="card">
+<strong>Important:</strong> customer, supplier and employee details are
+entered by <em>you</em>. You are responsible for having a lawful basis to
+store other people's personal data in the app.
+</div>
+
+<h3>1.4. Camera</h3>
+<p>The app uses the camera to scan barcodes. Camera images are
+<strong>never stored or transmitted</strong> — only the barcode number is
+extracted.</p>
+
+<h3>1.5. Data we do not collect</h3>
+<ul>
+  <li>Location (GPS)</li>
+  <li>Phone contacts</li>
+  <li>Photos, media or files</li>
+  <li>SMS or call logs</li>
+  <li>Advertising ID, tracking or usage analytics</li>
+</ul>
+
+<h2>2. Where data is stored</h2>
+<p>All data is stored in Google <strong>Firebase</strong> (Cloud Firestore
+and Firebase Authentication). Servers are located in the
+<strong>United States</strong> (<code>nam5</code> multi-region). All traffic
+between the app and the server is encrypted with HTTPS.</p>
+<p>Google acts as a data processor on our behalf. See
+<a href="https://firebase.google.com/support/privacy">firebase.google.com/support/privacy</a>.</p>
+
+<h2>3. Who can access your data</h2>
+<p>Server-side security rules restrict every document to the account that
+owns it. No other user can see your products, sales, customers or cash
+balance. Your data is never used for advertising, sold, or shared with
+third parties.</p>
+
+<h2>4. About the cashier PIN</h2>
+<p>Employee PINs are never stored in plain text — only a sha256 hash,
+salted per employee. The PIN is <strong>attribution, not
+authorisation</strong>: it records who made a sale on the receipt and in
+reports. All data on the device still belongs to the shop owner's
+account.</p>
+
+<h2>5. Retention</h2>
+<p>Until you delete your account. When you do, every document belonging to
+your shop (products, sales, customers, suppliers, employees, expenses,
+purchases, cash drawer) is permanently removed from the server.</p>
+
+<h2>6. Deleting your account and data</h2>
+<p><strong>In the app:</strong> Settings → "Xavfli hudud" (Danger zone) →
+"Hisobni butunlay o'chirish" (Delete account permanently). Your password
+is requested again; after confirmation the data and account are deleted
+immediately.</p>
+<p><strong>Without the app:</strong> follow the instructions on the
+<a href="delete-account.html">account deletion page</a>.</p>
+<p>This action cannot be undone.</p>
+
+<h2>7. Children</h2>
+<p>Ocam POS is a business tool for shop owners. It is not directed at
+children under 13 and does not knowingly collect data from them.</p>
+
+<h2>8. Your rights</h2>
+<ul>
+  <li>Access and edit your data — directly in the app</li>
+  <li>Delete your data — see section 6</li>
+  <li>Ask a question or raise a complaint — at the address below</li>
+</ul>
+
+<h2>9. Changes to this policy</h2>
+<p>If this document changes, the "Last updated" date above will be
+revised. Significant changes will be announced in the app.</p>
+
+<h2>10. Contact</h2>
+<p>Questions: <a href="mailto:ALMASHTIRING@example.com">ALMASHTIRING@example.com</a></p>
+
+</div>
+</body>
+</html>

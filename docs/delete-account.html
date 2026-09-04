@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ocam POS — Hisobni o'chirish</title>
+<style>
+  :root{
+    --bg:#f7faf8; --card:#ffffff; --text:#16241d; --muted:#5c7268;
+    --line:#dcebe3; --accent:#1f7a5a; --danger:#c0392b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1714; --card:#151f1b; --text:#e6efea; --muted:#9ab0a6;
+      --line:#243530; --accent:#4fbf95; --danger:#ef6a5a;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:32px 20px 72px}
+  header{border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:28px}
+  h1{font-size:26px; margin:0 0 6px; letter-spacing:-.3px}
+  h2{font-size:20px; margin:34px 0 10px}
+  .muted{color:var(--muted); font-size:14px; margin:0}
+  .langbar{display:flex; gap:10px; margin-bottom:22px; font-size:14px}
+  .langbar a{
+    text-decoration:none; color:var(--accent); border:1px solid var(--line);
+    padding:5px 12px; border-radius:999px;
+  }
+  a{color:var(--accent)}
+  ol{padding-left:22px} ul{padding-left:20px}
+  li{margin:6px 0}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; margin:18px 0;
+  }
+  .warn{border-color:var(--danger)}
+  .warn strong{color:var(--danger)}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; display:block; overflow-x:auto}
+  th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top}
+  th{background:var(--card); font-weight:600}
+  hr{border:0; border-top:1px solid var(--line); margin:56px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="langbar">
+  <a href="#uz">O'zbekcha</a>
+  <a href="#en">English</a>
+  <a href="index.html">Maxfiylik siyosati</a>
+</div>
+
+<header id="uz">
+  <h1>Ocam POS — hisobni o'chirish</h1>
+  <p class="muted">Ilova: Ocam POS &nbsp;·&nbsp; Paket nomi: uz.ocam.pos</p>
+</header>
+
+<p>Ocam POS hisobingizni va u bilan bog'liq barcha ma'lumotni o'chirishning
+ikki yo'li bor.</p>
+
+<h2>1-usul — ilova ichidan (tavsiya etiladi)</h2>
+<ol>
+  <li>Ocam POS ilovasini oching va hisobingizga kiring</li>
+  <li><strong>Profil</strong> → <strong>Sozlamalar</strong> bo'limiga o'ting</li>
+  <li>Pastdagi <strong>"Xavfli hudud"</strong> bo'limini toping</li>
+  <li><strong>"Hisobni butunlay o'chirish"</strong> tugmasini bosing</li>
+  <li>Ogohlantirishni o'qib, tasdiqlang</li>
+  <li>Parolingizni kiriting</li>
+</ol>
+<p>Hisob va ma'lumot <strong>darhol</strong> o'chiriladi. Tasdiqlash
+xatining kutilishi shart emas.</p>
+
+<h2>2-usul — email orqali so'rov</h2>
+<p>Ilovaga kira olmasangiz (masalan telefonni yo'qotgan bo'lsangiz),
+quyidagi manzilga yozing:</p>
+<div class="card">
+  <p style="margin:0 0 8px"><strong>Kimga:</strong>
+  <a href="mailto:ALMASHTIRING@example.com?subject=Hisobni%20o'chirish%20so'rovi">ALMASHTIRING@example.com</a></p>
+  <p style="margin:0 0 8px"><strong>Mavzu:</strong> Hisobni o'chirish so'rovi</p>
+  <p style="margin:0"><strong>Xat matnida:</strong> hisobingiz ro'yxatdan
+  o'tgan email manzilni yozing. Xatni <em>o'sha manzilning o'zidan</em>
+  yuboring — shu orqali hisob egasi ekaningiz tasdiqlanadi.</p>
+</div>
+<p>So'rov <strong>30 kun ichida</strong> bajariladi va bajarilgani haqida
+javob xati yuboriladi.</p>
+
+<h2>Nima o'chiriladi</h2>
+<table>
+<tr><th>Ma'lumot</th><th>Holati</th></tr>
+<tr><td>Hisob (email, parol, ism)</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Do'kon ma'lumoti (nomi, manzil, STIR, sozlamalar)</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Mahsulotlar va ombor qoldig'i</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Savdolar, cheklar va qaytarishlar</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Mijozlar va ta'minotchilar</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Xodimlar, oylik va PIN xeshlari</td><td>Butunlay o'chiriladi</td></tr>
+<tr><td>Xaridlar, xarajatlar, kassa balansi va o'tkazmalar</td><td>Butunlay o'chiriladi</td></tr>
+</table>
+
+<p>Hech qanday ma'lumot zaxira nusxa sifatida saqlab qolinmaydi.
+Serverdagi avtomatik texnik nusxalar (Google Firebase infratuzilmasi)
+eng ko'pi bilan <strong>30 kun</strong> ichida o'zi yo'qoladi.</p>
+
+<div class="card warn">
+  <strong>Diqqat:</strong> bu amalni ortga qaytarib bo'lmaydi. Savdo
+  tarixingiz yoki ombor ma'lumotingiz keyinchalik kerak bo'lishi mumkin
+  deb hisoblasangiz, o'chirishdan oldin kerakli cheklarni chop etib yoki
+  PDF qilib saqlab oling.
+</div>
+
+<hr>
+
+<header id="en">
+  <h1>Ocam POS — delete your account</h1>
+  <p class="muted">App: Ocam POS &nbsp;·&nbsp; Package name: uz.ocam.pos</p>
+</header>
+
+<p>There are two ways to delete your Ocam POS account and all data
+associated with it.</p>
+
+<h2>Option 1 — inside the app (recommended)</h2>
+<ol>
+  <li>Open Ocam POS and sign in</li>
+  <li>Go to <strong>Profil</strong> → <strong>Sozlamalar</strong> (Settings)</li>
+  <li>Scroll to <strong>"Xavfli hudud"</strong> (Danger zone)</li>
+  <li>Tap <strong>"Hisobni butunlay o'chirish"</strong> (Delete account permanently)</li>
+  <li>Read the warning and confirm</li>
+  <li>Enter your password</li>
+</ol>
+<p>The account and data are deleted <strong>immediately</strong>. No
+confirmation email is required.</p>
+
+<h2>Option 2 — request by email</h2>
+<p>If you cannot access the app (for example, you lost your phone), write
+to:</p>
+<div class="card">
+  <p style="margin:0 0 8px"><strong>To:</strong>
+  <a href="mailto:ALMASHTIRING@example.com?subject=Account%20deletion%20request">ALMASHTIRING@example.com</a></p>
+  <p style="margin:0 0 8px"><strong>Subject:</strong> Account deletion request</p>
+  <p style="margin:0"><strong>In the message:</strong> state the email
+  address your account is registered with. Send the message
+  <em>from that same address</em> so we can verify ownership.</p>
+</div>
+<p>Requests are completed within <strong>30 days</strong> and confirmed by
+reply.</p>
+
+<h2>What is deleted</h2>
+<table>
+<tr><th>Data</th><th>Status</th></tr>
+<tr><td>Account (email, password, name)</td><td>Permanently deleted</td></tr>
+<tr><td>Shop details (name, address, tax ID, settings)</td><td>Permanently deleted</td></tr>
+<tr><td>Products and stock levels</td><td>Permanently deleted</td></tr>
+<tr><td>Sales, receipts and refunds</td><td>Permanently deleted</td></tr>
+<tr><td>Customers and suppliers</td><td>Permanently deleted</td></tr>
+<tr><td>Employees, salaries and PIN hashes</td><td>Permanently deleted</td></tr>
+<tr><td>Purchases, expenses, cash drawer and transfers</td><td>Permanently deleted</td></tr>
+</table>
+
+<p>No data is retained as a backup. Automatic infrastructure snapshots
+(Google Firebase) expire on their own within <strong>30 days</strong>.</p>
+
+<div class="card warn">
+  <strong>Warning:</strong> this cannot be undone. If you may need your
+  sales history or inventory records later, print or export the receipts
+  you need before deleting.
+</div>
+
+</div>
+</body>
+</html>

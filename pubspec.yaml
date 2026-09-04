@@ -52,6 +52,7 @@ dev_dependencies:
   mocktail: ^1.0.4
   fake_cloud_firestore: ^4.0.0
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
 
@@ -74,4 +75,22 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
- 
+
+# Ilova ikonkasi — rasm qo'yilgandan keyin bitta buyruq bilan barcha
+# o'lchamlar (Android mipmap-*, adaptive icon va iOS AppIcon) yasaladi:
+#
+#     dart run flutter_launcher_icons
+#
+# Kerakli fayllar (assets/icon/README.md ga qarang):
+#   icon.png            1024x1024, to'liq ikonka, shaffof fonsiz
+#   icon_foreground.png 1024x1024, faqat belgi, atrofida ~25% bo'sh joy,
+#                       shaffof fon (Android adaptive ikonkaning old qatlami)
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: "ic_launcher"
+  min_sdk_android: 21
+  adaptive_icon_background: "#40916C"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  ios: true
+  remove_alpha_ios: true
+

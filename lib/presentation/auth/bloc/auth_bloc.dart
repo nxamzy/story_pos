@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignOutRequested>(_onSignOut);
     on<PasswordResetRequested>(_onPasswordReset);
     on<PasswordChangeRequested>(_onPasswordChange);
+    on<AccountDeletionRequested>(_onDeleteAccount);
     on<AuthMessageCleared>(
       (event, emit) => emit(
         state.copyWith(action: AuthActionStatus.idle, clearMessage: true),
@@ -152,6 +153,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           message: "Parol muvaffaqiyatli o'zgartirildi",
         ),
       );
+    } catch (error) {
+      _fail(emit, Failure.from(error).message);
+    }
+  }
+
+  Future<void> _onDeleteAccount(
+    AccountDeletionRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final validation = Validators.required(event.password, "Parol");
+    if (validation != null) return _fail(emit, validation);
+
+    emit(state.copyWith(action: AuthActionStatus.loading, clearMessage: true));
+    try {
+      await _authRepository.deleteAccount(password: event.password);
+      // Hisob o'chgach Firebase sessiyani tugatadi — `authStateChanges`
+      // `AuthStatusChanged(null)` yuboradi va router login sahifasiga
+      // qaytaradi. Bu yerda qo'shimcha emit shart emas.
     } catch (error) {
       _fail(emit, Failure.from(error).message);
     }

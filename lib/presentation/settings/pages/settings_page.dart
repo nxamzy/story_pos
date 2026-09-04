@@ -10,6 +10,7 @@ import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/data/models/user_model.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
+import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
@@ -50,16 +51,28 @@ class SettingsPage extends StatelessWidget {
           child: Divider(height: 1, color: AppColors.mintLight),
         ),
       ),
-      body: BlocListener<ProfileBloc, ProfileState>(
-        listenWhen: (previous, current) =>
-            current.actionMessage != null || current.error != null,
-        listener: (context, state) {
-          if (state.error != null) {
-            AppSnackBar.error(context, state.error!);
-          } else if (state.actionMessage != null) {
-            AppSnackBar.success(context, state.actionMessage!);
-          }
-        },
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<ProfileBloc, ProfileState>(
+            listenWhen: (previous, current) =>
+                current.actionMessage != null || current.error != null,
+            listener: (context, state) {
+              if (state.error != null) {
+                AppSnackBar.error(context, state.error!);
+              } else if (state.actionMessage != null) {
+                AppSnackBar.success(context, state.actionMessage!);
+              }
+            },
+          ),
+          // Hisobni o'chirish xatosi (masalan noto'g'ri parol) shu yerda
+          // ko'rsatiladi; muvaffaqiyat bo'lsa sessiya tugab, router o'zi
+          // login sahifasiga qaytaradi.
+          BlocListener<AuthBloc, AuthState>(
+            listenWhen: (previous, current) => current.hasError,
+            listener: (context, state) =>
+                AppSnackBar.error(context, state.errorMessage!),
+          ),
+        ],
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -102,6 +115,10 @@ class SettingsPage extends StatelessWidget {
 
               const SizedBox(height: 20),
               _buildLogoutButton(context),
+
+              _buildSectionTitle("Xavfli hudud"),
+              const _DeleteAccountTile(),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -284,6 +301,81 @@ class _CurrencySetting extends StatelessWidget {
           icon: Icons.payments_outlined,
           value: currency,
           onTap: () => _edit(context, currency),
+        );
+      },
+    );
+  }
+}
+
+/// Hisobni va do'konning barcha ma'lumotini butunlay o'chirish.
+///
+/// Google Play talabi: ro'yxatdan o'tkazadigan ilova hisobni o'chirish
+/// imkonini ham berishi shart. Amal ortga qaytmaydi, shuning uchun avval
+/// nima o'chishi aytiladi, keyin parol qayta so'raladi.
+class _DeleteAccountTile extends StatelessWidget {
+  const _DeleteAccountTile();
+
+  Future<void> _delete(BuildContext context) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: "Hisobni butunlay o'chirish",
+      message:
+          "Hisobingiz va u bilan birga barcha mahsulot, savdo, mijoz, "
+          "ta'minotchi, xodim, xarajat, xarid hamda kassa ma'lumoti "
+          "serverdan butunlay o'chiriladi.\n\n"
+          "Bu amalni ortga qaytarib bo'lmaydi.",
+      confirmLabel: "Ha, o'chirish",
+    );
+    if (!confirmed || !context.mounted) return;
+
+    final password = await showTextInputDialog(
+      context,
+      title: "Parolni tasdiqlang",
+      hint: "Hisob paroli",
+      obscureText: true,
+      saveLabel: "O'chirish",
+    );
+    if (password == null || password.isEmpty || !context.mounted) return;
+
+    context.read<AuthBloc>().add(AccountDeletionRequested(password));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (previous, current) => previous.isLoading != current.isLoading,
+      builder: (context, state) {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
+          ),
+          child: ListTile(
+            onTap: state.isLoading ? null : () => _delete(context),
+            leading: state.isLoading
+                ? const SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.error,
+                    ),
+                  )
+                : const Icon(Icons.delete_forever, color: AppColors.error),
+            title: const Text(
+              "Hisobni butunlay o'chirish",
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: const Text(
+              "Do'konning barcha ma'lumoti bilan birga",
+              style: TextStyle(color: AppColors.sage, fontSize: 12),
+            ),
+          ),
         );
       },
     );

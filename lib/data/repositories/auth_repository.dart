@@ -44,4 +44,7 @@ class AuthRepository with RepositoryGuard {
       newPassword: newPassword,
     ),
   );
+
+  Future<void> deleteAccount({required String password}) =>
+      guard(() => _remote.deleteAccount(password: password));
 }

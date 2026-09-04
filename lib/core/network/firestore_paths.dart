@@ -52,9 +52,30 @@ class FirestorePaths {
   CollectionReference<Map<String, dynamic>> get purchases =>
       userDoc.collection('purchases');
 
+  CollectionReference<Map<String, dynamic>> get posSettings =>
+      userDoc.collection('pos_settings');
+
   /// Kassa (drawer) hujjati — do'kon bo'yicha bitta.
   DocumentReference<Map<String, dynamic>> get drawer =>
-      userDoc.collection('pos_settings').doc('drawer_info');
+      posSettings.doc('drawer_info');
+
+  /// Do'konning barcha to'plamlari.
+  ///
+  /// Hisob o'chirilganda shu ro'yxat bo'ylab yurib hammasi tozalanadi
+  /// (`AuthRemoteDataSource.deleteAccount`). Yangi to'plam qo'shilsa shu
+  /// yerga ham qo'shish kerak — aks holda hisob o'chirilganda uning
+  /// hujjatlari bazada qolib ketadi.
+  List<CollectionReference<Map<String, dynamic>>> get allStoreCollections => [
+    products,
+    customers,
+    suppliers,
+    sales,
+    employees,
+    transferLogs,
+    expenses,
+    purchases,
+    posSettings,
+  ];
 
   FirebaseFirestore get db => _db;
 

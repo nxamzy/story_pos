@@ -13,6 +13,7 @@ Future<String?> showTextInputDialog(
   TextInputType keyboardType = TextInputType.text,
   int maxLines = 1,
   String saveLabel = "Saqlash",
+  bool obscureText = false,
 }) async {
   final controller = TextEditingController(text: initialValue);
 
@@ -26,7 +27,10 @@ Future<String?> showTextInputDialog(
         controller: controller,
         autofocus: true,
         keyboardType: keyboardType,
-        maxLines: maxLines,
+        // Parol so'ralganda matn bir qatorda va yopiq bo'lishi shart —
+        // `obscureText` ko'p qatorli maydonda ishlamaydi.
+        obscureText: obscureText,
+        maxLines: obscureText ? 1 : maxLines,
         textInputAction: maxLines > 1
             ? TextInputAction.newline
             : TextInputAction.done,

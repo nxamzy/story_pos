@@ -73,6 +73,18 @@ class PasswordChangeRequested extends AuthEvent {
   List<Object?> get props => [currentPassword, newPassword];
 }
 
+/// Hisobni va do'konning barcha ma'lumotini butunlay o'chirish.
+///
+/// Parol qayta so'raladi: Firebase "yaqinda kirgan" sessiyani talab qiladi
+/// va bu amalni ortga qaytarib bo'lmaydi.
+class AccountDeletionRequested extends AuthEvent {
+  final String password;
+  const AccountDeletionRequested(this.password);
+
+  @override
+  List<Object?> get props => [password];
+}
+
 /// Ko'rsatilgan xato/xabar o'qildi — state'dan tozalanadi.
 class AuthMessageCleared extends AuthEvent {
   const AuthMessageCleared();

@@ -51,21 +51,19 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCx6c4Fcxc1b7Ko9hpBq_l7kvivl_EWWfc',
-    appId: '1:649358456338:android:320e38d276d1ad71714acb',
+    appId: '1:649358456338:android:6bd5e33b9276d75a714acb',
     messagingSenderId: '649358456338',
     projectId: 'storepost-a64b8',
     storageBucket: 'storepost-a64b8.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyATSNAv_ac63GBynrg6JYwDl8QRozOGG5k',
-    appId: '1:649358456338:ios:eab014fa4b7f2c8d714acb',
+    appId: '1:649358456338:ios:3d85bfc381e1503e714acb',
     messagingSenderId: '649358456338',
     projectId: 'storepost-a64b8',
     storageBucket: 'storepost-a64b8.firebasestorage.app',
-    iosBundleId: 'com.example.ocamPos',
+    iosBundleId: 'uz.ocam.pos',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyATSNAv_ac63GBynrg6JYwDl8QRozOGG5k',
     appId: '1:649358456338:ios:eab014fa4b7f2c8d714acb',

@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.ocamPos</string>
+	<string>uz.ocam.pos</string>
 	<key>PROJECT_ID</key>
 	<string>storepost-a64b8</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:649358456338:ios:eab014fa4b7f2c8d714acb</string>
+	<string>1:649358456338:ios:3d85bfc381e1503e714acb</string>
 </dict>
 </plist>

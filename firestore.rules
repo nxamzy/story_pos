@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Ocam POS — Firestore xavfsizlik qoidalari.
+//
+// Ilovadagi barcha ma'lumot `users/{uid}/...` ostida saqlanadi
+// (`lib/core/network/firestore_paths.dart` — `collection()` chaqiriladigan
+// yagona joy). Shu sababli bitta qoida yetarli: hujjatga faqat o'sha
+// hisobning egasi kira oladi.
+//
+// Yuklash:
+//   firebase deploy --only firestore:rules --project storepost-a64b8
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Do'kon egasining hujjati va uning ostidagi hamma narsa:
+    // products, customers, suppliers, sales, employees, transfer_logs,
+    // expenses, purchases, pos_settings/drawer_info.
+    //
+    // `request.auth.uid == uid` — kirgan foydalanuvchi faqat o'z
+    // shoxobchasini o'qiy va yoza oladi. Boshqa do'konning savdolari,
+    // mijozlari yoki kassa balansi umuman ko'rinmaydi.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    // Yuqoridagidan tashqari hech qayerga ruxsat yo'q. Ilova boshqa
+    // yo'llarga murojaat qilmaydi; bu qoida niyatni aniq yozib qo'yish
+    // uchun (Firestore'da standart holat ham "taqiqlangan").
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

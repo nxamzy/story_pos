@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -8,8 +11,20 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Reliz imzosi `android/key.properties` faylidan o'qiladi. Bu fayl ham,
+// keystore'ning o'zi ham git'ga tushmaydi (.gitignore) — parol hech qachon
+// repoda saqlanmaydi. Fayl yo'q bo'lsa reliz debug kalit bilan imzolanadi:
+// mahalliy sinov uchun ishlaydi, lekin Play Console bunday paketni qabul
+// qilmaydi. Tayyorlash yo'riqnomasi: android/RELEASE.md
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+val hasReleaseSigning = keystorePropertiesFile.exists()
+if (hasReleaseSigning) {
+    FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+}
+
 android {
-    namespace = "com.example.ocam_pos"
+    namespace = "uz.ocam.pos"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,23 +37,43 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
-   defaultConfig {
-        // ... boshqa sozlamalar ...
-        applicationId = "com.example.ocam_pos"
-        
-        // 🎯 MANA SHU QATORNI O'ZGARTIRAMIZ
-        minSdk = flutter.minSdkVersion // Kamida 21 bo'lishi shart (mobile_scanner uchun)
-        
+    defaultConfig {
+        // Play Store'dagi doimiy identifikator — ilova chiqarilgandan keyin
+        // o'zgartirib bo'lmaydi.
+        applicationId = "uz.ocam.pos"
+
+        // mobile_scanner kamera API'si uchun kamida 21 talab qilinadi;
+        // Flutter'ning standart minSdk'i undan yuqori.
+        minSdk = flutter.minSdkVersion
+
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                logger.warn(
+                    "OGOHLANTIRISH: android/key.properties topilmadi — reliz " +
+                        "debug kalit bilan imzolanmoqda. Play Console bunday " +
+                        "paketni rad etadi (android/RELEASE.md ga qarang)."
+                )
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 }

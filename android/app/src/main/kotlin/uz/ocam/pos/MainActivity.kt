@@ -1,4 +1,4 @@
-package com.example.ocam_pos
+package uz.ocam.pos
 
 import io.flutter.embedding.android.FlutterActivity
 

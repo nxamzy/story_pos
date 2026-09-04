@@ -1,0 +1,10 @@
+# Bu faylning nusxasini `android/key.properties` nomi bilan saqlang va
+# o'z qiymatlaringiz bilan to'ldiring. `key.properties` git'ga tushmaydi.
+#
+# storeFile — keystore faylining TO'LIQ yo'li. Keystore'ni repo ichida
+# saqlamang: uni yo'qotsangiz ilovani boshqa yangilay olmaysiz.
+
+storePassword=KEYSTORE_PAROLI
+keyPassword=KALIT_PAROLI
+keyAlias=upload
+storeFile=/Users/FOYDALANUVCHI/ocam-upload-key.jks

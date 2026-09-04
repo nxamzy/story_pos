@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:ocam_pos/core/utils/app_config.dart';
+import 'package:ocam_pos/core/utils/receipt_paper.dart';
 import 'package:ocam_pos/data/models/model_utils.dart';
 
 class UserModel extends Equatable {
@@ -21,6 +22,19 @@ class UserModel extends Equatable {
 
   /// Do'kon valyutasi (masalan `UZS`). Bo'sh bo'lsa standart qiymat.
   final String currency;
+
+  /// Chek qaysi qog'ozga chiqarilishi (Sozlamalar -> "Printer").
+  final ReceiptPaper receiptPaper;
+
+  /// Shtrix-kod skanerlangach qurilma tebransinmi.
+  final bool scannerHaptics;
+
+  /// Mahsulot "kam qoldi" deb belgilanadigan qoldiq chegarasi.
+  final int lowStockThreshold;
+
+  /// Vaqt 24 soatlik ko'rsatilsinmi (aks holda 12 soatlik, AM/PM bilan).
+  final bool use24HourFormat;
+
   final DateTime? createdAt;
 
   const UserModel({
@@ -35,6 +49,10 @@ class UserModel extends Equatable {
     this.address = '',
     this.taxId = '',
     this.currency = AppConfig.defaultCurrency,
+    this.receiptPaper = ReceiptPaper.roll80,
+    this.scannerHaptics = true,
+    this.lowStockThreshold = AppConfig.defaultLowStockThreshold,
+    this.use24HourFormat = true,
     this.createdAt,
   });
 
@@ -63,6 +81,13 @@ class UserModel extends Equatable {
       address: ModelUtils.toStr(map['address']),
       taxId: ModelUtils.toStr(map['taxId']),
       currency: ModelUtils.toStr(map['currency'], AppConfig.defaultCurrency),
+      receiptPaper: ReceiptPaper.fromWire(map['receiptPaper']),
+      scannerHaptics: ModelUtils.toBool(map['scannerHaptics'], true),
+      lowStockThreshold: ModelUtils.toInt(
+        map['lowStockThreshold'],
+        AppConfig.defaultLowStockThreshold,
+      ),
+      use24HourFormat: ModelUtils.toBool(map['use24HourFormat'], true),
       createdAt: ModelUtils.dateOrNull(map['createdAt']),
     );
   }
@@ -80,6 +105,10 @@ class UserModel extends Equatable {
       'address': address,
       'taxId': taxId,
       'currency': currency,
+      'receiptPaper': receiptPaper.wire,
+      'scannerHaptics': scannerHaptics,
+      'lowStockThreshold': lowStockThreshold,
+      'use24HourFormat': use24HourFormat,
     };
   }
 
@@ -95,6 +124,10 @@ class UserModel extends Equatable {
     String? address,
     String? taxId,
     String? currency,
+    ReceiptPaper? receiptPaper,
+    bool? scannerHaptics,
+    int? lowStockThreshold,
+    bool? use24HourFormat,
     DateTime? createdAt,
   }) {
     return UserModel(
@@ -109,6 +142,10 @@ class UserModel extends Equatable {
       address: address ?? this.address,
       taxId: taxId ?? this.taxId,
       currency: currency ?? this.currency,
+      receiptPaper: receiptPaper ?? this.receiptPaper,
+      scannerHaptics: scannerHaptics ?? this.scannerHaptics,
+      lowStockThreshold: lowStockThreshold ?? this.lowStockThreshold,
+      use24HourFormat: use24HourFormat ?? this.use24HourFormat,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -126,5 +163,9 @@ class UserModel extends Equatable {
     address,
     taxId,
     currency,
+    receiptPaper,
+    scannerHaptics,
+    lowStockThreshold,
+    use24HourFormat,
   ];
 }

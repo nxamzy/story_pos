@@ -14,13 +14,15 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
+import 'package:ocam_pos/core/utils/receipt_paper.dart';
+import 'package:ocam_pos/presentation/settings/widgets/notification_settings_sheet.dart';
+import 'package:ocam_pos/presentation/settings/widgets/printer_settings_sheet.dart';
+import 'package:ocam_pos/presentation/settings/widgets/scanner_settings_sheet.dart';
 import 'package:ocam_pos/presentation/settings/widgets/settings_item.dart';
+import 'package:ocam_pos/presentation/settings/widgets/time_format_sheet.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
-
-  void _comingSoon(BuildContext context) =>
-      AppSnackBar.info(context, "Tez orada qo'shiladi");
 
   @override
   Widget build(BuildContext context) {
@@ -85,28 +87,10 @@ class SettingsPage extends StatelessWidget {
               const _CurrencySetting(),
 
               _buildSectionTitle("Qurilma sozlamalari"),
-              SettingsItem(
-                title: "Printer",
-                icon: Icons.print_outlined,
-                onTap: () => _comingSoon(context),
-              ),
-              SettingsItem(
-                title: "Shtrix-kod skaneri",
-                icon: Icons.qr_code_scanner_outlined,
-                onTap: () => _comingSoon(context),
-              ),
+              const _DeviceSettingsSection(),
 
               _buildSectionTitle("Umumiy sozlamalar"),
-              SettingsItem(
-                title: "Bildirishnomalar",
-                icon: Icons.notifications_none_outlined,
-                onTap: () => _comingSoon(context),
-              ),
-              SettingsItem(
-                title: "Vaqt formati",
-                icon: Icons.access_time,
-                onTap: () => _comingSoon(context),
-              ),
+              const _GeneralSettingsSection(),
               SettingsItem(
                 title: "Parolni o'zgartirish",
                 icon: Icons.lock_outline,
@@ -167,6 +151,77 @@ class SettingsPage extends StatelessWidget {
           style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
         ),
       ),
+    );
+  }
+}
+
+/// Printer va shtrix-kod skaneri sozlamalari.
+///
+/// Ikkalasi ham ilgari "Tez orada" xabarini chiqarardi, holbuki chek 80 mm
+/// lentaga qattiq bog'langan va skaner har doim tebranadigan edi.
+class _DeviceSettingsSection extends StatelessWidget {
+  const _DeviceSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final user = state.user;
+
+        return Column(
+          children: [
+            SettingsItem(
+              title: "Printer",
+              icon: Icons.print_outlined,
+              value: (user?.receiptPaper ?? ReceiptPaper.roll80).label,
+              onTap: () => showPrinterSettingsSheet(context),
+            ),
+            SettingsItem(
+              title: "Shtrix-kod skaneri",
+              icon: Icons.qr_code_scanner_outlined,
+              value: (user?.scannerHaptics ?? true)
+                  ? "Tebranish yoqilgan"
+                  : "Tebranish o'chirilgan",
+              onTap: () => showScannerSettingsSheet(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Ombor ogohlantirishi chegarasi va vaqt formati.
+class _GeneralSettingsSection extends StatelessWidget {
+  const _GeneralSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final user = state.user;
+        final threshold =
+            user?.lowStockThreshold ?? AppConfig.defaultLowStockThreshold;
+
+        return Column(
+          children: [
+            SettingsItem(
+              title: "Bildirishnomalar",
+              icon: Icons.notifications_none_outlined,
+              value: "Kam qoldi chegarasi: $threshold ta",
+              onTap: () => showNotificationSettingsSheet(context),
+            ),
+            SettingsItem(
+              title: "Vaqt formati",
+              icon: Icons.access_time,
+              value: (user?.use24HourFormat ?? true)
+                  ? "24 soatlik"
+                  : "12 soatlik",
+              onTap: () => showTimeFormatSheet(context),
+            ),
+          ],
+        );
+      },
     );
   }
 }

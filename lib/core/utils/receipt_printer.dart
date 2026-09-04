@@ -1,18 +1,29 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
+import 'package:ocam_pos/core/utils/receipt_paper.dart';
 import 'package:ocam_pos/data/models/cart_item_model.dart';
 import 'package:ocam_pos/data/models/sale_model.dart';
 import 'package:ocam_pos/data/models/user_model.dart';
 
-/// Chekni PDF qilib chop etish (80 mm lentali printer formatida).
+/// Chekni PDF qilib chop etish.
+///
+/// Qog'oz o'lchami Sozlamalar -> "Printer" da tanlanadi
+/// (`AppConfig.receiptPaper`); standart holat — 80 mm lenta.
 class ReceiptPrinter {
   const ReceiptPrinter._();
 
   /// [sale] berilsa chekda savdo raqami, to'lov turi, to'langan summa va
   /// qaytim ham ko'rsatiladi. [store] — Sozlamalardagi do'kon ma'lumoti
   /// (nomi, manzili, STIR); berilmasa umumiy sarlavha chiqadi.
+  static PdfPageFormat _pageFormat(ReceiptPaper paper) => switch (paper) {
+    ReceiptPaper.roll57 => PdfPageFormat.roll57,
+    ReceiptPaper.roll80 => PdfPageFormat.roll80,
+    ReceiptPaper.a4 => PdfPageFormat.a4,
+  };
+
   static Future<void> printReceipt(
     List<CartItem> items,
     double total, {
@@ -24,7 +35,7 @@ class ReceiptPrinter {
 
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.roll80,
+        pageFormat: _pageFormat(AppConfig.receiptPaper),
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [

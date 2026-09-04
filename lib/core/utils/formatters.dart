@@ -8,8 +8,10 @@ class AppFormat {
   static final NumberFormat _number = NumberFormat('#,##0.##', 'en_US');
   static final DateFormat _date = DateFormat('dd.MM.yyyy');
   static final DateFormat _dateLong = DateFormat('d MMMM yyyy');
-  static final DateFormat _dateTime = DateFormat('dd.MM.yyyy HH:mm');
-  static final DateFormat _time = DateFormat('HH:mm');
+  static final DateFormat _dateTime24 = DateFormat('dd.MM.yyyy HH:mm');
+  static final DateFormat _dateTime12 = DateFormat('dd.MM.yyyy h:mm a');
+  static final DateFormat _time24 = DateFormat('HH:mm');
+  static final DateFormat _time12 = DateFormat('h:mm a');
 
   /// 12500 -> "12 500 UZS"
   static String money(num? value) =>
@@ -25,11 +27,14 @@ class AppFormat {
   static String dateLong(DateTime? value) =>
       value == null ? '-' : _dateLong.format(value);
 
-  static String dateTime(DateTime? value) =>
-      value == null ? '-' : _dateTime.format(value);
+  /// Vaqtli formatlar Sozlamalardagi "Vaqt formati" tanloviga bo'ysunadi.
+  static String dateTime(DateTime? value) => value == null
+      ? '-'
+      : (AppConfig.use24HourFormat ? _dateTime24 : _dateTime12).format(value);
 
-  static String time(DateTime? value) =>
-      value == null ? '-' : _time.format(value);
+  static String time(DateTime? value) => value == null
+      ? '-'
+      : (AppConfig.use24HourFormat ? _time24 : _time12).format(value);
 
   /// Matndan raqam ajratib oladi ("12 500 UZS" -> 12500).
   static double parseAmount(String? input) {

@@ -32,6 +32,16 @@ class ModelUtils {
     return int.tryParse(value.toString()) ?? fallback;
   }
 
+  static bool toBool(dynamic value, [bool fallback = false]) {
+    if (value == null) return fallback;
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    final text = value.toString().toLowerCase();
+    if (text == 'true') return true;
+    if (text == 'false') return false;
+    return fallback;
+  }
+
   static String toStr(dynamic value, [String fallback = '']) =>
       value?.toString() ?? fallback;
 }

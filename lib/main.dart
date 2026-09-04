@@ -10,6 +10,7 @@ import 'package:ocam_pos/core/logic/app_bloc_observer.dart';
 import 'package:ocam_pos/core/navigation/app_router.dart';
 import 'package:ocam_pos/core/theme/app_theme.dart';
 import 'package:ocam_pos/core/utils/app_config.dart';
+import 'package:ocam_pos/core/utils/receipt_paper.dart';
 import 'package:ocam_pos/injection.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
@@ -87,39 +88,54 @@ class MyApp extends StatelessWidget {
             !previous.isAuthenticated && current.isAuthenticated,
         listener: (context, state) =>
             context.read<ProfileBloc>().add(const LoadUserProfile()),
-        child: const CurrencyScope(child: AppContent()),
+        child: const AppSettingsScope(child: AppContent()),
       ),
     );
   }
 }
 
-/// Do'kon valyutasini `AppConfig`ga o'rnatib turadi.
+/// Do'kon sozlamalarini `AppConfig`ga o'rnatib turadi.
 ///
-/// `AppFormat.money` valyutani `AppConfig`dan o'qiydi (u global qiymat,
-/// chunki narx formatlash butun ilovada, widget daraxtidan tashqarida ham
-/// ishlatiladi). Sozlamada valyuta o'zgarganda shu joy ilovani qayta
-/// chizadi — aks holda eski belgi ekranda qolib ketardi.
-class CurrencyScope extends StatefulWidget {
+/// Valyuta, chek qog'ozi, vaqt formati va "kam qoldi" chegarasi profil
+/// hujjatida saqlanadi, lekin ular widget daraxtidan tashqarida ham
+/// o'qiladi (`AppFormat`, `ReceiptPrinter`, skaner sahifasi) — shuning
+/// uchun `AppConfig`dagi global qiymatlarga ko'chiriladi. Sozlama
+/// o'zgarganda bu yer ilovani qayta chizadi, aks holda ekranda eski
+/// qiymat qolib ketardi.
+class AppSettingsScope extends StatefulWidget {
   final Widget child;
 
-  const CurrencyScope({super.key, required this.child});
+  const AppSettingsScope({super.key, required this.child});
 
   @override
-  State<CurrencyScope> createState() => _CurrencyScopeState();
+  State<AppSettingsScope> createState() => _AppSettingsScopeState();
 }
 
-class _CurrencyScopeState extends State<CurrencyScope> {
+class _AppSettingsScopeState extends State<AppSettingsScope> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
-      listenWhen: (previous, current) =>
-          previous.user?.currency != current.user?.currency,
+      listenWhen: (previous, current) {
+        final before = previous.user;
+        final after = current.user;
+        return before?.currency != after?.currency ||
+            before?.receiptPaper != after?.receiptPaper ||
+            before?.scannerHaptics != after?.scannerHaptics ||
+            before?.lowStockThreshold != after?.lowStockThreshold ||
+            before?.use24HourFormat != after?.use24HourFormat;
+      },
       listener: (context, state) {
-        final currency = state.user?.currency;
+        final user = state.user;
         setState(() {
+          final currency = user?.currency;
           AppConfig.currency = (currency == null || currency.isEmpty)
               ? AppConfig.defaultCurrency
               : currency;
+          AppConfig.receiptPaper = user?.receiptPaper ?? ReceiptPaper.roll80;
+          AppConfig.scannerHaptics = user?.scannerHaptics ?? true;
+          AppConfig.lowStockThreshold =
+              user?.lowStockThreshold ?? AppConfig.defaultLowStockThreshold;
+          AppConfig.use24HourFormat = user?.use24HourFormat ?? true;
         });
       },
       child: widget.child,

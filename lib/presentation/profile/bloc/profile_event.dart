@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ocam_pos/core/utils/receipt_paper.dart';
 import 'package:ocam_pos/data/models/user_model.dart';
 
 abstract class ProfileEvent extends Equatable {
@@ -53,6 +54,10 @@ class UpdateStoreInfo extends ProfileEvent {
   final String? address;
   final String? taxId;
   final String? currency;
+  final ReceiptPaper? receiptPaper;
+  final bool? scannerHaptics;
+  final int? lowStockThreshold;
+  final bool? use24HourFormat;
 
   const UpdateStoreInfo({
     this.storeName,
@@ -60,6 +65,10 @@ class UpdateStoreInfo extends ProfileEvent {
     this.address,
     this.taxId,
     this.currency,
+    this.receiptPaper,
+    this.scannerHaptics,
+    this.lowStockThreshold,
+    this.use24HourFormat,
   });
 
   @override
@@ -69,5 +78,9 @@ class UpdateStoreInfo extends ProfileEvent {
     address,
     taxId,
     currency,
+    receiptPaper,
+    scannerHaptics,
+    lowStockThreshold,
+    use24HourFormat,
   ];
 }

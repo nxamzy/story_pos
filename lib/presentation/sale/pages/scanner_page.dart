@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/services.dart';
+import 'package:ocam_pos/core/utils/app_config.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -33,7 +34,8 @@ class _ScannerPageState extends State<ScannerPage> {
           isScanned = true;
         });
 
-        await HapticFeedback.vibrate();
+        // Sozlamalar -> "Shtrix-kod skaneri" da o'chirib qo'yish mumkin.
+        if (AppConfig.scannerHaptics) await HapticFeedback.vibrate();
 
         if (mounted) {
           Navigator.pop(context, barcode.rawValue);

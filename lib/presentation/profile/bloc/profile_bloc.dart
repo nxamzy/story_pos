@@ -84,11 +84,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           address: event.address,
           taxId: event.taxId,
           currency: event.currency,
+          receiptPaper: event.receiptPaper,
+          scannerHaptics: event.scannerHaptics,
+          lowStockThreshold: event.lowStockThreshold,
+          use24HourFormat: event.use24HourFormat,
         ),
       );
       emit(
         state.copyWith(
-          actionMessage: "Do'kon ma'lumoti yangilandi",
+          actionMessage: "Sozlama saqlandi",
           clearError: true,
         ),
       );

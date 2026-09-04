@@ -33,7 +33,10 @@ import 'package:ocam_pos/presentation/sale/pages/basket_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/checkout_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/sale_page.dart';
 import 'package:ocam_pos/presentation/sale/pages/receipt_page.dart';
+import 'package:ocam_pos/presentation/profile/pages/roles_page.dart';
 import 'package:ocam_pos/presentation/settings/pages/settings_page.dart';
+import 'package:ocam_pos/presentation/support/pages/faq_page.dart';
+import 'package:ocam_pos/presentation/support/pages/help_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/change_password_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/forgot_password_page.dart';
 import 'package:ocam_pos/presentation/auth/pages/sign_in_page.dart';
@@ -128,6 +131,18 @@ class AppRouter {
       GoRoute(
         path: PlatformRoutes.showAllProfile.route,
         builder: (context, state) => const ShowAllProfile(),
+      ),
+      GoRoute(
+        path: PlatformRoutes.rolesPage.route,
+        builder: (context, state) => const RolesPage(),
+      ),
+      GoRoute(
+        path: PlatformRoutes.helpPage.route,
+        builder: (context, state) => const HelpPage(),
+      ),
+      GoRoute(
+        path: PlatformRoutes.faqPage.route,
+        builder: (context, state) => const FaqPage(),
       ),
 
       GoRoute(

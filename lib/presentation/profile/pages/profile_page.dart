@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/core/widgets/text_input_dialog.dart';
+import 'package:ocam_pos/presentation/profile/bloc/profile_state.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
 import 'package:ocam_pos/presentation/profile/bloc/profile_bloc.dart';
@@ -51,18 +53,32 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Container(color: AppColors.mintLight, height: 1.0),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
+      // Manzil saqlangani (yoki xato) haqida xabar shu yerda chiqadi —
+      // tahrirlash oynasi Sozlamalarga o'tmasdan shu sahifada ochiladi.
+      body: BlocListener<ProfileBloc, ProfileState>(
+        listenWhen: (previous, current) =>
+            current.actionMessage != null || current.error != null,
+        listener: (context, state) {
+          if (state.error != null) {
+            AppSnackBar.error(context, state.error!);
+          } else if (state.actionMessage != null) {
+            AppSnackBar.success(context, state.actionMessage!);
+          }
+        },
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
 
-            const ProfileInfoCard(),
+              const ProfileInfoCard(),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            _buildSettingsSection(),
-          ],
+              _buildSettingsSection(),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -84,6 +100,22 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  /// Do'kon manzilini tahrirlash — Sozlamalardagi bir xil maydon.
+  Future<void> _editAddress(BuildContext context) async {
+    final current = context.read<ProfileBloc>().state.user?.address ?? '';
+
+    final value = await showTextInputDialog(
+      context,
+      title: "Manzil",
+      initialValue: current,
+      hint: "Shahar, ko'cha, uy",
+      maxLines: 2,
+    );
+    if (value == null || value == current || !context.mounted) return;
+
+    context.read<ProfileBloc>().add(UpdateStoreInfo(address: value));
+  }
+
   Widget _buildSettingsSection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -98,17 +130,15 @@ class _ProfilePageState extends State<ProfilePage> {
           SettingsTile(
             icon: Icons.verified_user_outlined,
             title: "Rol va ruxsatlar",
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            onTap: () => context.push(PlatformRoutes.rolesPage.route),
           ),
+          // Manzil `UserModel.address`da saqlanadi va chekda chop etiladi —
+          // Sozlamalardagi bir xil maydonni shu yerdan ham tahrirlash
+          // mumkin.
           SettingsTile(
             icon: Icons.home_outlined,
             title: "Manzil",
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
-          ),
-          SettingsTile(
-            icon: Icons.language,
-            title: "Til",
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            onTap: () => _editAddress(context),
           ),
 
           const Padding(
@@ -125,12 +155,12 @@ class _ProfilePageState extends State<ProfilePage> {
           SettingsTile(
             icon: Icons.help_outline,
             title: "Yordam markazi",
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            onTap: () => context.push(PlatformRoutes.helpPage.route),
           ),
           SettingsTile(
             icon: Icons.info_outline,
             title: "Ko'p so'raladigan savollar",
-            onTap: () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+            onTap: () => context.push(PlatformRoutes.faqPage.route),
           ),
           SettingsTile(
             icon: Icons.settings_outlined,

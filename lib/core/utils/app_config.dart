@@ -34,6 +34,19 @@ class AppConfig {
   /// Sozlamalar -> "Vaqt formati".
   static bool use24HourFormat = true;
 
+  /// Ilova versiyasi — "Yordam" sahifasida ko'rsatiladi.
+  /// `pubspec.yaml`dagi `version:` bilan bir xil turishi kerak.
+  static const String appVersion = '1.0.0';
+
+  /// Yordam uchun aloqa ma'lumotlari.
+  ///
+  /// Bo'sh qoldirilgan qiymat "Yordam" sahifasida umuman chizilmaydi —
+  /// ishlamaydigan tugma ko'rsatilmasligi uchun. Qo'llab-quvvatlash
+  /// kanali tayyor bo'lganda shu yerga yoziladi.
+  static const String supportPhone = '';
+  static const String supportEmail = '';
+  static const String supportTelegram = '';
+
   /// Savdo ustiga qo'shiladigan soliq foizi (0 = soliqsiz).
   static const double taxRate = 0.0;
 

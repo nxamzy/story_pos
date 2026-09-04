@@ -83,4 +83,15 @@ class PlatformRoutes {
     name: 'salesHistory',
     route: '/salesHistory',
   );
+  static const rolesPage = RouteInfo(name: 'roles', route: '/roles');
+  static const helpPage = RouteInfo(name: 'help', route: '/help');
+  static const faqPage = RouteInfo(name: 'faq', route: '/faq');
+  static const transferLogsPage = RouteInfo(
+    name: 'transferLogs',
+    route: '/transferLogs',
+  );
+  static const loyalCustomersPage = RouteInfo(
+    name: 'loyalCustomers',
+    route: '/loyalCustomers',
+  );
 }

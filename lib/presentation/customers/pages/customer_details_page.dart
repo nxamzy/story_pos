@@ -4,7 +4,7 @@ import 'package:ocam_pos/core/logic/bloc_status.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 import 'package:ocam_pos/core/utils/formatters.dart';
-import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:ocam_pos/data/models/customer_model.dart';
 import 'package:ocam_pos/data/models/sale_model.dart';
 import 'package:ocam_pos/injection.dart';
@@ -88,7 +88,7 @@ class _CustomerDetailsView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            _ContactButtonsRow(phone: customer.phone),
+            _ContactButtonsRow(customer: customer),
             const SizedBox(height: 24),
             _buildPersonalInfo(context),
             const SizedBox(height: 16),
@@ -278,8 +278,24 @@ class _ProfileImage extends StatelessWidget {
 }
 
 class _ContactButtonsRow extends StatelessWidget {
-  final String phone;
-  const _ContactButtonsRow({required this.phone});
+  final CustomerModel customer;
+  const _ContactButtonsRow({required this.customer});
+
+  String get phone => customer.phone;
+
+  /// Mijozning aloqa ma'lumoti — tizim ulashish oynasi orqali Telegram,
+  /// SMS yoki boshqa ilovaga yuboriladi. Xarid summasi ataylab
+  /// qo'shilmagan: bu do'konning ichki ma'lumoti.
+  String get _shareText {
+    final lines = <String>[customer.name];
+    if (customer.phone.isNotEmpty) lines.add("Tel: ${customer.phone}");
+    if (customer.altPhone.isNotEmpty) {
+      lines.add("Qo'shimcha: ${customer.altPhone}");
+    }
+    if (customer.email.isNotEmpty) lines.add("Email: ${customer.email}");
+    if (customer.address.isNotEmpty) lines.add("Manzil: ${customer.address}");
+    return lines.join('\n');
+  }
 
   Future<void> _makeCall() async {
     final Uri url = Uri(scheme: 'tel', path: phone);
@@ -305,7 +321,9 @@ class _ContactButtonsRow extends StatelessWidget {
         _buildActionBtn(
           Icons.share_outlined,
           "Ulashish",
-          () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          () => SharePlus.instance.share(
+            ShareParams(text: _shareText, subject: customer.name),
+          ),
         ),
       ],
     );

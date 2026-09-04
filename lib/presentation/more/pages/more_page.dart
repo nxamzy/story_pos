@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/presentation/more/widgets/hub_card.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class POSHubPage extends StatelessWidget {
   const POSHubPage({super.key});
-
-  void _comingSoon(BuildContext context) =>
-      AppSnackBar.info(context, "Tez orada qo'shiladi");
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +61,7 @@ class POSHubPage extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            "Sovg'alar, xaridlar va aloqa",
+            "Kassa, qaytarishlar, xarajatlar va sozlamalar",
             style: TextStyle(color: AppColors.sage, fontSize: 14),
           ),
         ],
@@ -74,34 +70,64 @@ class POSHubPage extends StatelessWidget {
   }
 
   Widget _buildGrid(BuildContext context) {
-    return GridView.count(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
+    // Ilgari to'rtta kartochkaning ikkitasi ("Sodiqlik dasturi" va
+    // "Kupon yaratish") faqat "Tez orada" xabarini chiqarardi. Endi
+    // hammasi ishlaydigan bo'limga olib boradi va ekranning bo'sh qolgan
+    // pastki yarmi ham to'ldirildi.
+    //
+    // `const` emas: `PlatformRoutes.x.route` — const obyektning maydoni,
+    // Dart'da bu kompilyatsiya vaqtidagi doimiy hisoblanmaydi.
+    final items = <({String title, IconData icon, String route})>[
+      (
+        title: "Sodiq mijozlar",
+        icon: Icons.star_rounded,
+        route: PlatformRoutes.loyalCustomersPage.route,
+      ),
+      (
+        title: "Qaytarishlar",
+        icon: Icons.assignment_return_rounded,
+        route: PlatformRoutes.refundsPage.route,
+      ),
+      (
+        title: "Kassa",
+        icon: Icons.account_balance_wallet_rounded,
+        route: PlatformRoutes.cashDrawerPage.route,
+      ),
+      (
+        title: "Xarajatlar",
+        icon: Icons.payments_rounded,
+        route: PlatformRoutes.expensesPage.route,
+      ),
+      (
+        title: "Xaridlar",
+        icon: Icons.local_shipping_rounded,
+        route: PlatformRoutes.purchasesPage.route,
+      ),
+      (
+        title: "Sozlamalar",
+        icon: Icons.settings_rounded,
+        route: PlatformRoutes.settingsPage.route,
+      ),
+    ];
+
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       physics: const BouncingScrollPhysics(),
-      children: [
-        HubCard(
-          title: "Sodiqlik dasturi",
-          icon: Icons.star_rounded,
-          onTap: () => _comingSoon(context),
-        ),
-        HubCard(
-          title: "Qaytarishlar",
-          icon: Icons.assignment_return_rounded,
-          onTap: () => context.push(PlatformRoutes.refundsPage.route),
-        ),
-        HubCard(
-          title: "Kupon yaratish",
-          icon: Icons.confirmation_number_rounded,
-          onTap: () => _comingSoon(context),
-        ),
-        HubCard(
-          title: "Kassa",
-          icon: Icons.account_balance_wallet_rounded,
-          onTap: () => context.push(PlatformRoutes.cashDrawerPage.route),
-        ),
-      ],
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+
+        return HubCard(
+          title: item.title,
+          icon: item.icon,
+          onTap: () => context.push(item.route),
+        );
+      },
     );
   }
 }

@@ -38,6 +38,9 @@ dependencies:
   intl: ^0.18.1
   url_launcher: ^6.3.2
 
+  # Mijoz/chek ma'lumotini tizim ulashish oynasi orqali yuborish
+  share_plus: ^12.0.0
+
   # Kassir PIN kodini xeshlab saqlash uchun (ochiq matnda saqlanmaydi)
   crypto: ^3.0.7
 

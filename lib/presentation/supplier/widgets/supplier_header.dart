@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
-import 'package:ocam_pos/core/widgets/app_snackbar.dart';
+import 'package:ocam_pos/core/theme/app_colors.dart';
 
 class SupplierHeader extends StatelessWidget {
   const SupplierHeader({super.key});
@@ -29,45 +28,18 @@ class SupplierHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            offset: const Offset(0, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          // Ilgari ikki qatorli menyu edi va "Kontaktlardan import
+          // qilish" faqat "Tez orada" xabarini chiqarardi. Kontaktlarga
+          // kirish Google Play'da maxsus asoslash talab qiladigan nozik
+          // ruxsat — birinchi reliz uchun keraksiz xavf.
+          IconButton(
+            onPressed: () =>
+                context.push(PlatformRoutes.addNewSupplierPage.route),
+            tooltip: "Yangi ta'minotchi",
+            icon: const Icon(
+              Icons.person_add_alt_1_outlined,
+              color: Colors.white,
             ),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 1,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.person_add_alt_1_outlined,
-                      color: AppColors.forestDark,
-                    ),
-                    SizedBox(width: 10),
-                    Text("Kontaktlardan import qilish"),
-                  ],
-                ),
-              ),
-              const PopupMenuDivider(),
-              const PopupMenuItem(
-                value: 2,
-                child: Row(
-                  children: [
-                    Icon(Icons.edit_note, color: AppColors.forestDark),
-                    SizedBox(width: 10),
-                    Text("Qo'lda qo'shish"),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 2) {
-                context.push(PlatformRoutes.addNewSupplierPage.route);
-              } else {
-                AppSnackBar.info(context, "Tez orada qo'shiladi");
-              }
-            },
           ),
         ],
       ),

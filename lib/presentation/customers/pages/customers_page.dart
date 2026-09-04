@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
 import 'package:ocam_pos/core/logic/bloc_status.dart';
-import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_bloc.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_event.dart';
 import 'package:ocam_pos/presentation/customers/bloc/customer_state.dart';
@@ -111,42 +110,23 @@ class _CustomersPageState extends State<CustomersPage> {
     );
   }
 
+  /// Yangi mijoz qo'shish.
+  ///
+  /// Ilgari bu yerda ikki qatorli menyu bor edi va "Import qilish" faqat
+  /// "Tez orada" xabarini chiqarardi. Kontaktlardan import qilish uchun
+  /// READ_CONTACTS ruxsati kerak — Google Play uni maxsus asoslash
+  /// so'raladigan "nozik ruxsat" deb hisoblaydi. Birinchi reliz uchun
+  /// bunga arzimaydi, shuning uchun tugma to'g'ridan-to'g'ri qo'shish
+  /// sahifasini ochadi.
   Widget _buildAddMenu(BuildContext context) {
-    return PopupMenuButton<int>(
+    return IconButton(
+      onPressed: () => context.push(PlatformRoutes.addNewCustomerPage.route),
+      tooltip: "Yangi mijoz",
       icon: const Icon(
         Icons.add_circle_outline,
         color: AppColors.primary,
         size: 30,
       ),
-      onSelected: (value) {
-        if (value == 2) {
-          context.push(PlatformRoutes.addNewCustomerPage.route);
-        } else {
-          AppSnackBar.info(context, "Tez orada qo'shiladi");
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 1,
-          child: Row(
-            children: [
-              Icon(Icons.contact_phone, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text("Import qilish"),
-            ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 2,
-          child: Row(
-            children: [
-              Icon(Icons.edit, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text("Qo'lda qo'shish"),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

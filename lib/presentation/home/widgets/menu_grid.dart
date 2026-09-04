@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ocam_pos/core/theme/app_colors.dart';
-import 'package:ocam_pos/core/widgets/app_snackbar.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
 
 class MenuGrid extends StatelessWidget {
@@ -9,43 +8,46 @@ class MenuGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'title': 'Xaridlar',
-        'icon': Icons.shopping_bag_outlined,
-        'route': PlatformRoutes.purchasesPage.route,
-      },
-      {
-        'title': 'Xarajatlar',
-        'icon': Icons.payments_outlined,
-        'route': PlatformRoutes.expensesPage.route,
-      },
-      {
-        'title': 'Mijozlar',
-        'icon': Icons.people_outline,
-        'route': PlatformRoutes.customersPage.route,
-      },
-      {
+    // Har bir qatorning yo'li bor, shuning uchun "yo'l yo'q" holati
+    // uchun 'Tez orada' tarmog'i ham kerak emas edi — u hech qachon
+    // ishga tushmasdi. Yozuvlar (record) tipi buni endi imkonsiz qiladi.
+    final menuItems = <({String title, IconData icon, String route})>[
+      (
+        title: 'Xaridlar',
+        icon: Icons.shopping_bag_outlined,
+        route: PlatformRoutes.purchasesPage.route,
+      ),
+      (
+        title: 'Xarajatlar',
+        icon: Icons.payments_outlined,
+        route: PlatformRoutes.expensesPage.route,
+      ),
+      (
+        title: 'Mijozlar',
+        icon: Icons.people_outline,
+        route: PlatformRoutes.customersPage.route,
+      ),
+      (
         // Ilgari "Hisob-fakturalar" deb turgan, lekin hech qanday hujjat
         // tizimi yo'q edi. Do'konga kerak bo'ladigan narsa — eski chekni
         // topish, shuning uchun savdolar tarixi.
-        'title': 'Savdolar tarixi',
-        'icon': Icons.receipt_long_outlined,
-        'route': PlatformRoutes.salesHistoryPage.route,
-      },
-      {
+        title: 'Savdolar tarixi',
+        icon: Icons.receipt_long_outlined,
+        route: PlatformRoutes.salesHistoryPage.route,
+      ),
+      (
         // Xodimlar ro'yxati ochiladi. Ilgari bu yerdan `/employee` yo'liga
         // (bitta xodim profiliga) hech qanday xodimsiz o'tilardi va ekran
         // soxta "Administrator" profilini ko'rsatardi.
-        'title': 'Xodimlar',
-        'icon': Icons.admin_panel_settings_outlined,
-        'route': PlatformRoutes.showAllProfile.route,
-      },
-      {
-        'title': 'Hisobotlar',
-        'icon': Icons.pie_chart_outline,
-        'route': PlatformRoutes.repostsPage.route,
-      },
+        title: 'Xodimlar',
+        icon: Icons.admin_panel_settings_outlined,
+        route: PlatformRoutes.showAllProfile.route,
+      ),
+      (
+        title: 'Hisobotlar',
+        icon: Icons.pie_chart_outline,
+        route: PlatformRoutes.repostsPage.route,
+      ),
     ];
 
     return GridView.builder(
@@ -60,12 +62,11 @@ class MenuGrid extends StatelessWidget {
       itemCount: menuItems.length,
       itemBuilder: (context, index) {
         final item = menuItems[index];
+
         return _MenuItemCard(
-          title: item['title'],
-          icon: item['icon'],
-          onTap: item['route'] != null
-              ? () => context.push(item['route'])
-              : () => AppSnackBar.info(context, "Tez orada qo'shiladi"),
+          title: item.title,
+          icon: item.icon,
+          onTap: () => context.push(item.route),
         );
       },
     );

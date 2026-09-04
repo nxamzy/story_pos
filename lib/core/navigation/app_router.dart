@@ -11,9 +11,11 @@ import 'package:ocam_pos/data/models/supplier_model.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 
 import 'package:ocam_pos/presentation/cashdrawer/pages/cashdrawer_page.dart';
+import 'package:ocam_pos/presentation/cashdrawer/pages/transfer_logs_page.dart';
 import 'package:ocam_pos/presentation/customers/pages/add_customer_page.dart';
 import 'package:ocam_pos/presentation/customers/pages/customer_details_page.dart';
 import 'package:ocam_pos/presentation/customers/pages/customers_page.dart';
+import 'package:ocam_pos/presentation/customers/pages/loyal_customers_page.dart';
 import 'package:ocam_pos/presentation/employee/pages/employee_page.dart';
 import 'package:ocam_pos/presentation/employee/pages/add_employee_page.dart';
 import 'package:ocam_pos/presentation/home/pages/home_page.dart';
@@ -133,6 +135,10 @@ class AppRouter {
         builder: (context, state) => const ShowAllProfile(),
       ),
       GoRoute(
+        path: PlatformRoutes.loyalCustomersPage.route,
+        builder: (context, state) => const LoyalCustomersPage(),
+      ),
+      GoRoute(
         path: PlatformRoutes.rolesPage.route,
         builder: (context, state) => const RolesPage(),
       ),
@@ -145,6 +151,10 @@ class AppRouter {
         builder: (context, state) => const FaqPage(),
       ),
 
+      GoRoute(
+        path: PlatformRoutes.transferLogsPage.route,
+        builder: (context, state) => const TransferLogsPage(),
+      ),
       GoRoute(
         path: PlatformRoutes.cashDrawerPage.route,
         builder: (context, state) => const CashDrawerPage(),

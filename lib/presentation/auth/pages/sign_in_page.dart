@@ -8,7 +8,6 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_back_button.dart';
-import 'package:ocam_pos/presentation/auth/widgets/social_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_text_field.dart';
 import 'package:ocam_pos/core/navigation/nav_extensions.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
@@ -68,7 +67,8 @@ class _LoginPageState extends State<LoginPage> {
                     iconColor: AppColors.secondary,
                     // Tizimdan chiqqandan keyin login sahifasi stack ildizi
                     // bo'lib qoladi — bunda oddiy `pop()` xato beradi.
-                    onTap: () => context.popOrGo(PlatformRoutes.firstPage.route),
+                    onTap: () =>
+                        context.popOrGo(PlatformRoutes.firstPage.route),
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -108,8 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     icon: Icons.lock_outline,
                     isPassword: true,
                     textInputAction: TextInputAction.done,
-                    validator: (v) =>
-                        Validators.required(v, "Parol"),
+                    validator: (v) => Validators.required(v, "Parol"),
                     onFieldSubmitted: (_) => _submit(),
                   ),
 
@@ -128,11 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  _buildDivider(),
-                  const SizedBox(height: 30),
-                  _buildSocialButtons(),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 48),
                   _buildSignUpPrompt(context),
                   const SizedBox(height: 16),
 
@@ -147,33 +142,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppColors.mintMedium)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            "yoki",
-            style: TextStyle(color: AppColors.sage, fontSize: 14),
-          ),
-        ),
-        const Expanded(child: Divider(color: AppColors.mintMedium)),
-      ],
-    );
-  }
-
-  Widget _buildSocialButtons() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AuthSocialButton(type: "google"),
-        SizedBox(width: 20),
-        AuthSocialButton(type: "fb"),
-      ],
     );
   }
 

@@ -9,7 +9,6 @@ import 'package:ocam_pos/presentation/auth/bloc/auth_bloc.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_event.dart';
 import 'package:ocam_pos/presentation/auth/bloc/auth_state.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_back_button.dart';
-import 'package:ocam_pos/presentation/auth/widgets/social_button.dart';
 import 'package:ocam_pos/presentation/auth/widgets/auth_text_field.dart';
 import 'package:ocam_pos/core/navigation/nav_extensions.dart';
 import 'package:ocam_pos/core/routes/app_routes.dart';
@@ -86,7 +85,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   AuthBackButton(
                     bg: AppColors.surface,
                     iconColor: AppColors.secondary,
-                    onTap: () => context.popOrGo(PlatformRoutes.loginPage.route),
+                    onTap: () =>
+                        context.popOrGo(PlatformRoutes.loginPage.route),
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -163,10 +163,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  _buildDivider(),
-                  const SizedBox(height: 24),
-                  _buildSocialButtons(),
                   const SizedBox(height: 32),
 
                   _buildSignUpButton(),
@@ -218,33 +214,6 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppColors.mintMedium)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            "yoki",
-            style: TextStyle(color: AppColors.sage, fontSize: 14),
-          ),
-        ),
-        const Expanded(child: Divider(color: AppColors.mintMedium)),
-      ],
-    );
-  }
-
-  Widget _buildSocialButtons() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AuthSocialButton(type: "google"),
-        SizedBox(width: 20),
-        AuthSocialButton(type: "fb"),
-      ],
     );
   }
 

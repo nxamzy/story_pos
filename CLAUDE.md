@@ -16,6 +16,7 @@ flutter run                      # attached device/emulator
 flutter analyze                  # baseline: 0 issues
 flutter test                     # unit + bloc tests under test/
 flutter build apk --debug        # real compile check; --debug builds install fine without release signing
+flutter build appbundle --release # Play Console uchun .aab (android/RELEASE.md ga qarang)
 flutterfire configure            # regenerates lib/firebase_options.dart + google-services.json
 ```
 
@@ -46,7 +47,7 @@ lib/
   presentation/<feature>/         # auth, home, inventory, sale, sales_history, refunds,
                                    # purchases, expenses, supplier, customers, employee,
                                    # cashdrawer, profile, settings, notifications, more,
-                                   # report, onboarding
+                                   # report, onboarding, support
     bloc/                         # <feature>_bloc.dart + <feature>_event.dart + <feature>_state.dart — always 3 files
     pages/
     widgets/
@@ -127,17 +128,42 @@ The report shows one day at a time; `/salesHistory` (`SalesHistoryBloc`, screen-
 
 `users/{uid}/pos_settings/drawer_info.current_balance` grows on every cash sale. Money leaves it through a transfer: `TransferParty` (`data/models/transfer_party_model.dart`) makes the drawer and each employee interchangeable sides of `EmployeeRemoteDataSource.transferBalance`, which updates both documents (`current_balance` for the drawer, `balance` for an employee) and appends to `transfer_logs` in one transaction. `CashState` stores only the selected party **ids** and resolves balances from the live lists, so an open form never validates against a stale balance.
 
+### Account deletion
+
+`AuthRemoteDataSource.deleteAccount` (Settings → "Xavfli hudud") reauthenticates with the password, then wipes every collection in `FirestorePaths.allStoreCollections` plus the user document, and only then calls `user.delete()`. **The order is load-bearing:** once the Firebase account is gone the session ends and `firestore.rules` (`request.auth.uid == uid`) rejects any further write, so the documents would be stranded. Collections are deleted 400 docs at a time because a `WriteBatch` caps at 500 operations. Adding a new collection means adding it to `allStoreCollections` — otherwise its documents survive a deleted account.
+
+Google Play requires this: any app that lets a user create an account must offer in-app deletion, plus a web URL where deletion can be requested.
+
+### Settings
+
+Settings (`/settings`) writes to the profile document through `UpdateStoreInfo`. Beyond store name/phone/STIR/address/currency it now carries four device settings — receipt paper size (`ReceiptPaper`: 58 mm / 80 mm / A4), scanner haptics, low-stock threshold and 12/24-hour time. Each opens a compact bottom sheet built on `SettingsSheetFrame` + `SettingsChoiceTile` (`presentation/settings/widgets/`). `RadioListTile` is deliberately unused: its `groupValue`/`onChanged` pair is deprecated as of Flutter 3.32 and the project's baseline is zero analyzer issues.
+
+### Support pages
+
+`presentation/support/` holds two content-only screens: `/help` (routes to the common tasks, shows `AppConfig.appVersion`) and `/faq` (15 expandable Q&A entries describing how this app actually behaves — sale, refund, drawer, purchase-vs-expense, cashier PIN, printer, account deletion). `/help`'s contact buttons are drawn only when `AppConfig.supportPhone` / `supportEmail` / `supportTelegram` are non-empty; they ship empty, so no button leads to a dead channel. Fill them in when a support channel exists.
+
+## Play Market release
+
+Full instructions live in `android/RELEASE.md`. The essentials:
+
+- `applicationId` / iOS bundle id is **`uz.ocam.pos`** — permanent once the app is published. Firebase has apps registered for it in project `storepost-a64b8`.
+- Release signing reads `android/key.properties` (gitignored, template in `key.properties.example`). When the file is missing the build falls back to the debug key **and prints a Gradle warning** — Play rejects debug-signed uploads, so never ignore it.
+- Play takes `.aab`, not `.apk`: `flutter build appbundle --release`.
+- `firestore.rules` is in the repo and deployed with `firebase deploy --only firestore:rules --project storepost-a64b8`. Every query in the app goes through `FirestorePaths` under `users/{uid}`, so the single owner-only rule matches the app exactly. No composite indexes are needed — each query filters and sorts on one field.
+- Still owned by the user, not the code: launcher icon (the default Flutter logo is still in `mipmap-*`), privacy-policy URL, and the Play Console Data safety form.
+
 ## Known runtime gotcha (verified on-device, not visible from reading the code)
 
 `ElevatedButton(shape: const CircleBorder(), ...)` inside a `Row` that sits below a `ClipPath`-clipped `Stack` (as in `presentation/onboarding/widgets/splash_content.dart`) silently fails to paint on the Impeller/OpenGLES rendering backend — no exception, no overflow warning, the whole `Row` (siblings included) just never renders, and its tap targets don't exist. Confirmed by bisection on a physical build + emulator; `RepaintBoundary` did not fix it. Workaround in place: a circular next-button built from `Material(shape: CircleBorder()) + InkWell` instead of `ElevatedButton`. If you need a circular Material button elsewhere in this app, use that pattern, not `ElevatedButton` + `CircleBorder`.
 
 ## Testing
 
-`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 87 in total:
+`test/` has real unit, bloc and datasource tests (`bloc_test` + `mocktail` + `fake_cloud_firestore`), 103 in total:
 
-- `core/utils/` — Validators, AppFormat, PinHasher (pure functions)
+- `core/utils/` — Validators, AppFormat (money, 12/24-hour time), PinHasher (pure functions)
+- `data/models/` — `user_model_test.dart`: device-settings fields survive a Firestore round-trip and old documents without them fall back to defaults
 - `presentation/` — `auth_bloc_test.dart`, `sale_bloc_test.dart` (cart stock-limit, insufficient-payment guard), `product_state_test.dart`, `cashdrawer/cash_bloc_test.dart` (transfer validation, party resolution), `sales_history/sales_history_state_test.dart`
-- `data/` — `sale_remote_datasource_test.dart` (sale + refund), `employee_remote_datasource_test.dart` (drawer transfers), `expense_remote_datasource_test.dart`, `purchase_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`: real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
+- `data/` — `sale_remote_datasource_test.dart` (sale + refund), `employee_remote_datasource_test.dart` (drawer transfers), `expense_remote_datasource_test.dart`, `purchase_remote_datasource_test.dart`, `customer_remote_datasource_test.dart`, `auth_remote_datasource_test.dart` (account deletion wipes every collection, in the right order, and leaves everything untouched on a wrong password): real Firestore semantics (transactions, `FieldValue.increment`, `serverTimestamp`) against `FakeFirebaseFirestore`
 
 Money-moving code belongs in `data/` with a transaction test that asserts **both** the happy path and that a rejected operation leaves every document untouched.
 
@@ -155,8 +181,12 @@ For a datasource test, build `FirestorePaths(db: FakeFirebaseFirestore(), auth: 
 - `openBarcodeScanner(context)` (`presentation/sale/pages/scanner_page.dart`) is the single entry point to the camera scanner; it returns the barcode or `null`.
 - Documents are created with `createdAt: FieldValue.serverTimestamp()` **only when new** (`if (isNew)`) — a `SetOptions(merge: true)` save that always writes it would reset a customer's registration date and reorder every list sorted by `createdAt`.
 - `firebase_core` is a direct dependency in `pubspec.yaml` now (was previously transitive-only and unlisted).
+- `share_plus` (v12 API: `SharePlus.instance.share(ShareParams(...))`, not the old static `Share.share`) backs the customer "Ulashish" button. It needs no Android permission — that is why it was acceptable to add where contact import was not.
 - `SignUpBloc`-equivalent dead code has been removed. An alternate swipeable `PageView` onboarding (`onboarding_page.dart` + `OnboardingBloc`) was also removed — it was unrouted, still had the `ElevatedButton(shape: CircleBorder())` rendering bug (see below) unfixed, and was in English. The three routed splash pages (`first_splash_page.dart` / `second_splash_page.dart` / `third_splash_page.dart`, all built on `splash_content.dart`) are the only onboarding flow now.
-- A few screens (`presentation/profile/pages/select_profile_page.dart`'s "switch profile" flow) are intentionally wired to real data (employee list) but the actual "switch" action is a no-op placeholder — multi-cashier device switching needs a PIN/security design decision that hasn't been made yet.
-- The remaining `AppSnackBar.info(context, "Tez orada qo'shiladi")` placeholders are features that need a package or a backend that does not exist yet: contact import (customers, suppliers — needs a contacts plugin and permissions), social login, loyalty programme, coupons, invoices, language switching, help centre/FAQ, customer "share". Everything else that looked like a placeholder has been implemented — check before adding another one.
-- `AppConfig.currency` is a **mutable global** (not a const): it is set from the loaded profile by `CurrencyScope` in `main.dart` and read by `AppFormat.money`. Money formatting happens outside the widget tree (PDF receipts, BLoC messages), which is why it is not an InheritedWidget; `CurrencyScope` rebuilds the app when the setting changes so nothing shows a stale symbol.
+- **There are no `"Tez orada qo'shiladi"` placeholders left** — every tap target in the app does something. Don't add another one: either build the feature or remove the control. Four of the old placeholders were deliberately resolved by *deletion* rather than implementation, and re-adding them needs a decision first:
+  - **contact import** (customers, suppliers) — needs `READ_CONTACTS`, which Google Play treats as a sensitive permission requiring a declaration and review. The `+` buttons now go straight to the manual add pages.
+  - **social login** (Google, Facebook) — `google_sign_in` additionally needs the release keystore's SHA-1 registered in Firebase and the provider enabled in the console. The buttons and `social_button.dart` were removed; email/password is the only method.
+  - **language switching** — real multi-language means localising ~200 files; a switcher with one language is worse than none.
+  - **coupons / loyalty points** — needs a discount concept in `SaleModel` and the checkout transaction, which doesn't exist. "Sodiqlik dasturi" became `/loyalCustomers`, a ranking built from the `totalSpent` the app already tracks.
+- `AppConfig` holds several **mutable globals** (not consts): `currency`, `receiptPaper`, `scannerHaptics`, `lowStockThreshold`, `use24HourFormat`. They are mirrored from the loaded profile by `AppSettingsScope` in `main.dart` (formerly `CurrencyScope`) and read by `AppFormat`, `ReceiptPrinter`, `ScannerPage` and `ProductState.lowStockProducts`. They are globals rather than an InheritedWidget because money/time formatting and receipt printing happen **outside the widget tree**; `AppSettingsScope` rebuilds the app when any of them changes so nothing shows a stale value. A new user-visible setting belongs in `UserModel` + `UpdateStoreInfo` + `AppConfig` + `AppSettingsScope`, in that order.
 - Colors come from `AppColors` constants (`core/theme/app_colors.dart`) but there is now a real `AppTheme.light` (`core/theme/app_theme.dart`) wired into `MaterialApp.router` — prefer using themed defaults (`ElevatedButton`, `TextFormField`, etc. already pick up the right colors) over hardcoding `AppColors.x` in new widgets where a theme default exists.

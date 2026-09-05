@@ -38,5 +38,13 @@
   },
   "firestore": {
     "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": "docs",
+    "ignore": [
+      "**/.*",
+      "**/*.md",
+      "play/**"
+    ]
   }
 }

@@ -105,21 +105,37 @@ Bir xil `versionCode` bilan ikkinchi marta yuklab bo'lmaydi.
 
 ## 6. Play Console'da to'ldiriladigan narsalar
 
-Kodga aloqasi yo'q, lekin ularsiz ilova chiqmaydi:
+Kodga aloqasi yo'q, lekin ularsiz ilova chiqmaydi.
 
-- **Maxfiylik siyosati (Privacy policy) URL** — majburiy. Ilova email,
-  ism va do'kon ma'lumotini yig'adi.
+**Tayyor — faqat yuklash/nusxa olish qoladi:**
+
+| Nima | Qayerda |
+|---|---|
+| Ilova ikonkasi 512×512 | `docs/play/icon-512.png` |
+| Feature grafika 1024×500 | `docs/play/feature-graphic.png` |
+| Nom, qisqa va to'liq tavsif, teglar | `docs/play-listing.md` |
+| Maxfiylik siyosati sahifasi | `docs/index.html` |
+| Hisobni o'chirish sahifasi | `docs/delete-account.html` |
+
+Ikki sahifani avval internetga chiqarish kerak (`docs/README.md`):
+
+```bash
+firebase deploy --only hosting --project storepost-a64b8
+```
+
+**Hali qilinmagan:**
+
+- **Skrinshotlar** — kamida 2 ta, telefon uchun. Ilovani real ma'lumot
+  bilan to'ldirib oling: kassa, savat, chek, ombor, hisobot ekranlari.
 - **Data safety** anketasi — qanday ma'lumot yig'ilishi va nima uchun.
   Ocam POS uchun: Email manzil (hisob boshqaruvi), Ism (hisob
   boshqaruvi), Ilova faoliyati (do'kon ma'lumoti). Hammasi shifrlangan
-  holda uzatiladi (Firebase HTTPS) va foydalanuvchi hisobini o'chira
-  oladi.
-- **Hisobni o'chirish havolasi** — Play talab qiladi. Ilova ichida
-  Sozlamalar → "Hisobni butunlay o'chirish" bor; shu havolaga qo'shimcha
-  veb-sahifa ham ko'rsatish kerak.
-- **Kamera ruxsati izohi** — shtrix-kod skanerlash uchun.
-- Ilova ikonkasi (512×512 PNG), feature grafika (1024×500), kamida 2 ta
-  skrinshot.
+  holda uzatiladi (Firebase HTTPS), foydalanuvchi hisobini o'chira
+  oladi — o'chirish havolasi sifatida yuqoridagi sahifani ko'rsating.
+- **Kamera ruxsati izohi** — shtrix-kod skanerlash uchun. Ilovadagi
+  matn: `ios/Runner/Info.plist` dagi `NSCameraUsageDescription`.
+- **Content rating** anketasi va **Target audience** — biznes ilovasi,
+  18+ auditoriya.
 
 ## 7. Tez ma'lumotnoma
 

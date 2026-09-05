@@ -44,7 +44,7 @@ class AppConfig {
   /// ishlamaydigan tugma ko'rsatilmasligi uchun. Qo'llab-quvvatlash
   /// kanali tayyor bo'lganda shu yerga yoziladi.
   static const String supportPhone = '';
-  static const String supportEmail = '';
+  static const String supportEmail = 'jamshidbekormonjonov@gmail.com';
   static const String supportTelegram = '';
 
   /// Savdo ustiga qo'shiladigan soliq foizi (0 = soliqsiz).

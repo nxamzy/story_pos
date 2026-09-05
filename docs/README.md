@@ -11,49 +11,63 @@ Ikkalasi ham o'zbek va ingliz tilida, bitta faylda (yuqoridagi tugmalar
 orqali almashadi). Tashqi fayl, shrift yoki skript ishlatilmaydi —
 istalgan joyda ochiladi.
 
-## 1. Email manzilini qo'yish
+`play/` papkasida esa do'kon sahifasi uchun grafikalar turadi (ular
+saytga chiqarilmaydi, `firebase.json` da `ignore` qilingan).
 
-Ikkala faylda `ALMASHTIRING@example.com` o'rniga haqiqiy manzilingizni
-yozing:
+## 1. Aloqa manzili
+
+Ikkala sahifada `jamshidbekormonjonov@gmail.com` yozilgan — hisobni
+o'chirish so'rovlari shu manzilga keladi. Boshqasiga almashtirish:
 
 ```bash
 cd docs
-sed -i '' 's/ALMASHTIRING@example.com/sizning@email.uz/g' index.html delete-account.html
+sed -i '' 's/jamshidbekormonjonov@gmail.com/yangi@manzil.uz/g' index.html delete-account.html
 ```
 
-Manzil maxfiylik siyosatida ham, o'chirish so'rovi sahifasida ham
-ishlatiladi, shuning uchun **javob beriladigan** manzil bo'lishi kerak.
+`lib/core/utils/app_config.dart` dagi `supportEmail` ham shu manzil —
+ilova ichidagi "Yordam" sahifasidagi tugma o'shani ochadi. Birini
+o'zgartirsangiz, ikkinchisini ham o'zgartiring.
 
-## 2. GitHub Pages'ga qo'yish
+## 2. Internetga chiqarish
 
 Play sahifalari ochiq (login talab qilmaydigan) manzilda turishi shart.
-Eng oson bepul yo'l:
+
+### Firebase Hosting (tavsiya etiladi)
+
+Loyihada allaqachon Firebase bor (`storepost-a64b8`), `firebase.json` da
+hosting sozlangan — alohida repo ham, hisob ham kerak emas:
 
 ```bash
-# 1. GitHub'da yangi PUBLIC repo yarating, masalan: ocam-pos-pages
-# 2. Shu papkani o'sha repoga yuklang:
+firebase deploy --only hosting --project storepost-a64b8
+```
+
+Bir daqiqada manzillar tayyor:
+
+- Maxfiylik siyosati: `https://storepost-a64b8.web.app/`
+- Hisobni o'chirish: `https://storepost-a64b8.web.app/delete-account.html`
+
+Sahifani yangilaganda shu buyruqni qayta ishga tushiring. Kerak bo'lsa
+`firebase hosting:disable` bilan saytni o'chirib qo'yish mumkin.
+
+### GitHub Pages (muqobil)
+
+```bash
+# GitHub'da yangi PUBLIC repo yarating, masalan: ocam-pos-pages
 cd docs
-git init
-git add .
-git commit -m "Ocam POS: maxfiylik siyosati va hisobni o'chirish sahifasi"
+git init && git add . && git commit -m "Ocam POS: ommaviy sahifalar"
 git branch -M main
 git remote add origin https://github.com/<foydalanuvchi>/ocam-pos-pages.git
 git push -u origin main
 ```
 
-Keyin GitHub'da: **Settings → Pages → Source: `main` / `(root)` → Save**.
+Keyin: **Settings → Pages → Source: `main` / `(root)` → Save**.
 
-1-2 daqiqadan keyin manzillar tayyor bo'ladi:
+## 3. Play Console'ga kiritish
 
-- Maxfiylik siyosati: `https://<foydalanuvchi>.github.io/ocam-pos-pages/`
-- Hisobni o'chirish: `https://<foydalanuvchi>.github.io/ocam-pos-pages/delete-account.html`
+- **Store listing → Privacy policy** → maxfiylik siyosati manzili
+- **App content → Data safety → Data deletion** → o'chirish sahifasi manzili
 
-Shu ikki manzilni Play Console'ga kiritasiz:
-
-- **Store listing → Privacy policy** → birinchi manzil
-- **App content → Data safety → Data deletion** → ikkinchi manzil
-
-## 3. Tekshirish
+## 4. Tekshirish
 
 Yuklashdan oldin brauzerda ochib ko'ring:
 

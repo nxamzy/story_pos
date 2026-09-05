@@ -41,7 +41,7 @@ hosting sozlangan — alohida repo ham, hisob ham kerak emas:
 firebase deploy --only hosting --project storepost-a64b8
 ```
 
-Bir daqiqada manzillar tayyor:
+Sahifalar allaqachon chiqarilgan (2026-09-05), manzillar:
 
 - Maxfiylik siyosati: `https://storepost-a64b8.web.app/`
 - Hisobni o'chirish: `https://storepost-a64b8.web.app/delete-account.html`
